@@ -44,13 +44,13 @@ interface RepositoryConfiguration {
 	 * Set the collectionID
 	 * @param collectionId The collectionID
 	 */
-	void setCollectionId(String collectionId);
+	void setCollectionId(String collectionId) throws IllegalArgumentException;
 	
 	/**
 	 * Set the name of the repository configuration
 	 * @param name The name of the repository configuration
 	 */
-	void setName(String name);
+	void setName(String name) throws IllegalArgumentException;
 	
 	/**
 	 * Set the path to the PEM certificate used to connect to the bitrepository

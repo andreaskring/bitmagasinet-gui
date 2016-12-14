@@ -2,6 +2,8 @@ package dk.magenta.bitmagasinet.configuration;
 
 import java.nio.file.Path;
 
+import org.apache.commons.lang.StringUtils;
+
 class RepositoryConfigurationImpl implements RepositoryConfiguration {
 
 	private String name;
@@ -11,8 +13,8 @@ class RepositoryConfigurationImpl implements RepositoryConfiguration {
 	private Path settingsFolder;
 	private String pillarId;
 	
-	RepositoryConfigurationImpl(String name) {
-		this.name = name;
+	RepositoryConfigurationImpl(String name) throws IllegalArgumentException {
+		setName(name);;
 	}
 
 	@Override
@@ -41,11 +43,17 @@ class RepositoryConfigurationImpl implements RepositoryConfiguration {
 		return pillarId;
 	}
 
-	public void setCollectionId(String collectionId) {
+	public void setCollectionId(String collectionId) throws IllegalArgumentException {
+		if (StringUtils.isBlank(collectionId)) {
+			throw new IllegalArgumentException("CollectionID må ikke være blank");
+		}
 		this.collectionId = collectionId;
 	}
 
-	public void setName(String name) {
+	public void setName(String name) throws IllegalArgumentException {
+		if (StringUtils.isBlank(name)) {
+			throw new IllegalArgumentException("Navn må ikke være blank");
+		}
 		this.name = name;
 	}
 

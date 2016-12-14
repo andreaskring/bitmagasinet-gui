@@ -35,6 +35,12 @@ public class TestRepositoryConfiguration {
 		repositoryConfiguration.setName("name3");
 		assertEquals("name3", repositoryConfiguration.getName());
 	}
+	 
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void nameCannotBeNull() {
+		repositoryConfiguration.setName(null);
+	}
 	
 	@Test
 	public void shouldHaveCollectionIdC1() {
@@ -48,6 +54,11 @@ public class TestRepositoryConfiguration {
 		assertEquals("c2", repositoryConfiguration.getCollectionId());
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void shouldNotAllowBlankCollectionId() {
+		repositoryConfiguration.setCollectionId(null);
+	}
+	
 	@Test
 	public void shouldHavePathToCertificate_tmp() {
 		repositoryConfiguration.setPathToCertificate(path1);
