@@ -96,6 +96,8 @@ public class TestRepositoryConfiguration {
 		assertEquals("p2", repositoryConfiguration.getPillarId());
 	}
 
-	
+	// Check for blanks and null
+	// trimText
+
 }
 

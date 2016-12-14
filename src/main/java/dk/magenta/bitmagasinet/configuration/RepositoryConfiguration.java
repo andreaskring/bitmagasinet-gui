@@ -11,7 +11,6 @@ interface RepositoryConfiguration {
 	String getCollectionId();
 	
 	/**
-	 * Pre-condition: name cannot be null or empty
 	 * Get the name of the repository configuration
 	 * @return the name of the repository configuration
 	 */
