@@ -2,7 +2,7 @@ package dk.magenta.bitmagasinet.configuration;
 
 import java.nio.file.Path;
 
-public interface RepositoryConfiguration {
+interface RepositoryConfiguration {
 
 	/**
 	 * Get the collectionID
@@ -56,19 +56,19 @@ public interface RepositoryConfiguration {
 	 * Set the path to the PEM certificate used to connect to the bitrepository
 	 * @param path The path to the certificate
 	 */
-	void setPathToCertificate(String path);
+	void setPathToCertificate(Path path);
 	
 	/**
 	 * Set the path to the file containing the checksum list
 	 * @param path The path to the file containing the checksum list
 	 */
-	void setPathToChecksumList(String path);
+	void setPathToChecksumList(Path path);
 	
 	/**
 	 * Set the path to the RepositorySettings.xml and ReferenceSettings.xml
 	 * @param path The path to the RepositorySettings.xml and ReferenceSettings.xml
 	 */
-	void setPathToSettingsFiles(String path);
+	void setPathToSettingsFiles(Path path);
 
 	/**
 	 * Set the pillar ID

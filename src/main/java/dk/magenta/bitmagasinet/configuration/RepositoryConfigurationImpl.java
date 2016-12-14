@@ -2,69 +2,79 @@ package dk.magenta.bitmagasinet.configuration;
 
 import java.nio.file.Path;
 
-public class RepositoryConfigurationImpl implements RepositoryConfiguration {
+class RepositoryConfigurationImpl implements RepositoryConfiguration {
 
-	public RepositoryConfigurationImpl(String name) {
-		// TODO Auto-generated constructor stub
-	}
+	private String name;
+	private String collectionId;
+	private Path certificateFile;
+	private Path checksumListFile;
+	private Path settingsFolder;
+	private String pillarId;
 	
-	public String getCollectionId() {
-		// TODO Auto-generated method stub
-		return null;
+	/**
+	 * Pre-condition: name cannot be null or empty
+	 * @param name
+	 */
+	RepositoryConfigurationImpl(String name) {
+		this.name = name;
 	}
 
+	/**
+	 * Pre-condition: name cannot be null or empty
+	 * @param name
+	 */
+	@Override
+	public String getCollectionId() {
+		return collectionId;
+	}
+
+	@Override
 	public String getName() {
-		return "name";
+		return name;
 	}
 
 	public Path getPathToCertificate() {
-		// TODO Auto-generated method stub
-		return null;
+		return certificateFile;
 	}
 
 	public Path getPathToChecksumList() {
-		// TODO Auto-generated method stub
-		return null;
+		return checksumListFile;
 	}
 
 	public Path getPathToSettingsFiles() {
-		// TODO Auto-generated method stub
-		return null;
+		return settingsFolder;
 	}
 
 	public String getPillarId() {
-		// TODO Auto-generated method stub
-		return null;
+		return pillarId;
 	}
 
 	public void setCollectionId(String collectionId) {
-		// TODO Auto-generated method stub
-
+		this.collectionId = collectionId;
 	}
 
+	/**
+	 * Pre-condition: name cannot be null or empty
+	 * @param name
+	 */
 	public void setName(String name) {
-		// TODO Auto-generated method stub
-
+		this.name = name;
 	}
 
-	public void setPathToCertificate(String path) {
-		// TODO Auto-generated method stub
-
+	public void setPathToCertificate(Path path) {
+		certificateFile = path;
 	}
 
-	public void setPathToChecksumList(String path) {
-		// TODO Auto-generated method stub
-
+	public void setPathToChecksumList(Path path) {
+		checksumListFile = path;
 	}
 
-	public void setPathToSettingsFiles(String path) {
-		// TODO Auto-generated method stub
-
+	public void setPathToSettingsFiles(Path path) {
+		settingsFolder = path;
 	}
 
 	public void setPillarId(String pillarId) {
-		// TODO Auto-generated method stub
-
+		this.pillarId = pillarId;
 	}
 
 }
