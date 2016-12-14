@@ -11,18 +11,10 @@ class RepositoryConfigurationImpl implements RepositoryConfiguration {
 	private Path settingsFolder;
 	private String pillarId;
 	
-	/**
-	 * Pre-condition: name cannot be null or empty
-	 * @param name
-	 */
 	RepositoryConfigurationImpl(String name) {
 		this.name = name;
 	}
 
-	/**
-	 * Pre-condition: name cannot be null or empty
-	 * @param name
-	 */
 	@Override
 	public String getCollectionId() {
 		return collectionId;
@@ -53,10 +45,6 @@ class RepositoryConfigurationImpl implements RepositoryConfiguration {
 		this.collectionId = collectionId;
 	}
 
-	/**
-	 * Pre-condition: name cannot be null or empty
-	 * @param name
-	 */
 	public void setName(String name) {
 		this.name = name;
 	}

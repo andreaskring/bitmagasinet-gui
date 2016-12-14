@@ -30,24 +30,6 @@ public class TestRepositoryConfiguration {
 		assertEquals("name2", repositoryConfiguration.getName());
 	}
 
-	/*
-	@Test(expected = InvalidParameterException.class)
-	public void shouldNotAllowNameToBeNull() {
-		RepositoryConfiguration repositoryConfiguration = new RepositoryConfigurationImpl(null);
-	}
-
-	@Test(expected = InvalidParameterException.class)
-	public void shouldNotAllowNameToBeEmpty() {
-		RepositoryConfiguration repositoryConfiguration = new RepositoryConfigurationImpl("");
-	}
-	
-	@Test(expected = InvalidParameterException.class)
-	public void shouldNotAllowNameToBeBlank() {
-		RepositoryConfiguration repositoryConfiguration = new RepositoryConfigurationImpl(" ");
-	}
-	*/
-
-	
 	@Test
 	public void shouldSetNameToName3() {
 		repositoryConfiguration.setName("name3");
