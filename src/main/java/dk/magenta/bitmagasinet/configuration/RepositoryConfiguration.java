@@ -62,13 +62,13 @@ interface RepositoryConfiguration {
 	 * Set the path to the file containing the checksum list
 	 * @param path The path to the file containing the checksum list
 	 */
-	void setPathToChecksumList(Path path);
+	void setPathToChecksumList(Path path) throws IllegalArgumentException;
 	
 	/**
 	 * Set the path to the RepositorySettings.xml and ReferenceSettings.xml
 	 * @param path The path to the RepositorySettings.xml and ReferenceSettings.xml
 	 */
-	void setPathToSettingsFiles(Path path);
+	void setPathToSettingsFiles(Path path) throws IllegalArgumentException;
 
 	/**
 	 * Set the pillar ID

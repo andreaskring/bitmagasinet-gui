@@ -1,6 +1,6 @@
 package dk.magenta.bitmagasinet.configuration;
 
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.nio.file.Path;
 
 import org.apache.commons.io.FilenameUtils;
@@ -49,20 +49,18 @@ class RepositoryConfigurationImpl implements RepositoryConfiguration {
 		if (StringUtils.isBlank(collectionId)) {
 			throw new IllegalArgumentException("CollectionID må ikke være blank");
 		}
-		this.collectionId = collectionId;
+		this.collectionId = collectionId.trim();
 	}
 
 	public void setName(String name) throws IllegalArgumentException {
-		if (StringUtils.isBlank(name)) {
-			throw new IllegalArgumentException("Navn må ikke være blank");
-		}
-		this.name = name;
+		throwExceptionIfStringBlank(name, "Navn må ikke være blank");
+		this.name = name.trim();
 	}
 
 	public void setPathToCertificate(Path path) throws IllegalArgumentException {
 		checkIfPathIsFile(path);
 		if (!FilenameUtils.getExtension(path.toString().toLowerCase()).equals("pem")) {
-			throw new IllegalArgumentException("Filen er ikke et certifikat");
+			throw new IllegalArgumentException("Filen er ikke et PEM certifikat");
 		}
 		certificateFile = path;
 	}
@@ -72,17 +70,32 @@ class RepositoryConfigurationImpl implements RepositoryConfiguration {
 		checksumListFile = path;
 	}
 
-	public void setPathToSettingsFiles(Path path) {
+	public void setPathToSettingsFiles(Path path) throws IllegalArgumentException {
+		if (!path.toFile().isDirectory()) {
+			throw new IllegalArgumentException("Stien henviser ikke til en mappe");
+		}
+		File repositorySettings = path.resolve("RepositorySettings.xml").toFile();
+		File referenceSettings = path.resolve("ReferenceSettings.xml").toFile();
+		if (!repositorySettings.exists() || !referenceSettings.exists()) {
+			throw new IllegalArgumentException("Mappen indeholder ikke RepositorySettings.xml og/eller ReferenceSettings.xml");
+		}
 		settingsFolder = path;
 	}
 
 	public void setPillarId(String pillarId) {
-		this.pillarId = pillarId;
+		throwExceptionIfStringBlank(pillarId, "PillarID må ikke være blank");
+		this.pillarId = pillarId.trim();
 	}
 
 	private void checkIfPathIsFile(Path path) throws IllegalArgumentException {
 		if (!path.toFile().isFile()) {
 			throw new IllegalArgumentException("Stien henviser ikke til en fil");
+		}
+	}
+	
+	private void throwExceptionIfStringBlank(String s, String message) throws IllegalArgumentException {
+		if (StringUtils.isBlank(s)) {
+			throw new IllegalArgumentException(message);
 		}
 	}
 }

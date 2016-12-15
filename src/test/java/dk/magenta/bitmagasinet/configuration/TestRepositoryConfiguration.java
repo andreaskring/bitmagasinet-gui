@@ -2,8 +2,8 @@ package dk.magenta.bitmagasinet.configuration;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -14,11 +14,11 @@ import org.junit.Test;
 public class TestRepositoryConfiguration {
 
 	private RepositoryConfiguration repositoryConfiguration;
-	private final Path path1 = FileSystems.getDefault().getPath("/tmp");
-	private final Path path2 = FileSystems.getDefault().getPath("/tmp/folder1");
 	private static Path certificate;
 	private static Path certificate2;
 	private static Path certificate3;
+	private static Path folder1;
+	private static Path folder2;
 	private static String tmp;
 	
 	@BeforeClass
@@ -30,6 +30,9 @@ public class TestRepositoryConfiguration {
 		certificate.toFile().createNewFile();
 		certificate2.toFile().createNewFile();
 		certificate3.toFile().createNewFile();
+		folder1 = Paths.get(tmp);
+		folder2 = Paths.get(tmp, "folder1");
+		folder2.toFile().mkdir();
 	}
 	
 	@Before
@@ -63,6 +66,12 @@ public class TestRepositoryConfiguration {
 	@Test(expected = IllegalArgumentException.class)
 	public void nameCannotBeNull() {
 		repositoryConfiguration.setName(null);
+	}
+	
+	@Test
+	public void nameShouldBeTrimmed() {
+		repositoryConfiguration.setName("   abc   ");
+		assertEquals("abc", repositoryConfiguration.getName());
 	}
 	
 	@Test
@@ -129,17 +138,24 @@ public class TestRepositoryConfiguration {
 		repositoryConfiguration.setPathToChecksumList(path);
 	}
 
-	
 	@Test
-	public void shouldHavePathToSettingsFiles_tmp() {
-		repositoryConfiguration.setPathToSettingsFiles(path1);
-		assertEquals("/tmp", repositoryConfiguration.getPathToSettingsFiles().toString());
+	public void shouldHavePathToSettingsFiles_tmp_folder1() throws IOException {
+		File repositorySettings = folder2.resolve("RepositorySettings.xml").toFile();
+		repositorySettings.createNewFile();
+		File referenceSettings = folder2.resolve("ReferenceSettings.xml").toFile();
+		referenceSettings.createNewFile();
+		repositoryConfiguration.setPathToSettingsFiles(folder2);
+		assertEquals(tmp + "/folder1", repositoryConfiguration.getPathToSettingsFiles().toString());
 	}
 
-	@Test
-	public void shouldHavePathToSettingsFiles_tmp_folder1() {
-		repositoryConfiguration.setPathToSettingsFiles(path2);
-		assertEquals("/tmp/folder1", repositoryConfiguration.getPathToSettingsFiles().toString());
+	@Test(expected = IllegalArgumentException.class)
+	public void pathToSettingsFilesMustBeAFolder() {
+		repositoryConfiguration.setPathToSettingsFiles(Paths.get("/does/not/exist"));
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void pathToSettingsMustContainRepositorySettingsAndReferenceSettings() {
+		repositoryConfiguration.setPathToSettingsFiles(Paths.get(tmp));
 	}
 	
 	@Test
@@ -154,8 +170,21 @@ public class TestRepositoryConfiguration {
 		assertEquals("p2", repositoryConfiguration.getPillarId());
 	}
 
-	// Check for blanks and null
-	// trimText
-	// Check that file is file...
+	@Test(expected = IllegalArgumentException.class)
+	public void pillardIdMustNotBeBlank() {
+		repositoryConfiguration.setPillarId("");
+	}
+	
+	@Test
+	public void pillarIdMustBeTrimmed() {
+		repositoryConfiguration.setPillarId(" id ");
+		assertEquals("id", repositoryConfiguration.getPillarId());
+	}
+	
+	@Test
+	public void collectionIdMustBeTrimmed() {
+		repositoryConfiguration.setCollectionId(" id");
+		assertEquals("id", repositoryConfiguration.getCollectionId());
+	}
 }
 
