@@ -6,16 +6,16 @@ import static org.junit.Assert.assertTrue;
 
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestConfigurationHandler {
 
 	private ConfigurationHandler configurationHandler;
 	private RepositoryConfiguration repositoryConfiguration1;
-	
+
 	@Before
 	public void setUp() {
 		configurationHandler = new ConfigurationHandlerImpl(null);
@@ -91,5 +91,12 @@ public class TestConfigurationHandler {
 		Path localeConfigurationFolder = FileSystems.getDefault().getPath("/tmp/a");
 		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl(localeConfigurationFolder);
 		assertEquals("/tmp/a", configurationHandler.getPathToLocalConfigurationFolder().toString());
+	}
+	
+	@Test
+	public void shouldReturnRepoConfAsNameOfRepoConfFolder() {
+		Path tmp = Paths.get("tmp");
+		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl(tmp);
+		assertEquals("tmp/repoConf", configurationHandler.getPathToRepositoryConfigurations().toString());
 	}
 }

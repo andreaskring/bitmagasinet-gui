@@ -26,5 +26,11 @@ public interface ConfigurationHandler {
 	 * Get the path to the folder containing the local configuration files 
 	 * @return
 	 */
-	Path getPathToLocalConfigurationFolder(); 
+	public Path getPathToLocalConfigurationFolder();
+	
+	/**
+	 * Get the path to the repository configurations within the local configuration folder
+	 * @return
+	 */
+	public Path getPathToRepositoryConfigurations();
 }

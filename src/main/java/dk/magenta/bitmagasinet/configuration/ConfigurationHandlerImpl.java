@@ -6,6 +6,8 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 
+import dk.magenta.bitmagasinet.Constants;
+
 public class ConfigurationHandlerImpl implements ConfigurationHandler {
 
 	private Map<String, RepositoryConfiguration> repositoryMap;
@@ -49,5 +51,9 @@ public class ConfigurationHandlerImpl implements ConfigurationHandler {
 	public boolean containsRepositoryConfiguration(String name) {
 		return repositoryMap.containsKey(name);
 	}
-
+	
+	@Override
+	public Path getPathToRepositoryConfigurations() {
+		return getPathToLocalConfigurationFolder().resolve(Constants.REPOCONF_FOLDER);
+	}
 }

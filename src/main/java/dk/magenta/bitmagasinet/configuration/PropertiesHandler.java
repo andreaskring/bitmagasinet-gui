@@ -5,7 +5,7 @@ import java.util.Properties;
 
 public class PropertiesHandler {
 
-	public Properties convertRepositoryConfigurationToProperties(RepositoryConfiguration repositoryConfiguration) {
+	public static Properties convertRepositoryConfigurationToProperties(RepositoryConfiguration repositoryConfiguration) {
 		Properties properties = new Properties();
 		properties.setProperty("collectionID", repositoryConfiguration.getCollectionId());
 		properties.setProperty("name", repositoryConfiguration.getName());
@@ -16,7 +16,7 @@ public class PropertiesHandler {
 		return properties;
 	}
 
-	public RepositoryConfiguration convertPropertiesToRepositoryConfiguration(Properties properties) {
+	public static RepositoryConfiguration convertPropertiesToRepositoryConfiguration(Properties properties) {
 		RepositoryConfiguration repositoryConfiguration = new RepositoryConfigurationImpl(properties.getProperty("name"));
 		repositoryConfiguration.setCollectionId(properties.getProperty("collectionID"));
 		repositoryConfiguration.setPathToCertificate(Paths.get(properties.getProperty("pathToCertificate")));

@@ -28,23 +28,28 @@ class RepositoryConfigurationImpl implements RepositoryConfiguration {
 	public String getName() {
 		return name;
 	}
-
+	
+	@Override
 	public Path getPathToCertificate() {
 		return certificateFile;
 	}
 
+	@Override
 	public Path getPathToChecksumList() {
 		return checksumListFile;
 	}
 
+	@Override
 	public Path getPathToSettingsFiles() {
 		return settingsFolder;
 	}
 
+	@Override
 	public String getPillarId() {
 		return pillarId;
 	}
 
+	@Override
 	public void setCollectionId(String collectionId) throws IllegalArgumentException {
 		if (StringUtils.isBlank(collectionId)) {
 			throw new IllegalArgumentException("CollectionID må ikke være blank");
@@ -52,11 +57,13 @@ class RepositoryConfigurationImpl implements RepositoryConfiguration {
 		this.collectionId = collectionId.trim();
 	}
 
+	@Override
 	public void setName(String name) throws IllegalArgumentException {
 		throwExceptionIfStringBlank(name, "Navn må ikke være blank");
 		this.name = name.trim();
 	}
 
+	@Override
 	public void setPathToCertificate(Path path) throws IllegalArgumentException {
 		checkIfPathIsFile(path);
 		if (!FilenameUtils.getExtension(path.toString().toLowerCase()).equals("pem")) {
@@ -65,11 +72,13 @@ class RepositoryConfigurationImpl implements RepositoryConfiguration {
 		certificateFile = path;
 	}
 
+	@Override
 	public void setPathToChecksumList(Path path) {
 		checkIfPathIsFile(path);
 		checksumListFile = path;
 	}
 
+	@Override
 	public void setPathToSettingsFiles(Path path) throws IllegalArgumentException {
 		if (!path.toFile().isDirectory()) {
 			throw new IllegalArgumentException("Stien henviser ikke til en mappe");
@@ -82,9 +91,28 @@ class RepositoryConfigurationImpl implements RepositoryConfiguration {
 		settingsFolder = path;
 	}
 
+	@Override
 	public void setPillarId(String pillarId) {
 		throwExceptionIfStringBlank(pillarId, "PillarID må ikke være blank");
 		this.pillarId = pillarId.trim();
+	}
+	
+	@Override
+	public boolean equals(Object otherObject) {
+		if (this == otherObject) return true;
+		if (otherObject == null) return false;
+		if (getClass() != otherObject.getClass()) return false;
+		
+		RepositoryConfiguration other = (RepositoryConfiguration) otherObject;
+		
+		if (!getCollectionId().equals(other.getCollectionId())) return false;
+		if (!getPathToCertificate().equals(other.getPathToCertificate())) return false;
+		if (!getName().equals(other.getName())) return false;
+		if (!getPathToChecksumList().equals(other.getPathToChecksumList())) return false;
+		if (!getPathToSettingsFiles().equals(other.getPathToSettingsFiles())) return false;
+		if (!getPillarId().equals(other.getPillarId())) return false;
+		
+		return true;
 	}
 
 	private void checkIfPathIsFile(Path path) throws IllegalArgumentException {
