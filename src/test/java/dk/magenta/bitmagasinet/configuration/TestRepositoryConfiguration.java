@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -17,7 +19,6 @@ public class TestRepositoryConfiguration {
 	private static Path certificate;
 	private static Path certificate2;
 	private static Path certificate3;
-	private static Path folder1;
 	private static Path folder2;
 	private static String tmp;
 	
@@ -30,9 +31,16 @@ public class TestRepositoryConfiguration {
 		certificate.toFile().createNewFile();
 		certificate2.toFile().createNewFile();
 		certificate3.toFile().createNewFile();
-		folder1 = Paths.get(tmp);
 		folder2 = Paths.get(tmp, "folder1");
 		folder2.toFile().mkdir();
+	}
+	
+	@AfterClass
+	public static void tearDown() throws IOException {
+		certificate.toFile().delete();
+		certificate2.toFile().delete();
+		certificate3.toFile().delete();
+		FileUtils.deleteDirectory(folder2.toFile());
 	}
 	
 	@Before
@@ -186,5 +194,21 @@ public class TestRepositoryConfiguration {
 		repositoryConfiguration.setCollectionId(" id");
 		assertEquals("id", repositoryConfiguration.getCollectionId());
 	}
+	
+	@Test
+	public void shouldChangeNameCorrectly() {
+		RepositoryConfiguration r = new RepositoryConfigurationImpl("repo");
+		assertEquals("repo", r.getName());
+		r.setName("newName");
+		assertEquals("newName", r.getName());
+	}
+	
+	@Test
+	public void shouldChangeNameCorrectly2() {
+		assertEquals("name1", repositoryConfiguration.getName());
+		repositoryConfiguration.setName("newName");
+		assertEquals("newName", repositoryConfiguration.getName());
+	}
+
 }
 
