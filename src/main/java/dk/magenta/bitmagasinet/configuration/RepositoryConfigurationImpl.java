@@ -1,7 +1,9 @@
 package dk.magenta.bitmagasinet.configuration;
 
+import java.io.FileNotFoundException;
 import java.nio.file.Path;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 class RepositoryConfigurationImpl implements RepositoryConfiguration {
@@ -57,11 +59,16 @@ class RepositoryConfigurationImpl implements RepositoryConfiguration {
 		this.name = name;
 	}
 
-	public void setPathToCertificate(Path path) {
+	public void setPathToCertificate(Path path) throws IllegalArgumentException {
+		checkIfPathIsFile(path);
+		if (!FilenameUtils.getExtension(path.toString().toLowerCase()).equals("pem")) {
+			throw new IllegalArgumentException("Filen er ikke et certifikat");
+		}
 		certificateFile = path;
 	}
 
 	public void setPathToChecksumList(Path path) {
+		checkIfPathIsFile(path);
 		checksumListFile = path;
 	}
 
@@ -73,4 +80,9 @@ class RepositoryConfigurationImpl implements RepositoryConfiguration {
 		this.pillarId = pillarId;
 	}
 
+	private void checkIfPathIsFile(Path path) throws IllegalArgumentException {
+		if (!path.toFile().isFile()) {
+			throw new IllegalArgumentException("Stien henviser ikke til en fil");
+		}
+	}
 }

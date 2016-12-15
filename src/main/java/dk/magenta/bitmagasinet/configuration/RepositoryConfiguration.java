@@ -56,7 +56,7 @@ interface RepositoryConfiguration {
 	 * Set the path to the PEM certificate used to connect to the bitrepository
 	 * @param path The path to the certificate
 	 */
-	void setPathToCertificate(Path path);
+	void setPathToCertificate(Path path) throws IllegalArgumentException ;
 	
 	/**
 	 * Set the path to the file containing the checksum list
