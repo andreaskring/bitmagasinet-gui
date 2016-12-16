@@ -1,6 +1,5 @@
 package dk.magenta.bitmagasinet;
 
-import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,6 +23,7 @@ import org.bitrepository.commandline.resultmodel.GetChecksumsResultModel;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
+import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;
@@ -108,8 +108,7 @@ public class BitrepositoryClientExample {
         String fileID = "2016-04-26_00860.SA";
         
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
-        BigInteger salt = BigInteger.valueOf(64);
-        byte[] saltConverted = salt.toByteArray();
+        byte[] saltConverted = Base16Utils.encodeBase16("64");
         checksumRequest.setChecksumType(ChecksumType.HMAC_MD5);
         checksumRequest.setChecksumSalt(saltConverted);
         
