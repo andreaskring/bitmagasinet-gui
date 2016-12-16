@@ -8,7 +8,6 @@ import java.util.Arrays;
 
 import org.bitrepository.common.utils.Base16Utils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestFileChecksum {
