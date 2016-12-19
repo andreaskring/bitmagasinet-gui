@@ -20,8 +20,8 @@ public class TestFileChecksum {
 	
 	@Before
 	public void setUp() {
-		fileChecksum1 = new FileChecksumImpl(checksum1, "64");
-		fileChecksum2 = new FileChecksumImpl(checksum2, "54");
+		fileChecksum1 = new FileChecksumImpl("file1.txt", checksum1, "64");
+		fileChecksum2 = new FileChecksumImpl("file2.txt", checksum2, "54");
 	}
 	
 	@Test
@@ -82,4 +82,15 @@ public class TestFileChecksum {
 		boolean arraysEqual = Arrays.equals(Base16Utils.encodeBase16("11"), fileChecksum1.getSalt());
 		assertTrue(arraysEqual);
 	}
+	
+	@Test
+	public void shouldHaveFilenameFile1_txt() {
+		assertEquals("file1.txt", fileChecksum1.getFilename());
+	}
+	
+	@Test
+	public void shouldHaveFilenameFile2_txt() {
+		assertEquals("file2.txt", fileChecksum2.getFilename());
+	}
+
 }

@@ -4,11 +4,13 @@ import org.bitrepository.common.utils.Base16Utils;
 
 public class FileChecksumImpl implements FileChecksum {
 
+	private String filename;
 	private String localChecksum;
 	private String remoteChecksum;
 	private byte[] salt;
 	
-	public FileChecksumImpl(String localChecksum, String salt) {
+	public FileChecksumImpl(String filename, String localChecksum, String salt) {
+		this.filename = filename;
 		setLocalChecksum(localChecksum);
 		setSalt(salt);
 	}
@@ -18,6 +20,11 @@ public class FileChecksumImpl implements FileChecksum {
 		return localChecksum.equals(remoteChecksum);
 	}
 
+	@Override
+	public String getFilename() {
+		return filename;
+	}
+	
 	@Override
 	public String getLocalChecksum() {
 		return localChecksum;

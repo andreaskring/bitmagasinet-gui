@@ -7,6 +7,7 @@ public interface FileChecksum {
 	 **/
 	
 	public boolean checksumsMatch();
+	public String getFilename();
 	public String getLocalChecksum();
 	public String getRemoteChecksum();
 	public byte[] getSalt(); 
