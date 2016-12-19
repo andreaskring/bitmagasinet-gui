@@ -22,7 +22,7 @@
 	</repositories>
 
 	<build>
-		<!-- finalName>bitmagasin-gui</finalName -->
+		<finalName>bitmagasin-gui</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -34,13 +34,30 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>dk.magenta.bitmagasinet.MainTest</mainClass>
+						</manifest>
+					</archive>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
-
-	<!-- build> <plugins> <plugin> <artifactId>maven-assembly-plugin</artifactId> 
-		<configuration> <archive> <manifest> <mainClass>dk.magenta.bitmagasinet.BitrepositoryClientExample</mainClass> 
-		</manifest> </archive> <descriptorRefs> <descriptorRef>jar-with-dependencies</descriptorRef> 
-		</descriptorRefs> </configuration> </plugin> </plugins> </build -->
 
 	<dependencies>
 		<dependency>
