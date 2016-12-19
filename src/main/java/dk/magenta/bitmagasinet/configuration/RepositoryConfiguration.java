@@ -2,7 +2,7 @@ package dk.magenta.bitmagasinet.configuration;
 
 import java.nio.file.Path;
 
-interface RepositoryConfiguration {
+public interface RepositoryConfiguration {
 
 	/**
 	 * Get the collectionID

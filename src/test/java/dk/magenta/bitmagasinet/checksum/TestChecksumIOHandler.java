@@ -5,18 +5,15 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
 import org.bitrepository.common.utils.Base16Utils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestChecksumIOHandler {
 
-	private static Path localeConfigurationFolder;
 	private File checksumFile;
 
 	/*
@@ -49,7 +46,6 @@ public class TestChecksumIOHandler {
 
 	@Test
 	public void shouldReadChecksumFileCorrectly() throws IOException, InvalidChecksumFileException {
-		// ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl(localeConfigurationFolder);
 		List<FileChecksum> fileChecksumList = ChecksumIOHandler.readChecksumList(checksumFile);
 		
 		FileChecksum fileChecksum = fileChecksumList.get(0);
