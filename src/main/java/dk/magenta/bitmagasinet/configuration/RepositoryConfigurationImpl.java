@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
-class RepositoryConfigurationImpl implements RepositoryConfiguration {
+public class RepositoryConfigurationImpl implements RepositoryConfiguration {
 
 	private String name;
 	private String collectionId;
@@ -15,7 +15,7 @@ class RepositoryConfigurationImpl implements RepositoryConfiguration {
 	private Path settingsFolder;
 	private String pillarId;
 	
-	RepositoryConfigurationImpl(String name) throws IllegalArgumentException {
+	public RepositoryConfigurationImpl(String name) throws IllegalArgumentException {
 		setName(name);;
 	}
 

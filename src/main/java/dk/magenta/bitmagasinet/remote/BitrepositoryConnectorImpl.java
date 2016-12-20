@@ -72,9 +72,9 @@ public class BitrepositoryConnectorImpl implements BitrepositoryConnector {
 
 		List<String> pillarIDs = new ArrayList<String>();
 		pillarIDs.add(repositoryConfiguration.getPillarId());
+		model = new GetChecksumsResultModel(pillarIDs);
 		queries = makeQuery(pillarIDs);
 
-		model = new GetChecksumsResultModel(pillarIDs);
 		long timeout = settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
 		eventHandler = new GetChecksumsEventHandler(model, timeout, outputHandler);
 
