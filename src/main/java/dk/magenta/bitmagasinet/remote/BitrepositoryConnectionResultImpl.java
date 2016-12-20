@@ -3,16 +3,13 @@ package dk.magenta.bitmagasinet.remote;
 public class BitrepositoryConnectionResultImpl implements BitrepositoryConnectionResult {
 	
 	private String checksum;
-	private String filename;
+	private ThreadStatus status;
 	
 	/**
 	 * @param filename
 	 */
-	public BitrepositoryConnectionResultImpl(String filename, String checksum) throws RuntimeException {
-		if (filename == null) {
-			throw new RuntimeException();
-		}
-		this.filename = filename;
+	public BitrepositoryConnectionResultImpl(ThreadStatus status, String checksum) {
+		this.status = status;
 		this.checksum = checksum;
 	}
 	
@@ -22,8 +19,8 @@ public class BitrepositoryConnectionResultImpl implements BitrepositoryConnectio
 	}
 
 	@Override
-	public String getFilename() {
-		return filename;
+	public ThreadStatus getStatus() {
+		return status;
 	}
 
 }

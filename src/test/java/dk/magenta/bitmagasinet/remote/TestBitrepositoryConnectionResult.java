@@ -11,30 +11,26 @@ public class TestBitrepositoryConnectionResult {
 
 	@Test
 	public void shouldReturnChecksum1() {
-		BitrepositoryConnectionResult result = new BitrepositoryConnectionResultImpl("file1.bin", checksum1);
+		BitrepositoryConnectionResult result = new BitrepositoryConnectionResultImpl(ThreadStatus.SUCCESS, checksum1);
 		assertEquals(checksum1, result.getChecksum());
 	}
 	
 	@Test
 	public void shouldReturnChecksum2() {
-		BitrepositoryConnectionResult result = new BitrepositoryConnectionResultImpl("file1.bin", checksum2);
+		BitrepositoryConnectionResult result = new BitrepositoryConnectionResultImpl(ThreadStatus.SUCCESS, checksum2);
 		assertEquals(checksum2, result.getChecksum());
 	}
 	
 	@Test
-	public void shouldReturnFilename1() {
-		BitrepositoryConnectionResult result = new BitrepositoryConnectionResultImpl("file1.bin", checksum1);
-		assertEquals("file1.bin", result.getFilename());
+	public void shouldReturnSuccessWhenStatusSuccess() {
+		BitrepositoryConnectionResult result = new BitrepositoryConnectionResultImpl(ThreadStatus.SUCCESS, checksum1);
+		assertEquals(ThreadStatus.SUCCESS, result.getStatus());
 	}
-
+	
 	@Test
-	public void shouldReturnFilename2() {
-		BitrepositoryConnectionResult result = new BitrepositoryConnectionResultImpl("file2.bin", checksum1);
-		assertEquals("file2.bin", result.getFilename());
+	public void shouldReturnExceptionWhenStatusException() {
+		BitrepositoryConnectionResult result = new BitrepositoryConnectionResultImpl(ThreadStatus.EXCEPTION, checksum1);
+		assertEquals(ThreadStatus.EXCEPTION, result.getStatus());
 	}
 
-	@Test(expected = RuntimeException.class)
-	public void shouldThrowRuntimeExceptionIfFilenameNull() {
-		new BitrepositoryConnectionResultImpl(null, checksum1);
-	}
 }
