@@ -23,8 +23,6 @@ public class TestBitrepositoryConnectorImpl {
 		repositoryConfiguration.setPathToCertificate(Paths.get("/home/andreas/bitmagasinet/bitrepository-client-1.6/conf/rigsark-store-client-certkey.pem"));
 		repositoryConfiguration.setPillarId("rigsarkivnearline1");
 		
-		assertEquals("rigsarkivnearline1", repositoryConfiguration.getPillarId());
-		
 		FileChecksum fileChecksum = new FileChecksumImpl("Something.txt", "474cc7f5020f952447044e93438d0ea6", "64");
 		
 		BitrepositoryConnector connector = new BitrepositoryConnectorImpl(repositoryConfiguration);

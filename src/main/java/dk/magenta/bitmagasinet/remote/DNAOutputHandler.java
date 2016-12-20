@@ -1,4 +1,4 @@
-package dk.magenta.bitmagasinet;
+package dk.magenta.bitmagasinet.remote;
 
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.commandline.output.OutputHandler;

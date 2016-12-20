@@ -36,6 +36,8 @@ import org.bitrepository.protocol.security.OperationAuthorizor;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
 
+import dk.magenta.bitmagasinet.remote.DNAOutputHandler;
+
 public class BitrepositoryClientExample {
 
 	private GetChecksumsResultModel model;
