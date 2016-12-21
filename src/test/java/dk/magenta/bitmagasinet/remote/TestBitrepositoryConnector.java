@@ -44,7 +44,7 @@ public class TestBitrepositoryConnector implements ThreadStatusObserver {
 		}
 		
 		assertEquals(ThreadStatus.SUCCESS, bitrepositoryConnectionResult.getStatus());
-		assertEquals("474cc7f5020f952447044e93438d0ea6", bitrepositoryConnectionResult.getChecksum());
+		assertEquals("474cc7f5020f952447044e93438d0ea6", bitrepositoryConnectionResult.getFileChecksum().getRemoteChecksum());
 	}
 	
 	@Override

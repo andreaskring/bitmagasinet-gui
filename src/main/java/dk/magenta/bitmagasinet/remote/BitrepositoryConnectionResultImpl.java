@@ -1,18 +1,20 @@
 package dk.magenta.bitmagasinet.remote;
 
+import dk.magenta.bitmagasinet.checksum.FileChecksum;
+
 public class BitrepositoryConnectionResultImpl implements BitrepositoryConnectionResult {
 	
-	private String checksum;
+	private FileChecksum fileChecksum;
 	private ThreadStatus status;
 	
-	public BitrepositoryConnectionResultImpl(ThreadStatus status, String checksum) {
+	public BitrepositoryConnectionResultImpl(ThreadStatus status, FileChecksum checksum) {
 		this.status = status;
-		this.checksum = checksum;
+		this.fileChecksum = checksum;
 	}
 	
 	@Override
-	public String getChecksum() {
-		return checksum;
+	public FileChecksum getFileChecksum() {
+		return fileChecksum;
 	}
 
 	@Override

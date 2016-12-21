@@ -97,13 +97,13 @@ public class BitrepositoryConnectorImpl implements BitrepositoryConnector {
 		BitrepositoryConnectionResult bitrepositoryConnectionResult;
 		if (event.getEventType().equals(OperationEvent.OperationEventType.COMPLETE)) {
 			Iterator<ChecksumResult> iter = model.getCompletedResults().iterator();
-			String checksum = null;
 			if (iter.hasNext()) {
 				// Only returns one result
 				ChecksumResult checksumResult = iter.next();
-				checksum = checksumResult.getChecksum(repositoryConfiguration.getPillarId());
+				String checksum = checksumResult.getChecksum(repositoryConfiguration.getPillarId());
+				fileChecksum.setRemoteChecksum(checksum);
 			}
-			bitrepositoryConnectionResult = new BitrepositoryConnectionResultImpl(ThreadStatus.SUCCESS, checksum);
+			bitrepositoryConnectionResult = new BitrepositoryConnectionResultImpl(ThreadStatus.SUCCESS, fileChecksum);
 		} else {
 			bitrepositoryConnectionResult = new BitrepositoryConnectionResultImpl(ThreadStatus.ERROR, null);
 		}
