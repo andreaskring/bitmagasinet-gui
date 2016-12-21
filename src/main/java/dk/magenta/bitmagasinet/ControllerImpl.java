@@ -60,6 +60,7 @@ public class ControllerImpl implements Controller, ThreadStatusObserver {
 
 	@Override
 	public void update(BitrepositoryConnectionResult bitrepositoryConnectionResult) {
+		remainingFileChecksums.remove(0);
 		processedFileChecksums.add(bitrepositoryConnectionResult.getFileChecksum());
 
 	}

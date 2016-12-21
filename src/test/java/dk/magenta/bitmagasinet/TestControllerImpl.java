@@ -24,8 +24,7 @@ public class TestControllerImpl {
 	public void setUp() {
 		controller = new ControllerImpl();
 		fileChecksums = new ArrayList<FileChecksum>();
-		fileChecksum1 = new FileChecksumImpl("file1.bin", "9e5aae9572765f8bec9bca8c818188da", "64");
-		fileChecksums.add(fileChecksum1);
+		addFileChecksum1();
 	}
 
 	@Test
@@ -42,8 +41,7 @@ public class TestControllerImpl {
 
 	@Test
 	public void shouldReturnSizeTwoWhenRemainingFileChecksumListHasTwoElement() {
-		FileChecksum fileChecksum2 = new FileChecksumImpl("file2.bin", "9e5aae9572765f8bec9bca8c818188da", "64");
-		fileChecksums.add(fileChecksum2);
+		addFileChecksum2();
 		controller.addFileChecksumsToRemainingList(fileChecksums);
 		assertEquals(2, controller.getRemainingFileChecksums().size());
 		assertEquals("file1.bin", controller.getRemainingFileChecksums().get(0).getFilename());
@@ -55,12 +53,9 @@ public class TestControllerImpl {
 		assertEquals(0, controller.getProcessedFileChecksums().size());
 	}
 	
-	//@Ignore
 	@Test
 	public void shouldReturnSize1ForProcessedFileChecksumsWhenOneHaveBeenProcessed() throws InterruptedException {
-		fileChecksum1.setRemoteChecksum("9e5aae9572765f8bec9bca8c818188da");
-		FileChecksum fileChecksum2 = new FileChecksumImpl("file2.bin", "9e5aae9572765f8bec9bca8c818188da", "64");
-		fileChecksums.add(fileChecksum2);
+		addFileChecksum2();
 		controller.addFileChecksumsToRemainingList(fileChecksums);
 		
 		// Two FileChecksums are now in the remaining list
@@ -75,8 +70,34 @@ public class TestControllerImpl {
 		assertEquals("file1.bin", controller.getProcessedFileChecksums().get(0).getFilename());
 	}
 	
-	private void addFileChecksum1() {
+	@Test
+	public void whenFirstFileChecksumIsProcessedItShouldBeRemovedFromTheRemainingList() throws InterruptedException {
+		addFileChecksum2();
+		controller.addFileChecksumsToRemainingList(fileChecksums);
 		
+		// Two FileChecksums are now in the remaining list
+		
+		BitrepositoryConnector bitrepositoryConnector = new BitrepositoryConnectorStub(fileChecksum1);
+		bitrepositoryConnector.addObserver(controller);
+
+		controller.processNext(bitrepositoryConnector);
+		Thread.sleep(1000); // To make sure that the separate thread will finish
+
+		assertEquals(1, controller.getRemainingFileChecksums().size());
+		assertEquals("file2.bin", controller.getRemainingFileChecksums().get(0).getFilename());
+
+	}
+	
+	private void addFileChecksum1() {
+		fileChecksum1 = new FileChecksumImpl("file1.bin", "9e5aae9572765f8bec9bca8c818188da", "64");
+		fileChecksum1.setRemoteChecksum("9e5aae9572765f8bec9bca8c818188da");
+		fileChecksums.add(fileChecksum1);
+	}
+	
+	private void addFileChecksum2() {
+		FileChecksum fileChecksum2 = new FileChecksumImpl("file2.bin", "9e5aae9572765f8bec9bca8c818188da", "64");
+		fileChecksum2.setRemoteChecksum("00ffae9572765f8bec9bca8c81812211");
+		fileChecksums.add(fileChecksum2);
 	}
 	
 	// when processed one should be removed form the other list
