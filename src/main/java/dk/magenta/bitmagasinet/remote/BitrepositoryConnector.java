@@ -1,12 +1,6 @@
 package dk.magenta.bitmagasinet.remote;
 
-import javax.jms.JMSException;
+public interface BitrepositoryConnector extends Runnable {
 
-import dk.magenta.bitmagasinet.checksum.FileChecksum;
-
-public interface BitrepositoryConnector {
-
-	public String getRemoteChecksum(FileChecksum fileChecksum) throws Exception;
-	public void closeMessageBus() throws JMSException;
-	
+	public void addObserver(ThreadStatusObserver observer);
 }

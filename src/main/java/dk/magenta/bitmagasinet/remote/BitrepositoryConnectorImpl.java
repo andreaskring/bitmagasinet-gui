@@ -38,24 +38,30 @@ import dk.magenta.bitmagasinet.configuration.RepositoryConfiguration;
 
 public class BitrepositoryConnectorImpl implements BitrepositoryConnector {
 
-	private String clientId;
-	private SettingsProvider settingsLoader;
-	private GetChecksumsClient client;
 	private RepositoryConfiguration repositoryConfiguration;
-	private Settings settings;
+	private FileChecksum fileChecksum;
+	private List<ThreadStatusObserver> threadStatusObservers;
 	private GetChecksumsResultModel model;
-	private ContributorQuery[] queries;
-	private GetChecksumsEventHandler eventHandler;
-	
-	public BitrepositoryConnectorImpl(RepositoryConfiguration repositoryConfiguration) {
+
+	public BitrepositoryConnectorImpl(RepositoryConfiguration repositoryConfiguration, FileChecksum fileChecksum) {
 		this.repositoryConfiguration = repositoryConfiguration;
+		this.fileChecksum = fileChecksum;
+		threadStatusObservers = new ArrayList<ThreadStatusObserver>();
+	}
+
+	public void addObserver(ThreadStatusObserver observer) {
+		threadStatusObservers.add(observer);
+	}
+
+	@Override
+	public void run() {
 
 		UniqueCommandlineComponentID uniqueCommandlineComponentID = new UniqueCommandlineComponentID();
-		clientId = uniqueCommandlineComponentID.getComponentID();
+		String clientId = uniqueCommandlineComponentID.getComponentID();
 
-		settingsLoader = new SettingsProvider(
+		SettingsProvider settingsLoader = new SettingsProvider(
 				new XMLFileSettingsLoader(repositoryConfiguration.getPathToSettingsFiles().toString()), clientId);
-		settings = settingsLoader.getSettings();
+		Settings settings = settingsLoader.getSettings();
 
 		PermissionStore permissionStore = new PermissionStore();
 		MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
@@ -65,55 +71,75 @@ public class BitrepositoryConnectorImpl implements BitrepositoryConnector {
 				repositoryConfiguration.getPathToCertificate().toString(), authenticator, signer, authorizer,
 				permissionStore, settings.getComponentID());
 
-		client = AccessComponentFactory.getInstance().createGetChecksumsClient(settings, securityManager, clientId);
+		GetChecksumsClient client = AccessComponentFactory.getInstance().createGetChecksumsClient(settings,
+				securityManager, clientId);
 
 		OutputHandler outputHandler = new DNAOutputHandler();
 
 		List<String> pillarIDs = new ArrayList<String>();
 		pillarIDs.add(repositoryConfiguration.getPillarId());
 		model = new GetChecksumsResultModel(pillarIDs);
-		queries = makeQuery(pillarIDs);
+		ContributorQuery[] queries = makeQuery(pillarIDs);
 
 		long timeout = settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
-		eventHandler = new GetChecksumsEventHandler(model, timeout, outputHandler);
-
-	}
-
-	@Override
-	public String getRemoteChecksum(FileChecksum fileChecksum) throws Exception {
+		GetChecksumsEventHandler eventHandler = new GetChecksumsEventHandler(model, timeout, outputHandler);
 
 		ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
 		checksumRequest.setChecksumType(ChecksumType.HMAC_MD5);
 		checksumRequest.setChecksumSalt(fileChecksum.getSalt());
 
 		String auditInfo = "Getting salted checksum for " + fileChecksum.getFilename();
-		
-		client.getChecksums(repositoryConfiguration.getCollectionId(), queries, fileChecksum.getFilename(), checksumRequest, null, eventHandler, auditInfo);
+
+		client.getChecksums(repositoryConfiguration.getCollectionId(), queries, fileChecksum.getFilename(),
+				checksumRequest, null, eventHandler, auditInfo);
 
 		OperationEvent event = eventHandler.getFinish();
-		if (event.getEventType().equals(OperationEvent.OperationEventType.FAILED)) {
-			throw new UnsuccessfulChecksumRetreivalException("Hentning af checksum fejlede");
-		} else if (event.getEventType().equals(OperationEvent.OperationEventType.COMPLETE)) {
+		BitrepositoryConnectionResult bitrepositoryConnectionResult;
+		if (event.getEventType().equals(OperationEvent.OperationEventType.COMPLETE)) {
 			Iterator<ChecksumResult> iter = model.getCompletedResults().iterator();
 			String checksum = null;
-			while (iter.hasNext()) {
+			if (iter.hasNext()) {
 				// Only returns one result
-				ChecksumResult result = iter.next();
-				checksum = result.getChecksum(repositoryConfiguration.getPillarId());
+				ChecksumResult checksumResult = iter.next();
+				checksum = checksumResult.getChecksum(repositoryConfiguration.getPillarId());
 			}
-			return checksum;
+			bitrepositoryConnectionResult = new BitrepositoryConnectionResultImpl(ThreadStatus.SUCCESS, checksum);
 		} else {
-			throw new UnsuccessfulChecksumRetreivalException("Hentning af checksum fejlede");
+			bitrepositoryConnectionResult = new BitrepositoryConnectionResultImpl(ThreadStatus.ERROR, null);
+		}
+		
+		// Closing down after use
+		MessageBus messageBus = MessageBusManager.getMessageBus();
+		if (messageBus != null) {
+			try {
+				messageBus.close();
+			} catch (JMSException e) {
+				e.printStackTrace();
+				messageBusError();
+			}
+		}
+
+		//TODO: handle interruptions...
+		
+		notifyObservers(bitrepositoryConnectionResult);
+		
+	}
+	
+
+	private void notifyObservers(BitrepositoryConnectionResult bitrepositoryConnectionResult) {
+		if (!threadStatusObservers.isEmpty()) {
+			for (ThreadStatusObserver observer : threadStatusObservers) {
+				observer.update(bitrepositoryConnectionResult);
+			}
 		}
 	}
 	
-	@Override
-	public void closeMessageBus() throws JMSException {
-		 // Closing down after use
-		 MessageBus messageBus = MessageBusManager.getMessageBus();
-		 if (messageBus != null) {
-			 messageBus.close();
-		 }
+	private void messageBusError() {
+		if (!threadStatusObservers.isEmpty()) {
+			for (ThreadStatusObserver observer : threadStatusObservers) {
+				observer.messageBusErrorCallback();
+			}
+		}
 	}
 
 	private ContributorQuery[] makeQuery(List<String> pillars) {

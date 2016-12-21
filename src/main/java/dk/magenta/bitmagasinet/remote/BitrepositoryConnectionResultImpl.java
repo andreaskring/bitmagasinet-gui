@@ -5,9 +5,6 @@ public class BitrepositoryConnectionResultImpl implements BitrepositoryConnectio
 	private String checksum;
 	private ThreadStatus status;
 	
-	/**
-	 * @param filename
-	 */
 	public BitrepositoryConnectionResultImpl(ThreadStatus status, String checksum) {
 		this.status = status;
 		this.checksum = checksum;

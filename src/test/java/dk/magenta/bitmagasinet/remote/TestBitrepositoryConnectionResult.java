@@ -29,8 +29,8 @@ public class TestBitrepositoryConnectionResult {
 	
 	@Test
 	public void shouldReturnExceptionWhenStatusException() {
-		BitrepositoryConnectionResult result = new BitrepositoryConnectionResultImpl(ThreadStatus.EXCEPTION, checksum1);
-		assertEquals(ThreadStatus.EXCEPTION, result.getStatus());
+		BitrepositoryConnectionResult result = new BitrepositoryConnectionResultImpl(ThreadStatus.ERROR, checksum1);
+		assertEquals(ThreadStatus.ERROR, result.getStatus());
 	}
 
 }
