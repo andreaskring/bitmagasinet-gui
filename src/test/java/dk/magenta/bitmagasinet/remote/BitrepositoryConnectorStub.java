@@ -9,16 +9,18 @@ public class BitrepositoryConnectorStub implements BitrepositoryConnector {
 
 	private List<ThreadStatusObserver> observers;
 	private FileChecksum returnFileChecksum;
+	private ThreadStatus threadStatus;
 
-	public BitrepositoryConnectorStub(FileChecksum returnFileChecksum) {
+	public BitrepositoryConnectorStub(FileChecksum returnFileChecksum, ThreadStatus threadStatus) {
 		this.returnFileChecksum = returnFileChecksum;
+		this.threadStatus = threadStatus;
 		observers = new ArrayList<ThreadStatusObserver>();
 	}
 
 	@Override
 	public void run() {
 		BitrepositoryConnectionResult bitrepositoryConnectionResult = new BitrepositoryConnectionResultImpl(
-				ThreadStatus.SUCCESS, returnFileChecksum);
+				threadStatus, returnFileChecksum);
 		notifyObservers(bitrepositoryConnectionResult);
 	}
 

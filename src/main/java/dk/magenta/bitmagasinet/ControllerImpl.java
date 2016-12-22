@@ -6,13 +6,16 @@ import java.util.List;
 import dk.magenta.bitmagasinet.checksum.FileChecksum;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnectionResult;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnector;
+import dk.magenta.bitmagasinet.remote.BitrepositoryProgressHandler;
+import dk.magenta.bitmagasinet.remote.BitrepositoryProgressHandlerImpl;
+import dk.magenta.bitmagasinet.remote.ThreadStatus;
 import dk.magenta.bitmagasinet.remote.ThreadStatusObserver;
 
 public class ControllerImpl implements Controller, ThreadStatusObserver {
 
 	private List<FileChecksum> remainingFileChecksums;
 	private List<FileChecksum> processedFileChecksums;
-	// private BitrepositoryConnector bitrepositoryConnector;
+	private BitrepositoryProgressHandler bitrepositoryProgressHandler;
 
 	public ControllerImpl() {
 		remainingFileChecksums = new ArrayList<FileChecksum>();
@@ -41,34 +44,23 @@ public class ControllerImpl implements Controller, ThreadStatusObserver {
 	}
 
 	@Override
-	public void getCheckSumsFromFile() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void abortCurrentRepositoryProcess() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void abortAllRepositoryProcesses() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void update(BitrepositoryConnectionResult bitrepositoryConnectionResult) {
 		remainingFileChecksums.remove(0);
-		processedFileChecksums.add(bitrepositoryConnectionResult.getFileChecksum());
-
+		if (bitrepositoryConnectionResult.getStatus() == ThreadStatus.SUCCESS) {
+			processedFileChecksums.add(bitrepositoryConnectionResult.getFileChecksum());
+		} else {
+			remainingFileChecksums.add(bitrepositoryConnectionResult.getFileChecksum());
+		}
 	}
 
+	@Override
+	public BitrepositoryProgressHandler getProgressHandler() {
+		return null;
+	}
+	
 	@Override
 	public void messageBusErrorCallback() {
 		// TODO Auto-generated method stub
-
 	}
 
 }
