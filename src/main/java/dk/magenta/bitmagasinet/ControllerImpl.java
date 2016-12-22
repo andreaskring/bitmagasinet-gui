@@ -7,6 +7,7 @@ import dk.magenta.bitmagasinet.checksum.FileChecksum;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnectionResult;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnector;
 import dk.magenta.bitmagasinet.remote.BitrepositoryProgressHandler;
+import dk.magenta.bitmagasinet.remote.BitrepositoryProgressHandlerImpl;
 import dk.magenta.bitmagasinet.remote.ThreadStatus;
 import dk.magenta.bitmagasinet.remote.ThreadStatusObserver;
 
@@ -19,6 +20,7 @@ public class ControllerImpl implements Controller, ThreadStatusObserver {
 	public ControllerImpl(List<FileChecksum> fileChecksums) {
 		remainingFileChecksums = fileChecksums;
 		processedFileChecksums = new ArrayList<FileChecksum>();
+		bitrepositoryProgressHandler = new BitrepositoryProgressHandlerImpl(fileChecksums);
 	}
 
 	@Override
@@ -42,6 +44,7 @@ public class ControllerImpl implements Controller, ThreadStatusObserver {
 		remainingFileChecksums.remove(0);
 		if (bitrepositoryConnectionResult.getStatus() == ThreadStatus.SUCCESS) {
 			processedFileChecksums.add(bitrepositoryConnectionResult.getFileChecksum());
+			bitrepositoryProgressHandler.fileCompleted();
 		} else {
 			remainingFileChecksums.add(bitrepositoryConnectionResult.getFileChecksum());
 		}
@@ -49,7 +52,7 @@ public class ControllerImpl implements Controller, ThreadStatusObserver {
 
 	@Override
 	public BitrepositoryProgressHandler getProgressHandler() {
-		return null;
+		return bitrepositoryProgressHandler;
 	}
 	
 	@Override

@@ -27,8 +27,6 @@ public class TestControllerImpl {
 	@Before
 	public void setUp() {
 		fileChecksums = new ArrayList<FileChecksum>();
-		controller = new ControllerImpl(fileChecksums);
-		addFileChecksum1();
 	}
 
 	@Test
@@ -40,13 +38,18 @@ public class TestControllerImpl {
 
 	@Test
 	public void shouldReturnSizeOneWhenRemainingFileChecksumListHasOneElement() {
+		addFileChecksum1();
+		controller = new ControllerImpl(fileChecksums);
 		assertEquals(1, controller.getRemainingFileChecksums().size());
 		assertEquals("file1.bin", controller.getRemainingFileChecksums().get(0).getFilename());
 	}
 
 	@Test
 	public void shouldReturnSizeTwoWhenRemainingFileChecksumListHasTwoElement() {
+		addFileChecksum1();
 		addFileChecksum2();
+		controller = new ControllerImpl(fileChecksums);
+
 		assertEquals(2, controller.getRemainingFileChecksums().size());
 		assertEquals("file1.bin", controller.getRemainingFileChecksums().get(0).getFilename());
 		assertEquals("file2.bin", controller.getRemainingFileChecksums().get(1).getFilename());
@@ -54,12 +57,16 @@ public class TestControllerImpl {
 	
 	@Test
 	public void shouldReturnSize0ForProcessedFileChecksumsWhenNoneHaveBeenProcessed() {
+		addFileChecksum1();
+		controller = new ControllerImpl(fileChecksums);
 		assertEquals(0, controller.getProcessedFileChecksums().size());
 	}
 	
 	@Test
 	public void shouldReturnSize1ForProcessedFileChecksumsWhenOneHaveBeenProcessed() throws InterruptedException {
+		addFileChecksum1();
 		addFileChecksum2();
+		controller = new ControllerImpl(fileChecksums);
 		
 		// Two FileChecksums are now in the remaining list
 		
@@ -71,7 +78,9 @@ public class TestControllerImpl {
 	
 	@Test
 	public void whenFirstFileChecksumIsProcessedItShouldBeRemovedFromTheRemainingList() throws InterruptedException {
+		addFileChecksum1();
 		addFileChecksum2();
+		controller = new ControllerImpl(fileChecksums);
 		
 		// Two FileChecksums are now in the remaining list
 
@@ -84,8 +93,10 @@ public class TestControllerImpl {
 
 	@Test
 	public void shouldProcess3FileChecksumsCorrectly() throws InterruptedException {
+		addFileChecksum1();
 		addFileChecksum2();
 		addFileChecksum3();
+		controller = new ControllerImpl(fileChecksums);
 		
 		// Three FileChecksums are now in the remaining list
 		
@@ -122,8 +133,10 @@ public class TestControllerImpl {
 
 	@Test
 	public void shouldPutFileChecksumBackInLineInCaseOfError() {
+		addFileChecksum1();
 		addFileChecksum2();
 		addFileChecksum3();
+		controller = new ControllerImpl(fileChecksums);
 		
 		processFileChecksum(fileChecksum1, ThreadStatus.ERROR);
 		
@@ -132,15 +145,78 @@ public class TestControllerImpl {
 		assertEquals("file3.bin", controller.getRemainingFileChecksums().get(1).getFilename());
 		assertEquals("file1.bin", controller.getRemainingFileChecksums().get(2).getFilename());
 		assertEquals(0, controller.getProcessedFileChecksums().size());
-		
-		
 	}
 	
-	@Ignore
 	@Test
 	public void shouldReturnProgressHandler() {
+		addFileChecksum1();
+		controller = new ControllerImpl(fileChecksums);
 		assertNotNull(controller.getProgressHandler());
 	}
+	
+	@Test
+	public void progressShouldBeZeroWhenNoFilesAreProcessed() {
+		addFileChecksum1();
+		addFileChecksum2();
+		addFileChecksum3();
+		controller = new ControllerImpl(fileChecksums);
+		assertEquals(0, controller.getProgressHandler().getProgress());
+	}
+
+	@Test
+	public void progressShouldBe33WhenOneFileIsProcessed() {
+		addFileChecksum1();
+		addFileChecksum2();
+		addFileChecksum3();
+		controller = new ControllerImpl(fileChecksums);
+		
+		processFileChecksum(fileChecksum1, ThreadStatus.SUCCESS);
+		assertEquals(33, controller.getProgressHandler().getProgress());
+	}
+
+	@Test
+	public void progressShouldBe66WhenOneFileIsProcessed() {
+		addFileChecksum1();
+		addFileChecksum2();
+		addFileChecksum3();
+		controller = new ControllerImpl(fileChecksums);
+		
+		processFileChecksum(fileChecksum1, ThreadStatus.SUCCESS);
+		processFileChecksum(fileChecksum2, ThreadStatus.SUCCESS);
+		assertEquals(66, controller.getProgressHandler().getProgress());
+	}
+
+	@Test
+	public void progressShouldBe100WhenAllFilesAreProcessed() {
+		addFileChecksum1();
+		addFileChecksum2();
+		addFileChecksum3();
+		controller = new ControllerImpl(fileChecksums);
+		
+		processFileChecksum(fileChecksum1, ThreadStatus.SUCCESS);
+		processFileChecksum(fileChecksum2, ThreadStatus.SUCCESS);
+		processFileChecksum(fileChecksum3, ThreadStatus.SUCCESS);
+		assertEquals(100, controller.getProgressHandler().getProgress());
+	}
+	
+
+	@Test
+	public void progressShouldBeHandlesCorrectlyInCaseOfErrors() {
+		addFileChecksum1();
+		addFileChecksum2();
+		addFileChecksum3();
+		controller = new ControllerImpl(fileChecksums);
+		
+		processFileChecksum(fileChecksum1, ThreadStatus.ERROR);
+		assertEquals(0, controller.getProgressHandler().getProgress());
+		processFileChecksum(fileChecksum2, ThreadStatus.SUCCESS);
+		assertEquals(33, controller.getProgressHandler().getProgress());
+		processFileChecksum(fileChecksum3, ThreadStatus.SUCCESS);
+		assertEquals(66, controller.getProgressHandler().getProgress());
+		processFileChecksum(fileChecksum1, ThreadStatus.SUCCESS);
+		assertEquals(100, controller.getProgressHandler().getProgress());
+	}
+
 	
 	private void addFileChecksum1() {
 		fileChecksum1 = new FileChecksumImpl("file1.bin", "9e5aae9572765f8bec9bca8c818188da", "64");
@@ -166,14 +242,11 @@ public class TestControllerImpl {
 
 		controller.processNext(bitrepositoryConnector);
 		try {
-			Thread.sleep(200); // To make sure that the separate thread will finish
+			Thread.sleep(50); // To make sure that the separate thread will finish
 		} catch (InterruptedException e) {}
 
 	}
 
-	// should update progress handler after one file
-	// should update progress handler after two file
-	// show hold BitrepositoProgressHandler
 	// handle messagebus error
 
 }
