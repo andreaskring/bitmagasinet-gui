@@ -11,6 +11,5 @@ public interface Controller {
 	public void processNext(BitrepositoryConnector bitrepositoryConnector);
 	public List<FileChecksum> getRemainingFileChecksums();
 	public List<FileChecksum> getProcessedFileChecksums();
-	public void addFileChecksumsToRemainingList(List<FileChecksum> fileChecksums);
 	public BitrepositoryProgressHandler getProgressHandler();
 }

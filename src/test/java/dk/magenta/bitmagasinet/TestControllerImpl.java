@@ -26,19 +26,20 @@ public class TestControllerImpl {
 
 	@Before
 	public void setUp() {
-		controller = new ControllerImpl();
 		fileChecksums = new ArrayList<FileChecksum>();
+		controller = new ControllerImpl(fileChecksums);
 		addFileChecksum1();
 	}
 
 	@Test
 	public void shouldReturnSizeZeroWhenRemainingFileChecksumListEmpty() {
+		List<FileChecksum> fileChecksums = new ArrayList<FileChecksum>();
+		Controller controller = new ControllerImpl(fileChecksums);
 		assertEquals(0, controller.getRemainingFileChecksums().size());
 	}
 
 	@Test
 	public void shouldReturnSizeOneWhenRemainingFileChecksumListHasOneElement() {
-		controller.addFileChecksumsToRemainingList(fileChecksums);
 		assertEquals(1, controller.getRemainingFileChecksums().size());
 		assertEquals("file1.bin", controller.getRemainingFileChecksums().get(0).getFilename());
 	}
@@ -46,7 +47,6 @@ public class TestControllerImpl {
 	@Test
 	public void shouldReturnSizeTwoWhenRemainingFileChecksumListHasTwoElement() {
 		addFileChecksum2();
-		controller.addFileChecksumsToRemainingList(fileChecksums);
 		assertEquals(2, controller.getRemainingFileChecksums().size());
 		assertEquals("file1.bin", controller.getRemainingFileChecksums().get(0).getFilename());
 		assertEquals("file2.bin", controller.getRemainingFileChecksums().get(1).getFilename());
@@ -60,7 +60,6 @@ public class TestControllerImpl {
 	@Test
 	public void shouldReturnSize1ForProcessedFileChecksumsWhenOneHaveBeenProcessed() throws InterruptedException {
 		addFileChecksum2();
-		controller.addFileChecksumsToRemainingList(fileChecksums);
 		
 		// Two FileChecksums are now in the remaining list
 		
@@ -73,7 +72,6 @@ public class TestControllerImpl {
 	@Test
 	public void whenFirstFileChecksumIsProcessedItShouldBeRemovedFromTheRemainingList() throws InterruptedException {
 		addFileChecksum2();
-		controller.addFileChecksumsToRemainingList(fileChecksums);
 		
 		// Two FileChecksums are now in the remaining list
 
@@ -88,7 +86,6 @@ public class TestControllerImpl {
 	public void shouldProcess3FileChecksumsCorrectly() throws InterruptedException {
 		addFileChecksum2();
 		addFileChecksum3();
-		controller.addFileChecksumsToRemainingList(fileChecksums);
 		
 		// Three FileChecksums are now in the remaining list
 		
@@ -127,7 +124,6 @@ public class TestControllerImpl {
 	public void shouldPutFileChecksumBackInLineInCaseOfError() {
 		addFileChecksum2();
 		addFileChecksum3();
-		controller.addFileChecksumsToRemainingList(fileChecksums);
 		
 		processFileChecksum(fileChecksum1, ThreadStatus.ERROR);
 		
