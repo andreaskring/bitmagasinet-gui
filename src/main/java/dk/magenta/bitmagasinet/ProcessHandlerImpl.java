@@ -11,13 +11,13 @@ import dk.magenta.bitmagasinet.remote.BitrepositoryProgressHandlerImpl;
 import dk.magenta.bitmagasinet.remote.ThreadStatus;
 import dk.magenta.bitmagasinet.remote.ThreadStatusObserver;
 
-public class ControllerImpl implements Controller, ThreadStatusObserver {
+public class ProcessHandlerImpl implements ProcessHandler, ThreadStatusObserver {
 
 	private List<FileChecksum> remainingFileChecksums;
 	private List<FileChecksum> processedFileChecksums;
 	private BitrepositoryProgressHandler bitrepositoryProgressHandler;
 
-	public ControllerImpl(List<FileChecksum> fileChecksums) {
+	public ProcessHandlerImpl(List<FileChecksum> fileChecksums) {
 		remainingFileChecksums = fileChecksums;
 		processedFileChecksums = new ArrayList<FileChecksum>();
 		bitrepositoryProgressHandler = new BitrepositoryProgressHandlerImpl(fileChecksums);

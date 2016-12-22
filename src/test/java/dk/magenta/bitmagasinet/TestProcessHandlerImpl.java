@@ -15,9 +15,9 @@ import dk.magenta.bitmagasinet.remote.BitrepositoryConnector;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnectorStub;
 import dk.magenta.bitmagasinet.remote.ThreadStatus;
 
-public class TestControllerImpl {
+public class TestProcessHandlerImpl {
 
-	private ControllerImpl controller;
+	private ProcessHandlerImpl processHandler;
 	private List<FileChecksum> fileChecksums;
 	private FileChecksum fileChecksum1;
 	private FileChecksum fileChecksum2;
@@ -32,62 +32,62 @@ public class TestControllerImpl {
 	@Test
 	public void shouldReturnSizeZeroWhenRemainingFileChecksumListEmpty() {
 		List<FileChecksum> fileChecksums = new ArrayList<FileChecksum>();
-		Controller controller = new ControllerImpl(fileChecksums);
+		ProcessHandler controller = new ProcessHandlerImpl(fileChecksums);
 		assertEquals(0, controller.getRemainingFileChecksums().size());
 	}
 
 	@Test
 	public void shouldReturnSizeOneWhenRemainingFileChecksumListHasOneElement() {
 		addFileChecksum1();
-		controller = new ControllerImpl(fileChecksums);
-		assertEquals(1, controller.getRemainingFileChecksums().size());
-		assertEquals("file1.bin", controller.getRemainingFileChecksums().get(0).getFilename());
+		processHandler = new ProcessHandlerImpl(fileChecksums);
+		assertEquals(1, processHandler.getRemainingFileChecksums().size());
+		assertEquals("file1.bin", processHandler.getRemainingFileChecksums().get(0).getFilename());
 	}
 
 	@Test
 	public void shouldReturnSizeTwoWhenRemainingFileChecksumListHasTwoElement() {
 		addFileChecksum1();
 		addFileChecksum2();
-		controller = new ControllerImpl(fileChecksums);
+		processHandler = new ProcessHandlerImpl(fileChecksums);
 
-		assertEquals(2, controller.getRemainingFileChecksums().size());
-		assertEquals("file1.bin", controller.getRemainingFileChecksums().get(0).getFilename());
-		assertEquals("file2.bin", controller.getRemainingFileChecksums().get(1).getFilename());
+		assertEquals(2, processHandler.getRemainingFileChecksums().size());
+		assertEquals("file1.bin", processHandler.getRemainingFileChecksums().get(0).getFilename());
+		assertEquals("file2.bin", processHandler.getRemainingFileChecksums().get(1).getFilename());
 	}
 	
 	@Test
 	public void shouldReturnSize0ForProcessedFileChecksumsWhenNoneHaveBeenProcessed() {
 		addFileChecksum1();
-		controller = new ControllerImpl(fileChecksums);
-		assertEquals(0, controller.getProcessedFileChecksums().size());
+		processHandler = new ProcessHandlerImpl(fileChecksums);
+		assertEquals(0, processHandler.getProcessedFileChecksums().size());
 	}
 	
 	@Test
 	public void shouldReturnSize1ForProcessedFileChecksumsWhenOneHaveBeenProcessed() throws InterruptedException {
 		addFileChecksum1();
 		addFileChecksum2();
-		controller = new ControllerImpl(fileChecksums);
+		processHandler = new ProcessHandlerImpl(fileChecksums);
 		
 		// Two FileChecksums are now in the remaining list
 		
 		processFileChecksum(fileChecksum1, ThreadStatus.SUCCESS);
 		
-		assertEquals(1, controller.getProcessedFileChecksums().size());
-		assertEquals("file1.bin", controller.getProcessedFileChecksums().get(0).getFilename());
+		assertEquals(1, processHandler.getProcessedFileChecksums().size());
+		assertEquals("file1.bin", processHandler.getProcessedFileChecksums().get(0).getFilename());
 	}
 	
 	@Test
 	public void whenFirstFileChecksumIsProcessedItShouldBeRemovedFromTheRemainingList() throws InterruptedException {
 		addFileChecksum1();
 		addFileChecksum2();
-		controller = new ControllerImpl(fileChecksums);
+		processHandler = new ProcessHandlerImpl(fileChecksums);
 		
 		// Two FileChecksums are now in the remaining list
 
 		processFileChecksum(fileChecksum1, ThreadStatus.SUCCESS);
 
-		assertEquals(1, controller.getRemainingFileChecksums().size());
-		assertEquals("file2.bin", controller.getRemainingFileChecksums().get(0).getFilename());
+		assertEquals(1, processHandler.getRemainingFileChecksums().size());
+		assertEquals("file2.bin", processHandler.getRemainingFileChecksums().get(0).getFilename());
 
 	}
 
@@ -96,38 +96,38 @@ public class TestControllerImpl {
 		addFileChecksum1();
 		addFileChecksum2();
 		addFileChecksum3();
-		controller = new ControllerImpl(fileChecksums);
+		processHandler = new ProcessHandlerImpl(fileChecksums);
 		
 		// Three FileChecksums are now in the remaining list
 		
-		assertEquals(3, controller.getRemainingFileChecksums().size());
-		assertEquals("file1.bin", controller.getRemainingFileChecksums().get(0).getFilename());
-		assertEquals("file2.bin", controller.getRemainingFileChecksums().get(1).getFilename());
-		assertEquals("file3.bin", controller.getRemainingFileChecksums().get(2).getFilename());
+		assertEquals(3, processHandler.getRemainingFileChecksums().size());
+		assertEquals("file1.bin", processHandler.getRemainingFileChecksums().get(0).getFilename());
+		assertEquals("file2.bin", processHandler.getRemainingFileChecksums().get(1).getFilename());
+		assertEquals("file3.bin", processHandler.getRemainingFileChecksums().get(2).getFilename());
 
 		processFileChecksum(fileChecksum1, ThreadStatus.SUCCESS);
 		
-		assertEquals(2, controller.getRemainingFileChecksums().size());
-		assertEquals("file2.bin", controller.getRemainingFileChecksums().get(0).getFilename());
-		assertEquals("file3.bin", controller.getRemainingFileChecksums().get(1).getFilename());
-		assertEquals(1, controller.getProcessedFileChecksums().size());
-		assertEquals("file1.bin", controller.getProcessedFileChecksums().get(0).getFilename());
+		assertEquals(2, processHandler.getRemainingFileChecksums().size());
+		assertEquals("file2.bin", processHandler.getRemainingFileChecksums().get(0).getFilename());
+		assertEquals("file3.bin", processHandler.getRemainingFileChecksums().get(1).getFilename());
+		assertEquals(1, processHandler.getProcessedFileChecksums().size());
+		assertEquals("file1.bin", processHandler.getProcessedFileChecksums().get(0).getFilename());
 
 		processFileChecksum(fileChecksum2, ThreadStatus.SUCCESS);
 
-		assertEquals(1, controller.getRemainingFileChecksums().size());
-		assertEquals("file3.bin", controller.getRemainingFileChecksums().get(0).getFilename());
-		assertEquals(2, controller.getProcessedFileChecksums().size());
-		assertEquals("file1.bin", controller.getProcessedFileChecksums().get(0).getFilename());
-		assertEquals("file2.bin", controller.getProcessedFileChecksums().get(1).getFilename());
+		assertEquals(1, processHandler.getRemainingFileChecksums().size());
+		assertEquals("file3.bin", processHandler.getRemainingFileChecksums().get(0).getFilename());
+		assertEquals(2, processHandler.getProcessedFileChecksums().size());
+		assertEquals("file1.bin", processHandler.getProcessedFileChecksums().get(0).getFilename());
+		assertEquals("file2.bin", processHandler.getProcessedFileChecksums().get(1).getFilename());
 
 		processFileChecksum(fileChecksum3, ThreadStatus.SUCCESS);
 		
-		assertEquals(0, controller.getRemainingFileChecksums().size());
-		assertEquals(3, controller.getProcessedFileChecksums().size());
-		assertEquals("file1.bin", controller.getProcessedFileChecksums().get(0).getFilename());
-		assertEquals("file2.bin", controller.getProcessedFileChecksums().get(1).getFilename());
-		assertEquals("file3.bin", controller.getProcessedFileChecksums().get(2).getFilename());
+		assertEquals(0, processHandler.getRemainingFileChecksums().size());
+		assertEquals(3, processHandler.getProcessedFileChecksums().size());
+		assertEquals("file1.bin", processHandler.getProcessedFileChecksums().get(0).getFilename());
+		assertEquals("file2.bin", processHandler.getProcessedFileChecksums().get(1).getFilename());
+		assertEquals("file3.bin", processHandler.getProcessedFileChecksums().get(2).getFilename());
 
 	}
 
@@ -136,22 +136,22 @@ public class TestControllerImpl {
 		addFileChecksum1();
 		addFileChecksum2();
 		addFileChecksum3();
-		controller = new ControllerImpl(fileChecksums);
+		processHandler = new ProcessHandlerImpl(fileChecksums);
 		
 		processFileChecksum(fileChecksum1, ThreadStatus.ERROR);
 		
-		assertEquals(3, controller.getRemainingFileChecksums().size());
-		assertEquals("file2.bin", controller.getRemainingFileChecksums().get(0).getFilename());
-		assertEquals("file3.bin", controller.getRemainingFileChecksums().get(1).getFilename());
-		assertEquals("file1.bin", controller.getRemainingFileChecksums().get(2).getFilename());
-		assertEquals(0, controller.getProcessedFileChecksums().size());
+		assertEquals(3, processHandler.getRemainingFileChecksums().size());
+		assertEquals("file2.bin", processHandler.getRemainingFileChecksums().get(0).getFilename());
+		assertEquals("file3.bin", processHandler.getRemainingFileChecksums().get(1).getFilename());
+		assertEquals("file1.bin", processHandler.getRemainingFileChecksums().get(2).getFilename());
+		assertEquals(0, processHandler.getProcessedFileChecksums().size());
 	}
 	
 	@Test
 	public void shouldReturnProgressHandler() {
 		addFileChecksum1();
-		controller = new ControllerImpl(fileChecksums);
-		assertNotNull(controller.getProgressHandler());
+		processHandler = new ProcessHandlerImpl(fileChecksums);
+		assertNotNull(processHandler.getProgressHandler());
 	}
 	
 	@Test
@@ -159,8 +159,8 @@ public class TestControllerImpl {
 		addFileChecksum1();
 		addFileChecksum2();
 		addFileChecksum3();
-		controller = new ControllerImpl(fileChecksums);
-		assertEquals(0, controller.getProgressHandler().getProgress());
+		processHandler = new ProcessHandlerImpl(fileChecksums);
+		assertEquals(0, processHandler.getProgressHandler().getProgress());
 	}
 
 	@Test
@@ -168,10 +168,10 @@ public class TestControllerImpl {
 		addFileChecksum1();
 		addFileChecksum2();
 		addFileChecksum3();
-		controller = new ControllerImpl(fileChecksums);
+		processHandler = new ProcessHandlerImpl(fileChecksums);
 		
 		processFileChecksum(fileChecksum1, ThreadStatus.SUCCESS);
-		assertEquals(33, controller.getProgressHandler().getProgress());
+		assertEquals(33, processHandler.getProgressHandler().getProgress());
 	}
 
 	@Test
@@ -179,11 +179,11 @@ public class TestControllerImpl {
 		addFileChecksum1();
 		addFileChecksum2();
 		addFileChecksum3();
-		controller = new ControllerImpl(fileChecksums);
+		processHandler = new ProcessHandlerImpl(fileChecksums);
 		
 		processFileChecksum(fileChecksum1, ThreadStatus.SUCCESS);
 		processFileChecksum(fileChecksum2, ThreadStatus.SUCCESS);
-		assertEquals(66, controller.getProgressHandler().getProgress());
+		assertEquals(66, processHandler.getProgressHandler().getProgress());
 	}
 
 	@Test
@@ -191,12 +191,12 @@ public class TestControllerImpl {
 		addFileChecksum1();
 		addFileChecksum2();
 		addFileChecksum3();
-		controller = new ControllerImpl(fileChecksums);
+		processHandler = new ProcessHandlerImpl(fileChecksums);
 		
 		processFileChecksum(fileChecksum1, ThreadStatus.SUCCESS);
 		processFileChecksum(fileChecksum2, ThreadStatus.SUCCESS);
 		processFileChecksum(fileChecksum3, ThreadStatus.SUCCESS);
-		assertEquals(100, controller.getProgressHandler().getProgress());
+		assertEquals(100, processHandler.getProgressHandler().getProgress());
 	}
 	
 
@@ -205,16 +205,16 @@ public class TestControllerImpl {
 		addFileChecksum1();
 		addFileChecksum2();
 		addFileChecksum3();
-		controller = new ControllerImpl(fileChecksums);
+		processHandler = new ProcessHandlerImpl(fileChecksums);
 		
 		processFileChecksum(fileChecksum1, ThreadStatus.ERROR);
-		assertEquals(0, controller.getProgressHandler().getProgress());
+		assertEquals(0, processHandler.getProgressHandler().getProgress());
 		processFileChecksum(fileChecksum2, ThreadStatus.SUCCESS);
-		assertEquals(33, controller.getProgressHandler().getProgress());
+		assertEquals(33, processHandler.getProgressHandler().getProgress());
 		processFileChecksum(fileChecksum3, ThreadStatus.SUCCESS);
-		assertEquals(66, controller.getProgressHandler().getProgress());
+		assertEquals(66, processHandler.getProgressHandler().getProgress());
 		processFileChecksum(fileChecksum1, ThreadStatus.SUCCESS);
-		assertEquals(100, controller.getProgressHandler().getProgress());
+		assertEquals(100, processHandler.getProgressHandler().getProgress());
 	}
 
 	
@@ -238,9 +238,9 @@ public class TestControllerImpl {
 	
 	private void processFileChecksum(FileChecksum fileChecksum, ThreadStatus status) {
 		bitrepositoryConnector = new BitrepositoryConnectorStub(fileChecksum, status);
-		bitrepositoryConnector.addObserver(controller);
+		bitrepositoryConnector.addObserver(processHandler);
 
-		controller.processNext(bitrepositoryConnector);
+		processHandler.processNext(bitrepositoryConnector);
 		try {
 			Thread.sleep(50); // To make sure that the separate thread will finish
 		} catch (InterruptedException e) {}
