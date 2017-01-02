@@ -52,6 +52,11 @@ public class BitrepositoryConnectorImpl implements BitrepositoryConnector {
 	public void addObserver(ThreadStatusObserver observer) {
 		threadStatusObservers.add(observer);
 	}
+	
+	@Override
+	public void setFileChecksum(FileChecksum fileChecksum) {
+		this.fileChecksum = fileChecksum;
+	}
 
 	@Override
 	public void run() {

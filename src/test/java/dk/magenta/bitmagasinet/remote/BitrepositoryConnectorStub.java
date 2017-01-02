@@ -18,6 +18,11 @@ public class BitrepositoryConnectorStub implements BitrepositoryConnector {
 	}
 
 	@Override
+	public void setFileChecksum(FileChecksum fileChecksum) {
+		returnFileChecksum = fileChecksum;
+	}
+	
+	@Override
 	public void run() {
 		BitrepositoryConnectionResult bitrepositoryConnectionResult = new BitrepositoryConnectionResultImpl(
 				threadStatus, returnFileChecksum);
@@ -33,6 +38,10 @@ public class BitrepositoryConnectorStub implements BitrepositoryConnector {
 		for (ThreadStatusObserver observer : observers) {
 			observer.update(bitrepositoryConnectionResult);
 		}
+	}
+	
+	public void setThreadStatus(ThreadStatus threadStatus) {
+		this.threadStatus = threadStatus;
 	}
 
 }

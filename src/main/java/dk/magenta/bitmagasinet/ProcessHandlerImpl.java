@@ -16,15 +16,19 @@ public class ProcessHandlerImpl implements ProcessHandler, ThreadStatusObserver 
 	private List<FileChecksum> remainingFileChecksums;
 	private List<FileChecksum> processedFileChecksums;
 	private BitrepositoryProgressHandler bitrepositoryProgressHandler;
+	private BitrepositoryConnector bitrepositoryConnector;
+	private boolean processAutomatically;
 
-	public ProcessHandlerImpl(List<FileChecksum> fileChecksums) {
+	public ProcessHandlerImpl(List<FileChecksum> fileChecksums, BitrepositoryConnector bitrepositoryConnector, boolean processAutomatically) {
+		this.bitrepositoryConnector = bitrepositoryConnector;
+		this.processAutomatically = processAutomatically;
 		remainingFileChecksums = fileChecksums;
 		processedFileChecksums = new ArrayList<FileChecksum>();
 		bitrepositoryProgressHandler = new BitrepositoryProgressHandlerImpl(fileChecksums);
 	}
 
 	@Override
-	public void processNext(BitrepositoryConnector bitrepositoryConnector) {
+	public void processNext() {
 		Thread t = new Thread(bitrepositoryConnector);
 		t.start();
 	}
@@ -45,6 +49,13 @@ public class ProcessHandlerImpl implements ProcessHandler, ThreadStatusObserver 
 		if (bitrepositoryConnectionResult.getStatus() == ThreadStatus.SUCCESS) {
 			processedFileChecksums.add(bitrepositoryConnectionResult.getFileChecksum());
 			bitrepositoryProgressHandler.fileCompleted();
+			if (!remainingFileChecksums.isEmpty()) {
+				bitrepositoryConnector.setFileChecksum(remainingFileChecksums.get(0));
+				if (processAutomatically) {
+					processNext();
+				}
+			}
+			
 		} else {
 			remainingFileChecksums.add(bitrepositoryConnectionResult.getFileChecksum());
 		}
