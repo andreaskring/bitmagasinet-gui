@@ -18,7 +18,7 @@ class ChecksumIOHandler {
 		try {
 			String line = reader.readLine();
 			while (line != null) {
-				if (!ChecksumFileValidator.isLinevalid(line)) {
+				if (!ChecksumFileValidator.isLineValid(line)) {
 					throw new InvalidChecksumFileException("Formatet af checksumfilen er ikke korrekt");
 				}
 				

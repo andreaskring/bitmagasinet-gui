@@ -4,7 +4,7 @@ import org.apache.commons.lang.StringUtils;
 
 public class ChecksumFileValidator {
 
-	static boolean isLinevalid(String line) {
+	static boolean isLineValid(String line) {
 
 		String[] values = line.split("\\t");
 		if (values.length != 3) return false;
