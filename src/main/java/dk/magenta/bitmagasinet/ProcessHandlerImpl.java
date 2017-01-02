@@ -15,16 +15,19 @@ public class ProcessHandlerImpl implements ProcessHandler, ThreadStatusObserver 
 
 	private List<FileChecksum> remainingFileChecksums;
 	private List<FileChecksum> processedFileChecksums;
+	private List<ProcessHandlerObserver> observers;
 	private BitrepositoryProgressHandler bitrepositoryProgressHandler;
 	private BitrepositoryConnector bitrepositoryConnector;
 	private boolean processAutomatically;
 
-	public ProcessHandlerImpl(List<FileChecksum> fileChecksums, BitrepositoryConnector bitrepositoryConnector, boolean processAutomatically) {
+	public ProcessHandlerImpl(List<FileChecksum> fileChecksums, BitrepositoryConnector bitrepositoryConnector,
+			boolean processAutomatically) {
 		this.bitrepositoryConnector = bitrepositoryConnector;
 		this.processAutomatically = processAutomatically;
 		remainingFileChecksums = fileChecksums;
 		processedFileChecksums = new ArrayList<FileChecksum>();
 		bitrepositoryProgressHandler = new BitrepositoryProgressHandlerImpl(fileChecksums);
+		observers = new ArrayList<ProcessHandlerObserver>();
 	}
 
 	@Override
@@ -54,8 +57,9 @@ public class ProcessHandlerImpl implements ProcessHandler, ThreadStatusObserver 
 				if (processAutomatically) {
 					processNext();
 				}
+			} else {
+				notifyObservers();
 			}
-			
 		} else {
 			remainingFileChecksums.add(bitrepositoryConnectionResult.getFileChecksum());
 		}
@@ -65,10 +69,24 @@ public class ProcessHandlerImpl implements ProcessHandler, ThreadStatusObserver 
 	public BitrepositoryProgressHandler getProgressHandler() {
 		return bitrepositoryProgressHandler;
 	}
-	
+
 	@Override
 	public void messageBusErrorCallback() {
 		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void addObserver(ProcessHandlerObserver processHandlerObserver) {
+		observers.add(processHandlerObserver);
+	}
+
+	@Override
+	public void notifyObservers() {
+		if (!observers.isEmpty()) {
+			for (ProcessHandlerObserver observer : observers) {
+				observer.update(this);
+			}
+		}
 	}
 
 }

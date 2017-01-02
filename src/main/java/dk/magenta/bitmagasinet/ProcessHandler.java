@@ -11,4 +11,6 @@ public interface ProcessHandler {
 	public List<FileChecksum> getRemainingFileChecksums();
 	public List<FileChecksum> getProcessedFileChecksums();
 	public BitrepositoryProgressHandler getProgressHandler();
+	public void addObserver(ProcessHandlerObserver processHandlerObserver);
+	public void notifyObservers();
 }
