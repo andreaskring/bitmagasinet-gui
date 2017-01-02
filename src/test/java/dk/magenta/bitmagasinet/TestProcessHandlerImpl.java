@@ -303,6 +303,40 @@ public class TestProcessHandlerImpl {
 		assertTrue(processHandlerObserver.getDone());
 		
 	}
+	
+	@Test
+	public void shouldBeAbleToAccessProgressHandlerWhenObserverHasBeenNotified() {
+		addFileChecksum1();
+		addFileChecksum2();
+		addFileChecksum3();
+		
+		ProcessHandlerObserverDummy processHandlerObserver = new ProcessHandlerObserverDummy();
+		
+		bitrepositoryConnector = getBitrepositoryConnector(fileChecksum1, ThreadStatus.SUCCESS);
+		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, true);
+		processHandler.addObserver(processHandlerObserver);
+		
+		bitrepositoryConnector.addObserver(processHandler);
+		
+		// Three FileChecksums are now in the remaining list
+		
+		assertEquals(3, processHandler.getRemainingFileChecksums().size());
+		assertEquals("file1.bin", processHandler.getRemainingFileChecksums().get(0).getFilename());
+		assertEquals("file2.bin", processHandler.getRemainingFileChecksums().get(1).getFilename());
+		assertEquals("file3.bin", processHandler.getRemainingFileChecksums().get(2).getFilename());
+	
+		processFileChecksum();
+		
+		assertEquals(0, processHandler.getRemainingFileChecksums().size());
+		assertEquals(3, processHandler.getProcessedFileChecksums().size());
+		assertEquals("file1.bin", processHandler.getProcessedFileChecksums().get(0).getFilename());
+		assertEquals("file2.bin", processHandler.getProcessedFileChecksums().get(1).getFilename());
+		assertEquals("file3.bin", processHandler.getProcessedFileChecksums().get(2).getFilename());
+		
+		assertTrue(processHandler.equals(processHandlerObserver.getProcessHandler()));
+		
+	}
+
 
 	@Test
 	public void shouldNotifyObserver1And2Correctly() {
