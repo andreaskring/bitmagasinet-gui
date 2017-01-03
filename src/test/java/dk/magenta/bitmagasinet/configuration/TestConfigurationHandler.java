@@ -83,20 +83,22 @@ public class TestConfigurationHandler {
 	public void shouldReturn_tmp_WhenPathToLocalConfIs_tmp() {
 		Path localeConfigurationFolder = FileSystems.getDefault().getPath("/tmp");
 		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl(localeConfigurationFolder);
-		assertEquals("/tmp", configurationHandler.getPathToLocalConfigurationFolder().toString());
+		assertEquals(localeConfigurationFolder.toString(), configurationHandler.getPathToLocalConfigurationFolder().toString());
 	}
 
 	@Test
 	public void shouldReturn_tmp_a_WhenPathToLocalConfIs_tmp_a() {
-		Path localeConfigurationFolder = FileSystems.getDefault().getPath("/tmp/a");
+		Path path = Paths.get("/tmp/a");
+		Path localeConfigurationFolder = FileSystems.getDefault().getPath(path.toString());
 		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl(localeConfigurationFolder);
-		assertEquals("/tmp/a", configurationHandler.getPathToLocalConfigurationFolder().toString());
+		assertEquals(path.toString(), configurationHandler.getPathToLocalConfigurationFolder().toString());
 	}
 	
 	@Test
 	public void shouldReturnRepoConfAsNameOfRepoConfFolder() {
 		Path tmp = Paths.get("tmp");
+		Path repoConf = Paths.get("tmp/repoConf");
 		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl(tmp);
-		assertEquals("tmp/repoConf", configurationHandler.getPathToRepositoryConfigurations().toString());
+		assertEquals(repoConf.toString(), configurationHandler.getPathToRepositoryConfigurations().toString());
 	}
 }
