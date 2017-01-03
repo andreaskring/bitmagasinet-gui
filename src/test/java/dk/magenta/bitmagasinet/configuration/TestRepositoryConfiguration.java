@@ -131,13 +131,15 @@ public class TestRepositoryConfiguration {
 	@Test
 	public void shouldHavePathToCertificate1() {
 		repositoryConfiguration.setPathToCertificate(certificate);
-		assertEquals(tmp + "/certificate.pem", repositoryConfiguration.getPathToCertificate().toString());
+		Path certificate = Paths.get(tmp).resolve("certificate.pem");
+		assertEquals(certificate.toString(), repositoryConfiguration.getPathToCertificate().toString());
 	}
 	
 	@Test
 	public void shouldHavePathToCertificate2() {
 		repositoryConfiguration.setPathToCertificate(certificate2);
-		assertEquals(tmp + "/certificate2.pem", repositoryConfiguration.getPathToCertificate().toString());
+		Path certificate2 = Paths.get(tmp).resolve("certificate2.pem");
+		assertEquals(certificate2.toString(), repositoryConfiguration.getPathToCertificate().toString());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -154,13 +156,15 @@ public class TestRepositoryConfiguration {
 	@Test
 	public void shouldHavePathToChecksumList_tmp() {
 		repositoryConfiguration.setPathToChecksumList(certificate);
-		assertEquals("Just using a random file...", tmp + "/certificate.pem", repositoryConfiguration.getPathToChecksumList().toString());
+		Path certificate = Paths.get(tmp).resolve("certificate.pem");
+		assertEquals("Just using a random file...", certificate.toString(), repositoryConfiguration.getPathToChecksumList().toString());
 	}
 
 	@Test
 	public void shouldHavePathToChecksumList_tmp_folder1() {
 		repositoryConfiguration.setPathToChecksumList(certificate2);
-		assertEquals("Just using a random file...", tmp + "/certificate2.pem", repositoryConfiguration.getPathToChecksumList().toString());
+		Path certificate2 = Paths.get(tmp).resolve("certificate2.pem");
+		assertEquals("Just using a random file...", certificate2.toString(), repositoryConfiguration.getPathToChecksumList().toString());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -182,7 +186,8 @@ public class TestRepositoryConfiguration {
 		File referenceSettings = folder2.resolve("ReferenceSettings.xml").toFile();
 		referenceSettings.createNewFile();
 		repositoryConfiguration.setPathToSettingsFiles(folder2);
-		assertEquals(tmp + "/folder1", repositoryConfiguration.getPathToSettingsFiles().toString());
+		Path folder1 = Paths.get(tmp).resolve("folder1");
+		assertEquals(folder1.toString(), repositoryConfiguration.getPathToSettingsFiles().toString());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
