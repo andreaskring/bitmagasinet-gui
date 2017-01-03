@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.bitrepository.common.utils.Base16Utils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestChecksumIOHandler {
@@ -64,5 +65,16 @@ public class TestChecksumIOHandler {
 		assertEquals("c100d3c5a366a1e860e2f8a1afc21110", fileChecksum.getLocalChecksum());
 
 	}
+	
+	@Test
+	public void resultFileShouldHaveName_ChecksumCheckResult_1879_03_14_120000_CET() {
+		assertEquals("ChecksumCheckResult-1879-03-14_120000_CET", ChecksumIOHandler.getRelativePathToResultChecksumFile().toString());
+	}
+
+	@Test
+	public void resultFileShouldHaveName_ChecksumCheckResult_1879_03_14_130000_CET() {
+		assertEquals("ChecksumCheckResult-1879-03-14_130000_CET", ChecksumIOHandler.getRelativePathToResultChecksumFile().toString());
+	}
+
 	
 }

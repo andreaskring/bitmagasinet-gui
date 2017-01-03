@@ -5,8 +5,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+
+import dk.magenta.bitmagasinet.Constants;
 
 class ChecksumIOHandler {
 
@@ -45,4 +52,31 @@ class ChecksumIOHandler {
 		return fileChecksumList;
 	};
 
+	public static void writeResultFiles(Path path) {
+		writeChecksumList(path);
+		writeHeaderFile(path);
+	}
+
+	private static void writeChecksumList(Path path) {
+		
+		
+	}
+	
+	private static void writeHeaderFile(Path path) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	static Path getRelativePathToResultChecksumFile() {
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(1879, Calendar.MARCH, 14, 12, 0, 0);
+		Date d = calendar.getTime();
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_kkmmss_z");
+		
+		return Paths.get(Constants.CHECKSUMFILE_PREFIX + sdf.format(d));
+	}
+
+	
 }
