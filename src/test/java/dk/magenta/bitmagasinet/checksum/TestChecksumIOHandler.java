@@ -12,7 +12,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.bitrepository.common.utils.Base16Utils;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -45,16 +47,17 @@ public class TestChecksumIOHandler {
 	}
 	*/
 	
-//	@AfterClass
-//	public static void tearDown() throws IOException {
-//		FileUtils.deleteDirectory(localeConfigurationFolder.toFile());
-//	}
 	
 	@BeforeClass
 	public static void makeTestFolder() {
 		String tmp = System.getProperty("java.io.tmpdir");
 		path = Paths.get(tmp).resolve("temp");
 		path.toFile().mkdir();
+	}
+
+	@AfterClass
+	public static void tearDown() throws IOException {
+		FileUtils.deleteDirectory(path.toFile());
 	}
 	
 	@Before
