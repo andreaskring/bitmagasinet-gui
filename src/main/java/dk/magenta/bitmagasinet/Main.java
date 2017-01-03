@@ -26,13 +26,19 @@ import java.awt.Font;
 import javax.swing.SwingConstants;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.border.LineBorder;
+import java.awt.Color;
 
 public class Main extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField textField;
-	private JTextField txtUsername;
-	private JPasswordField pwdPwd;
+	private JButton btnGetConfiguration;
+	private JLabel lblCurrentConfiguration;
+	private JPanel currentConfigurationPane;
+	private JList bitRepoList;
 
 	/**
 	 * Launch the application.
@@ -93,98 +99,72 @@ public class Main extends JFrame {
 		JLabel lblVlgBitmagasin = new JLabel("Vælg Bitmagasin");
 		lblVlgBitmagasin.setFont(new Font("Dialog", Font.BOLD, 12));
 		
-		JScrollPane scrollPane = new JScrollPane();
+		JScrollPane bitRepoScrollPane = new JScrollPane();
 		
-		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(null, "Indstillinger", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		btnGetConfiguration = new JButton("Hent konfiguration");
+		btnGetConfiguration.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String repositoryName = (String) bitRepoList.getSelectedValue();
+				lblCurrentConfiguration.setText(repositoryName);
+				lblCurrentConfiguration.setVisible(true);
+				currentConfigurationPane.setVisible(true);
+
+			}
+		});
+		
+		currentConfigurationPane = new JPanel();
+		currentConfigurationPane.setBorder(new LineBorder(new Color(0, 0, 0)));
+		currentConfigurationPane.setVisible(false);
+		
+		lblCurrentConfiguration = new JLabel("Konfiguration for");
+		lblCurrentConfiguration.setFont(new Font("Dialog", Font.BOLD, 12));
+		lblCurrentConfiguration.setVisible(false);
 		GroupLayout gl_pnlInputList = new GroupLayout(pnlInputList);
 		gl_pnlInputList.setHorizontalGroup(
 			gl_pnlInputList.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_pnlInputList.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_pnlInputList.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblVlgBitmagasin)
-						.addGroup(gl_pnlInputList.createSequentialGroup()
-							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 263, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 587, GroupLayout.PREFERRED_SIZE)))
-					.addContainerGap(123, Short.MAX_VALUE))
+						.addGroup(gl_pnlInputList.createParallelGroup(Alignment.TRAILING)
+							.addComponent(btnGetConfiguration)
+							.addComponent(bitRepoScrollPane, GroupLayout.PREFERRED_SIZE, 263, GroupLayout.PREFERRED_SIZE))
+						.addComponent(lblVlgBitmagasin))
+					.addGap(72)
+					.addGroup(gl_pnlInputList.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblCurrentConfiguration)
+						.addComponent(currentConfigurationPane, GroupLayout.PREFERRED_SIZE, 601, GroupLayout.PREFERRED_SIZE))
+					.addGap(49))
 		);
 		gl_pnlInputList.setVerticalGroup(
 			gl_pnlInputList.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_pnlInputList.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(lblVlgBitmagasin)
+					.addGroup(gl_pnlInputList.createParallelGroup(Alignment.TRAILING)
+						.addComponent(lblCurrentConfiguration)
+						.addComponent(lblVlgBitmagasin))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_pnlInputList.createParallelGroup(Alignment.LEADING)
-						.addComponent(panel, GroupLayout.PREFERRED_SIZE, 449, GroupLayout.PREFERRED_SIZE)
-						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap(111, Short.MAX_VALUE))
+						.addGroup(gl_pnlInputList.createSequentialGroup()
+							.addComponent(bitRepoScrollPane, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnGetConfiguration))
+						.addComponent(currentConfigurationPane, GroupLayout.PREFERRED_SIZE, 298, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap(204, Short.MAX_VALUE))
 		);
-		
-		JLabel lblUrl = new JLabel("URL:");
-		
-		textField = new JTextField();
-		textField.setColumns(10);
-		
-		JLabel lblUsername = new JLabel("Username:");
-		
-		JLabel lblPassword = new JLabel("Password:");
-		
-		txtUsername = new JTextField();
-		txtUsername.setText("Username");
-		txtUsername.setColumns(10);
-		
-		pwdPwd = new JPasswordField();
-		pwdPwd.setText("Pwd");
-		GroupLayout gl_panel = new GroupLayout(panel);
-		gl_panel.setHorizontalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
-					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panel.createSequentialGroup()
-							.addContainerGap()
-							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_panel.createSequentialGroup()
-									.addComponent(lblUrl)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(textField, GroupLayout.PREFERRED_SIZE, 276, GroupLayout.PREFERRED_SIZE))
-								.addGroup(gl_panel.createSequentialGroup()
-									.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
-										.addComponent(lblPassword)
-										.addComponent(lblUsername))
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(txtUsername, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
-						.addGroup(gl_panel.createSequentialGroup()
-							.addGap(124)
-							.addComponent(pwdPwd, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)))
-					.addContainerGap(239, Short.MAX_VALUE))
+		GroupLayout gl_currentConfigurationPane = new GroupLayout(currentConfigurationPane);
+		gl_currentConfigurationPane.setHorizontalGroup(
+			gl_currentConfigurationPane.createParallelGroup(Alignment.LEADING)
+				.addGap(0, 599, Short.MAX_VALUE)
 		);
-		gl_panel.setVerticalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
-					.addGap(26)
-					.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
-						.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblUrl))
-					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panel.createSequentialGroup()
-							.addGap(42)
-							.addComponent(lblUsername)
-							.addGap(41)
-							.addComponent(lblPassword))
-						.addGroup(gl_panel.createSequentialGroup()
-							.addGap(53)
-							.addComponent(txtUsername, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-					.addGap(9)
-					.addComponent(pwdPwd, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(241, Short.MAX_VALUE))
+		gl_currentConfigurationPane.setVerticalGroup(
+			gl_currentConfigurationPane.createParallelGroup(Alignment.LEADING)
+				.addGap(0, 296, Short.MAX_VALUE)
 		);
-		panel.setLayout(gl_panel);
+		currentConfigurationPane.setLayout(gl_currentConfigurationPane);
 		
-		JList list = new JList();
-		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		list.setModel(new AbstractListModel() {
+		bitRepoList = new JList();
+		bitRepoList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		bitRepoList.setModel(new AbstractListModel() {
 			String[] values = new String[] {"Statsbiblioteket", "Det Kongelige Bibliotek", "Bitmagasin no 1", "Prima Bitmagasin", "Bitmagasin no 7", "Superlageret", "Aarhus Universitet"};
 			public int getSize() {
 				return values.length;
@@ -193,8 +173,8 @@ public class Main extends JFrame {
 				return values[index];
 			}
 		});
-		list.setSelectedIndex(0);
-		scrollPane.setViewportView(list);
+		bitRepoList.setSelectedIndex(0);
+		bitRepoScrollPane.setViewportView(bitRepoList);
 		pnlInputList.setLayout(gl_pnlInputList);
 		
 		JPanel pnlChecksumList = new JPanel();
