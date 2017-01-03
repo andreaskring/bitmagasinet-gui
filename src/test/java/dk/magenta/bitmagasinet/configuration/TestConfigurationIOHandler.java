@@ -40,11 +40,6 @@ public class TestConfigurationIOHandler {
 		FileUtils.deleteDirectory(configurationHandler.getPathToRepositoryConfigurations().toFile());
 	}
 	
-	@Before
-	public void setUp() {
-		configurationHandler = new ConfigurationHandlerImpl(Paths.get("/tmp"));
-	}
-	
 	@Test
 	public void writeFollowedByReadShouldBeConsistent() throws IOException {
 		RepositoryConfiguration repositoryConfiguration = new RepositoryConfigurationImpl("repo");
@@ -54,7 +49,7 @@ public class TestConfigurationIOHandler {
 		repositoryConfiguration.setPathToSettingsFiles(settingsFolder);
 		repositoryConfiguration.setPillarId("id");
 
-		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl(Paths.get("/tmp"));
+		configurationHandler = new ConfigurationHandlerImpl(Paths.get(tmp));
 		ConfigurationIOHandler configurationIOHandler = new ConfigurationIOHandlerImpl(configurationHandler);
 		
 		configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration);
