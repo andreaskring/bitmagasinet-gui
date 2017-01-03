@@ -87,13 +87,15 @@ public class TestPropertiesHandler {
 	
 	@Test
 	public void shouldHavePathToCertificate() {
-		assertEquals(tmp + "/certificate.pem", propertiesHandler.convertRepositoryConfigurationToProperties(repositoryConfiguration).getProperty("pathToCertificate"));
+		Path path = Paths.get(tmp).resolve("certificate.pem");
+		assertEquals(path.toString(), propertiesHandler.convertRepositoryConfigurationToProperties(repositoryConfiguration).getProperty("pathToCertificate"));
 	}
 	
 	@Test
 	public void shouldHavePathToChecksumListFile() {
+		Path path = Paths.get(tmp).resolve("certificate.pem");
 		assertEquals("Just using a random file...",
-				tmp + "/certificate.pem",
+				path.toString(),
 				propertiesHandler.convertRepositoryConfigurationToProperties(repositoryConfiguration).getProperty("pathToChecksumList"));
 	}
 	
