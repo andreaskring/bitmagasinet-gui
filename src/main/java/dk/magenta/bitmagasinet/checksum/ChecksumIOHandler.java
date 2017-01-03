@@ -16,15 +16,21 @@ import java.util.List;
 import org.bitrepository.common.utils.Base16Utils;
 
 import dk.magenta.bitmagasinet.Constants;
+import dk.magenta.bitmagasinet.configuration.RepositoryConfiguration;
 
 // TODO: make interface
 class ChecksumIOHandler {
 
-	private DateStrategy dateStrategy;
-	private static final String TAB = "\t"; 
+	private static final String TAB = "\t";
+	private static final String LINEFEED = "\n";
 	
+	private DateStrategy dateStrategy;
+	private SimpleDateFormat simpleDateFormat;
+	private Date date;
+
 	public ChecksumIOHandler(DateStrategy dateStrategy) {
 		this.dateStrategy = dateStrategy;
+		this.simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd_kkmmss_z");
 	}
 	
 	public List<FileChecksum> readChecksumList(File file) throws IOException, InvalidChecksumFileException {
@@ -62,14 +68,14 @@ class ChecksumIOHandler {
 		return fileChecksumList;
 	};
 
-	public void writeResultFiles(Path path, List<FileChecksum> fileChecksums) throws IOException {
+	public void writeResultFiles(Path path, List<FileChecksum> fileChecksums, RepositoryConfiguration repositoryConfiguration) throws IOException {
 		writeChecksumList(path, fileChecksums);
-		writeHeaderFile(path);
+		writeHeaderFile(path, repositoryConfiguration);
 	}
 
 	private void writeChecksumList(Path path, List<FileChecksum> fileChecksums) throws IOException {
 		Path file = path.resolve(getRelativePathToResultChecksumFile());
-		try(FileWriter writer = new FileWriter(file.toFile())) {
+		try (FileWriter writer = new FileWriter(file.toFile())) {
 			for (FileChecksum fileChecksum : fileChecksums) {
 				String line = new StringBuilder()
 				.append(fileChecksum.getFilename())
@@ -81,7 +87,7 @@ class ChecksumIOHandler {
 				.append(fileChecksum.getLocalChecksum())
 				.append(TAB)
 				.append(fileChecksum.getRemoteChecksum())
-				.append('\n')
+				.append(LINEFEED)
 				.toString();
 				writer.write(line);
 			}
@@ -91,17 +97,51 @@ class ChecksumIOHandler {
 		}
 	}
 	
-	private void writeHeaderFile(Path path) {
-		// TODO Auto-generated method stub
+	private void writeHeaderFile(Path path, RepositoryConfiguration repositoryConfiguration) throws IOException {
+		// TODO: write test case to verify output from this method (method not yet stable)
 		
+		Path file = path.resolve(getRelativePathToHeaderFile());
+		try (FileWriter writer = new FileWriter(file.toFile())) {
+			String line = new StringBuilder()
+				.append(Constants.DO_NOT_EDIT_FILE)
+				.append("\n")
+				.append("Repository navn: ")
+				.append(repositoryConfiguration.getName())
+				.append(LINEFEED)
+				.append("Collection ID: ")
+				.append(repositoryConfiguration.getCollectionId())
+				.append(LINEFEED)
+				.append("Pillar ID: ")
+				.append(repositoryConfiguration.getPillarId())
+				.append(LINEFEED)
+				.append("Dato: ")
+				.append(simpleDateFormat.format(date))
+				.append(LINEFEED)
+				.append(LINEFEED)
+				.append("Filnavn\tChecksum match\tSalt\tLokal checksum\tRemote checksum")
+				.append(LINEFEED)
+				.toString();
+			writer.write(line);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 	
 	Path getRelativePathToResultChecksumFile() {
-		Date d = dateStrategy.getDate();
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd_kkmmss_z");
-		
-		return Paths.get(Constants.CHECKSUMFILE_PREFIX + simpleDateFormat.format(d) + Constants.CHECKSUMFILE_EXT);
+		checkDate();
+		return Paths.get(Constants.CHECKSUMFILE_PREFIX + simpleDateFormat.format(date) + Constants.CHECKSUMFILE_EXT);
 	}
 
+	Path getRelativePathToHeaderFile() {
+		checkDate();
+		return Paths.get(Constants.HEADERFILE_PREFIX + simpleDateFormat.format(date) + Constants.HEADERFILE_EXT);
+	}
+	
+	private void checkDate() {
+		if (date == null) {
+			date = dateStrategy.getDate();	
+		}
+	}
 	
 }

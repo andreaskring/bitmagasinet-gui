@@ -16,7 +16,7 @@ public class RepositoryConfigurationImpl implements RepositoryConfiguration {
 	private String pillarId;
 	
 	public RepositoryConfigurationImpl(String name) throws IllegalArgumentException {
-		setName(name);;
+		setName(name);
 	}
 
 	@Override
