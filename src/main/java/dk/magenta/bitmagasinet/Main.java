@@ -39,10 +39,12 @@ public class Main extends JFrame {
 	private JList bitRepoList;
 	private DefaultListModel<String> bitRepoListModel;
 	private GUIFacade guiFacade;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JLabel lblTom;
+	private JTextField txtPathToSettingsFolder;
+	private JTextField txtPathToCertificate;
 	private String repoName;
+	private JTextField txtCollectionId;
+	private JTextField txtPillarId;
+	private JTextField txtPathToLocalChecksumList;
 	
 	/**
 	 * Launch the application.
@@ -206,30 +208,61 @@ public class Main extends JFrame {
 		
 		JLabel lblStiTilRepositorysettingxml = new JLabel("Sti til mappe indeholdende RepositorySetting.xml og ReferenceSettings.xml");
 		
-		textField = new JTextField();
-		textField.setColumns(10);
+		txtPathToSettingsFolder = new JTextField();
+		txtPathToSettingsFolder.setColumns(10);
 		
 		JLabel lblStiTilCertifikat = new JLabel("Sti til certifikat");
 		
-		textField_1 = new JTextField();
-		textField_1.setColumns(10);
+		txtPathToCertificate = new JTextField();
+		txtPathToCertificate.setColumns(10);
 		
-		lblTom = new JLabel("Tom");
+		JLabel lblCollectionId = new JLabel("Samling (Collection ID)");
+		
+		txtCollectionId = new JTextField();
+		txtCollectionId.setColumns(10);
+		
+		JLabel lblSjlepillarId = new JLabel("Søjle (Pillar ID)");
+		
+		txtPillarId = new JTextField();
+		txtPillarId.setColumns(10);
+		
+		JLabel lblStiTilLokal = new JLabel("Sti til lokal kontrolsumsliste");
+		
+		txtPathToLocalChecksumList = new JTextField();
+		txtPathToLocalChecksumList.setColumns(10);
+		
+		JButton btnGem = new JButton("Gem");
+		
+		JButton btnRydFelter = new JButton("Ryd felter");
+		btnRydFelter.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				txtPathToSettingsFolder.setText(null);
+				txtPathToCertificate.setText(null);
+				txtCollectionId.setText(null);
+				txtPillarId.setText(null);
+				txtPathToLocalChecksumList.setText(null);
+			}
+		});
 		GroupLayout gl_currentConfigurationPane = new GroupLayout(currentConfigurationPane);
 		gl_currentConfigurationPane.setHorizontalGroup(
 			gl_currentConfigurationPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_currentConfigurationPane.createSequentialGroup()
+					.addContainerGap()
 					.addGroup(gl_currentConfigurationPane.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_currentConfigurationPane.createSequentialGroup()
-							.addContainerGap()
-							.addGroup(gl_currentConfigurationPane.createParallelGroup(Alignment.LEADING)
-								.addComponent(textField, GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
-								.addComponent(lblStiTilRepositorysettingxml)
-								.addComponent(lblStiTilCertifikat)
-								.addComponent(textField_1, GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)))
-						.addGroup(gl_currentConfigurationPane.createSequentialGroup()
-							.addGap(168)
-							.addComponent(lblTom)))
+						.addComponent(txtPathToSettingsFolder, GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
+						.addComponent(lblStiTilRepositorysettingxml)
+						.addComponent(lblStiTilCertifikat)
+						.addComponent(txtPathToCertificate, GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
+						.addComponent(lblCollectionId)
+						.addComponent(txtCollectionId, GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
+						.addComponent(lblSjlepillarId)
+						.addComponent(txtPillarId, GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
+						.addComponent(lblStiTilLokal)
+						.addComponent(txtPathToLocalChecksumList, GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
+						.addGroup(Alignment.TRAILING, gl_currentConfigurationPane.createSequentialGroup()
+							.addComponent(btnRydFelter)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnGem)))
 					.addContainerGap())
 		);
 		gl_currentConfigurationPane.setVerticalGroup(
@@ -238,14 +271,28 @@ public class Main extends JFrame {
 					.addContainerGap()
 					.addComponent(lblStiTilRepositorysettingxml)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addComponent(txtPathToSettingsFolder, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGap(18)
 					.addComponent(lblStiTilCertifikat)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(textField_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(146)
-					.addComponent(lblTom)
-					.addContainerGap(208, Short.MAX_VALUE))
+					.addComponent(txtPathToCertificate, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addGap(18)
+					.addComponent(lblCollectionId)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(txtCollectionId, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addGap(18)
+					.addComponent(lblSjlepillarId)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(txtPillarId, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addGap(18)
+					.addComponent(lblStiTilLokal)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(txtPathToLocalChecksumList, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addGap(18)
+					.addGroup(gl_currentConfigurationPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnGem)
+						.addComponent(btnRydFelter))
+					.addContainerGap(138, Short.MAX_VALUE))
 		);
 		currentConfigurationPane.setLayout(gl_currentConfigurationPane);
 		
