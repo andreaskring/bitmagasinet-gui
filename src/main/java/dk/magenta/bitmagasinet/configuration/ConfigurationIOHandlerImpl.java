@@ -20,7 +20,7 @@ class ConfigurationIOHandlerImpl implements ConfigurationIOHandler {
 	}
 	
 	@Override
-	public RepositoryConfiguration readRepositoryConfiguration(String name) throws IOException {
+	public RepositoryConfiguration readRepositoryConfiguration(String name) throws IOException, InvalidArgumentException {
 
 		Path path = configurationHandler.getPathToRepositoryConfigurations().resolve(name + Constants.REPOFILE_EXT);
 		try {

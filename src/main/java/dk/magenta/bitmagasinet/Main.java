@@ -25,6 +25,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import dk.magenta.bitmagasinet.configuration.ConfigurationHandlerImpl;
+import dk.magenta.bitmagasinet.configuration.InvalidArgumentException;
+import dk.magenta.bitmagasinet.configuration.RepositoryConfiguration;
+import dk.magenta.bitmagasinet.configuration.RepositoryConfigurationImpl;
+
 import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
@@ -231,7 +235,16 @@ public class Main extends JFrame {
 		txtPathToLocalChecksumList = new JTextField();
 		txtPathToLocalChecksumList.setColumns(10);
 		
-		JButton btnGem = new JButton("Gem");
+		JButton btnSaveRepoConf = new JButton("Gem");
+		btnSaveRepoConf.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					RepositoryConfiguration repositoryConfiguration = new RepositoryConfigurationImpl(repoName);
+				} catch (InvalidArgumentException e) {
+					JOptionPane.showMessageDialog(contentPane, e.getMessage());
+				}
+			}
+		});
 		
 		JButton btnRydFelter = new JButton("Ryd felter");
 		btnRydFelter.addActionListener(new ActionListener() {
@@ -262,7 +275,7 @@ public class Main extends JFrame {
 						.addGroup(Alignment.TRAILING, gl_currentConfigurationPane.createSequentialGroup()
 							.addComponent(btnRydFelter)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnGem)))
+							.addComponent(btnSaveRepoConf)))
 					.addContainerGap())
 		);
 		gl_currentConfigurationPane.setVerticalGroup(
@@ -290,7 +303,7 @@ public class Main extends JFrame {
 					.addComponent(txtPathToLocalChecksumList, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGap(18)
 					.addGroup(gl_currentConfigurationPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnGem)
+						.addComponent(btnSaveRepoConf)
 						.addComponent(btnRydFelter))
 					.addContainerGap(138, Short.MAX_VALUE))
 		);

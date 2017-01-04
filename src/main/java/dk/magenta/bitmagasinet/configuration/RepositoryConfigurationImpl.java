@@ -15,7 +15,7 @@ public class RepositoryConfigurationImpl implements RepositoryConfiguration {
 	private Path settingsFolder;
 	private String pillarId;
 	
-	public RepositoryConfigurationImpl(String name) throws IllegalArgumentException {
+	public RepositoryConfigurationImpl(String name) throws InvalidArgumentException {
 		setName(name);
 	}
 
@@ -50,49 +50,49 @@ public class RepositoryConfigurationImpl implements RepositoryConfiguration {
 	}
 
 	@Override
-	public void setCollectionId(String collectionId) throws IllegalArgumentException {
+	public void setCollectionId(String collectionId) throws InvalidArgumentException {
 		if (StringUtils.isBlank(collectionId)) {
-			throw new IllegalArgumentException("CollectionID må ikke være blank");
+			throw new InvalidArgumentException("CollectionID må ikke være blank");
 		}
 		this.collectionId = collectionId.trim();
 	}
 
 	@Override
-	public void setName(String name) throws IllegalArgumentException {
+	public void setName(String name) throws InvalidArgumentException {
 		throwExceptionIfStringBlank(name, "Navn må ikke være blank");
 		this.name = name.trim();
 	}
 
 	@Override
-	public void setPathToCertificate(Path path) throws IllegalArgumentException {
+	public void setPathToCertificate(Path path) throws InvalidArgumentException {
 		checkIfPathIsFile(path);
 		if (!FilenameUtils.getExtension(path.toString().toLowerCase()).equals("pem")) {
-			throw new IllegalArgumentException("Filen er ikke et PEM certifikat");
+			throw new InvalidArgumentException("Filen er ikke et PEM certifikat");
 		}
 		certificateFile = path;
 	}
 
 	@Override
-	public void setPathToChecksumList(Path path) {
+	public void setPathToChecksumList(Path path) throws InvalidArgumentException {
 		checkIfPathIsFile(path);
 		checksumListFile = path;
 	}
 
 	@Override
-	public void setPathToSettingsFiles(Path path) throws IllegalArgumentException {
+	public void setPathToSettingsFiles(Path path) throws InvalidArgumentException {
 		if (!path.toFile().isDirectory()) {
-			throw new IllegalArgumentException("Stien henviser ikke til en mappe");
+			throw new InvalidArgumentException("Stien henviser ikke til en mappe");
 		}
 		File repositorySettings = path.resolve("RepositorySettings.xml").toFile();
 		File referenceSettings = path.resolve("ReferenceSettings.xml").toFile();
 		if (!repositorySettings.exists() || !referenceSettings.exists()) {
-			throw new IllegalArgumentException("Mappen indeholder ikke RepositorySettings.xml og/eller ReferenceSettings.xml");
+			throw new InvalidArgumentException("Mappen indeholder ikke RepositorySettings.xml og/eller ReferenceSettings.xml");
 		}
 		settingsFolder = path;
 	}
 
 	@Override
-	public void setPillarId(String pillarId) {
+	public void setPillarId(String pillarId) throws InvalidArgumentException {
 		throwExceptionIfStringBlank(pillarId, "PillarID må ikke være blank");
 		this.pillarId = pillarId.trim();
 	}
@@ -115,15 +115,15 @@ public class RepositoryConfigurationImpl implements RepositoryConfiguration {
 		return true;
 	}
 
-	private void checkIfPathIsFile(Path path) throws IllegalArgumentException {
+	private void checkIfPathIsFile(Path path) throws InvalidArgumentException {
 		if (!path.toFile().isFile()) {
-			throw new IllegalArgumentException("Stien henviser ikke til en fil");
+			throw new InvalidArgumentException("Stien henviser ikke til en fil");
 		}
 	}
 	
-	private void throwExceptionIfStringBlank(String s, String message) throws IllegalArgumentException {
+	private void throwExceptionIfStringBlank(String s, String message) throws InvalidArgumentException {
 		if (StringUtils.isBlank(s)) {
-			throw new IllegalArgumentException(message);
+			throw new InvalidArgumentException(message);
 		}
 	}
 }

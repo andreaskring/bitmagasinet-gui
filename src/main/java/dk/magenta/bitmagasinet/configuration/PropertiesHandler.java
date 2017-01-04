@@ -16,7 +16,7 @@ public class PropertiesHandler {
 		return properties;
 	}
 
-	public static RepositoryConfiguration convertPropertiesToRepositoryConfiguration(Properties properties) {
+	public static RepositoryConfiguration convertPropertiesToRepositoryConfiguration(Properties properties) throws InvalidArgumentException {
 		RepositoryConfiguration repositoryConfiguration = new RepositoryConfigurationImpl(properties.getProperty("name"));
 		repositoryConfiguration.setCollectionId(properties.getProperty("collectionID"));
 		repositoryConfiguration.setPathToCertificate(Paths.get(properties.getProperty("pathToCertificate")));

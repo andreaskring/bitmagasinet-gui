@@ -44,35 +44,35 @@ public interface RepositoryConfiguration {
 	 * Set the collectionID
 	 * @param collectionId The collectionID
 	 */
-	void setCollectionId(String collectionId) throws IllegalArgumentException;
+	void setCollectionId(String collectionId) throws InvalidArgumentException;
 	
 	/**
 	 * Set the name of the repository configuration
 	 * @param name The name of the repository configuration
 	 */
-	void setName(String name) throws IllegalArgumentException;
+	void setName(String name) throws InvalidArgumentException;
 	
 	/**
 	 * Set the path to the PEM certificate used to connect to the bitrepository
 	 * @param path The path to the certificate
 	 */
-	void setPathToCertificate(Path path) throws IllegalArgumentException ;
+	void setPathToCertificate(Path path) throws InvalidArgumentException ;
 	
 	/**
 	 * Set the path to the file containing the checksum list
 	 * @param path The path to the file containing the checksum list
 	 */
-	void setPathToChecksumList(Path path) throws IllegalArgumentException;
+	void setPathToChecksumList(Path path) throws InvalidArgumentException;
 	
 	/**
 	 * Set the path to the RepositorySettings.xml and ReferenceSettings.xml
 	 * @param path The path to the RepositorySettings.xml and ReferenceSettings.xml
 	 */
-	void setPathToSettingsFiles(Path path) throws IllegalArgumentException;
+	void setPathToSettingsFiles(Path path) throws InvalidArgumentException;
 
 	/**
 	 * Set the pillar ID
 	 * @param pillarId the pillar ID
 	 */
-	void setPillarId(String pillarId);
+	void setPillarId(String pillarId) throws InvalidArgumentException;
 }

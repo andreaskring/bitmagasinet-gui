@@ -20,7 +20,7 @@ public class TestConfigurationHandlerImpl {
 	private Path bitMagGUI;
 
 	@Before
-	public void setUp() {
+	public void setUp() throws InvalidArgumentException {
 		bitMagGUI = Paths.get(System.getProperty("java.io.tmpdir")).resolve("BitMagGUI");
 		configurationHandler = new ConfigurationHandlerImpl(bitMagGUI);
 		repositoryConfiguration1 = new RepositoryConfigurationImpl("r1");
@@ -38,7 +38,7 @@ public class TestConfigurationHandlerImpl {
 	}
 	
 	@Test
-	public void shouldGetRepositoryConfigurationWithNameR2() {
+	public void shouldGetRepositoryConfigurationWithNameR2() throws IllegalArgumentException, InvalidArgumentException {
 		configurationHandler.addRepositoryConfiguration(new RepositoryConfigurationImpl("r2"));
 		assertEquals("r2", configurationHandler.getRepositoryConfiguration("r2").getName());
 	}

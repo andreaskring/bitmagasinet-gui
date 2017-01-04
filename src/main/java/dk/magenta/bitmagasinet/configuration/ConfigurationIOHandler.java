@@ -4,7 +4,7 @@ import java.io.IOException;
 
 interface ConfigurationIOHandler {
 
-	RepositoryConfiguration readRepositoryConfiguration(String name) throws IOException;
+	RepositoryConfiguration readRepositoryConfiguration(String name) throws IOException, InvalidArgumentException;
 	
 	/**
 	 * Pre-condition: repositoryConfiguration must not be null

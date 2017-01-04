@@ -58,7 +58,7 @@ public class TestRepositoryConfiguration {
 	}
 	
 	@Before
-	public void setUp() {
+	public void setUp() throws InvalidArgumentException {
 		repositoryConfiguration = new RepositoryConfigurationImpl("name1");
 		
 		self = new RepositoryConfigurationImpl("repo");
@@ -82,105 +82,105 @@ public class TestRepositoryConfiguration {
 		assertEquals("name1", repositoryConfiguration.getName());
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
-	public void shouldNotAllowBlankName() {
+	@Test(expected = InvalidArgumentException.class)
+	public void shouldNotAllowBlankName() throws InvalidArgumentException {
 		new RepositoryConfigurationImpl(" ");
 	}
 	
 	@Test
-	public void shouldStoreItsNameAsName2() {
+	public void shouldStoreItsNameAsName2() throws InvalidArgumentException {
 		RepositoryConfiguration repositoryConfiguration = new RepositoryConfigurationImpl("name2");
 		assertEquals("name2", repositoryConfiguration.getName());
 	}
 
 	@Test
-	public void shouldSetNameToName3() {
+	public void shouldSetNameToName3() throws InvalidArgumentException {
 		repositoryConfiguration.setName("name3");
 		assertEquals("name3", repositoryConfiguration.getName());
 	}
 	 
 	
-	@Test(expected = IllegalArgumentException.class)
-	public void nameCannotBeNull() {
+	@Test(expected = InvalidArgumentException.class)
+	public void nameCannotBeNull() throws InvalidArgumentException {
 		repositoryConfiguration.setName(null);
 	}
 	
 	@Test
-	public void nameShouldBeTrimmed() {
+	public void nameShouldBeTrimmed() throws InvalidArgumentException {
 		repositoryConfiguration.setName("   abc   ");
 		assertEquals("abc", repositoryConfiguration.getName());
 	}
 	
 	@Test
-	public void shouldHaveCollectionIdC1() {
+	public void shouldHaveCollectionIdC1() throws InvalidArgumentException {
 		repositoryConfiguration.setCollectionId("c1");
 		assertEquals("c1", repositoryConfiguration.getCollectionId());
 	}
 	
 	@Test
-	public void shouldHaveCollectionIdC2() {
+	public void shouldHaveCollectionIdC2() throws InvalidArgumentException {
 		repositoryConfiguration.setCollectionId("c2");
 		assertEquals("c2", repositoryConfiguration.getCollectionId());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void shouldNotAllowBlankCollectionId() {
+	@Test(expected = InvalidArgumentException.class)
+	public void shouldNotAllowBlankCollectionId() throws InvalidArgumentException {
 		repositoryConfiguration.setCollectionId(null);
 	}
 	
 	@Test
-	public void shouldHavePathToCertificate1() {
+	public void shouldHavePathToCertificate1() throws InvalidArgumentException {
 		repositoryConfiguration.setPathToCertificate(certificate);
 		Path certificate = Paths.get(tmp).resolve("certificate.pem");
 		assertEquals(certificate.toString(), repositoryConfiguration.getPathToCertificate().toString());
 	}
 	
 	@Test
-	public void shouldHavePathToCertificate2() {
+	public void shouldHavePathToCertificate2() throws InvalidArgumentException {
 		repositoryConfiguration.setPathToCertificate(certificate2);
 		Path certificate2 = Paths.get(tmp).resolve("certificate2.pem");
 		assertEquals(certificate2.toString(), repositoryConfiguration.getPathToCertificate().toString());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void certificateMustBeFile() {
+	@Test(expected = InvalidArgumentException.class)
+	public void certificateMustBeFile() throws InvalidArgumentException {
 		Path path = Paths.get("/does/not/exists/cert.pem");
 		repositoryConfiguration.setPathToCertificate(path);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void extensionMustBePEM() {
+	@Test(expected = InvalidArgumentException.class)
+	public void extensionMustBePEM() throws InvalidArgumentException {
 		repositoryConfiguration.setPathToCertificate(certificate3);
 	}
 	
 	@Test
-	public void shouldHavePathToChecksumList_tmp() {
+	public void shouldHavePathToChecksumList_tmp() throws InvalidArgumentException {
 		repositoryConfiguration.setPathToChecksumList(certificate);
 		Path certificate = Paths.get(tmp).resolve("certificate.pem");
 		assertEquals("Just using a random file...", certificate.toString(), repositoryConfiguration.getPathToChecksumList().toString());
 	}
 
 	@Test
-	public void shouldHavePathToChecksumList_tmp_folder1() {
+	public void shouldHavePathToChecksumList_tmp_folder1() throws InvalidArgumentException {
 		repositoryConfiguration.setPathToChecksumList(certificate2);
 		Path certificate2 = Paths.get(tmp).resolve("certificate2.pem");
 		assertEquals("Just using a random file...", certificate2.toString(), repositoryConfiguration.getPathToChecksumList().toString());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void checksumFileMustBeFile() {
+	@Test(expected = InvalidArgumentException.class)
+	public void checksumFileMustBeFile() throws InvalidArgumentException {
 		Path path = Paths.get("/does/not/exists/checksum.txt");
 		repositoryConfiguration.setPathToChecksumList(path);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void checksumFileMustNotBeFolder() {
+	@Test(expected = InvalidArgumentException.class)
+	public void checksumFileMustNotBeFolder() throws InvalidArgumentException {
 		Path path = Paths.get(tmp);
 		repositoryConfiguration.setPathToChecksumList(path);
 	}
 
 	@Test
-	public void shouldHavePathToSettingsFiles_tmp_folder1() throws IOException {
+	public void shouldHavePathToSettingsFiles_tmp_folder1() throws IOException, InvalidArgumentException {
 		File repositorySettings = folder2.resolve("RepositorySettings.xml").toFile();
 		repositorySettings.createNewFile();
 		File referenceSettings = folder2.resolve("ReferenceSettings.xml").toFile();
@@ -190,47 +190,47 @@ public class TestRepositoryConfiguration {
 		assertEquals(folder1.toString(), repositoryConfiguration.getPathToSettingsFiles().toString());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void pathToSettingsFilesMustBeAFolder() {
+	@Test(expected = InvalidArgumentException.class)
+	public void pathToSettingsFilesMustBeAFolder() throws InvalidArgumentException {
 		repositoryConfiguration.setPathToSettingsFiles(Paths.get("/does/not/exist"));
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
-	public void pathToSettingsMustContainRepositorySettingsAndReferenceSettings() {
+	@Test(expected = InvalidArgumentException.class)
+	public void pathToSettingsMustContainRepositorySettingsAndReferenceSettings() throws InvalidArgumentException {
 		repositoryConfiguration.setPathToSettingsFiles(Paths.get(tmp));
 	}
 	
 	@Test
-	public void shouldHavePillarIdP1() {
+	public void shouldHavePillarIdP1() throws InvalidArgumentException {
 		repositoryConfiguration.setPillarId("p1");
 		assertEquals("p1", repositoryConfiguration.getPillarId());
 	}
 
 	@Test
-	public void shouldHavePillarIdP2() {
+	public void shouldHavePillarIdP2() throws InvalidArgumentException {
 		repositoryConfiguration.setPillarId("p2");
 		assertEquals("p2", repositoryConfiguration.getPillarId());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void pillardIdMustNotBeBlank() {
+	@Test(expected = InvalidArgumentException.class)
+	public void pillardIdMustNotBeBlank() throws InvalidArgumentException {
 		repositoryConfiguration.setPillarId("");
 	}
 	
 	@Test
-	public void pillarIdMustBeTrimmed() {
+	public void pillarIdMustBeTrimmed() throws InvalidArgumentException {
 		repositoryConfiguration.setPillarId(" id ");
 		assertEquals("id", repositoryConfiguration.getPillarId());
 	}
 	
 	@Test
-	public void collectionIdMustBeTrimmed() {
+	public void collectionIdMustBeTrimmed() throws InvalidArgumentException {
 		repositoryConfiguration.setCollectionId(" id");
 		assertEquals("id", repositoryConfiguration.getCollectionId());
 	}
 	
 	@Test
-	public void shouldChangeNameCorrectly() {
+	public void shouldChangeNameCorrectly() throws InvalidArgumentException {
 		RepositoryConfiguration r = new RepositoryConfigurationImpl("repo");
 		assertEquals("repo", r.getName());
 		r.setName("newName");
@@ -238,7 +238,7 @@ public class TestRepositoryConfiguration {
 	}
 	
 	@Test
-	public void shouldChangeNameCorrectly2() {
+	public void shouldChangeNameCorrectly2() throws InvalidArgumentException {
 		assertEquals("name1", repositoryConfiguration.getName());
 		repositoryConfiguration.setName("newName");
 		assertEquals("newName", repositoryConfiguration.getName());
@@ -262,31 +262,31 @@ public class TestRepositoryConfiguration {
 	}
 
 	@Test
-	public void shouldBeFalseIfCollectionIdIsDifferent() {
+	public void shouldBeFalseIfCollectionIdIsDifferent() throws InvalidArgumentException {
 		other.setCollectionId("notId");
 		assertFalse(self.equals(other));
 	}
 	
 	@Test
-	public void shouldBeFalseWhenNamesAreDifferent() {
+	public void shouldBeFalseWhenNamesAreDifferent() throws InvalidArgumentException {
 		other.setName("otherName");
 		assertFalse(self.equals(other));
 	}
 	
 	@Test
-	public void shouldBeFalseIfCertPathDifferent() {
+	public void shouldBeFalseIfCertPathDifferent() throws InvalidArgumentException {
 		other.setPathToCertificate(certificate2);
 		assertFalse(self.equals(other));
 	}
 	
 	@Test
-	public void shouldBeFalseIfChecksumPathDifferent() {
+	public void shouldBeFalseIfChecksumPathDifferent() throws InvalidArgumentException {
 		other.setPathToChecksumList(certificate2);
 		assertFalse(self.equals(other));
 	}
 	
 	@Test
-	public void shouldBeFalseIfSettingsFilesPathDifferent() throws IOException {
+	public void shouldBeFalseIfSettingsFilesPathDifferent() throws IOException, InvalidArgumentException {
 		// These two file need to be in folder2
 		File repositorySettings = folder2.resolve("RepositorySettings.xml").toFile();
 		repositorySettings.createNewFile();
@@ -297,7 +297,7 @@ public class TestRepositoryConfiguration {
 	}
 	
 	@Test
-	public void shouldBeFalseIfPillarIDsDifferent() {
+	public void shouldBeFalseIfPillarIDsDifferent() throws InvalidArgumentException {
 		other.setPillarId("notId");
 		assertFalse(self.equals(other));
 	}

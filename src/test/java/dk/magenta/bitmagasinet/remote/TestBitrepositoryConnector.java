@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import dk.magenta.bitmagasinet.checksum.FileChecksum;
 import dk.magenta.bitmagasinet.checksum.FileChecksumImpl;
+import dk.magenta.bitmagasinet.configuration.InvalidArgumentException;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfiguration;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfigurationImpl;
 
@@ -19,7 +20,7 @@ public class TestBitrepositoryConnector implements ThreadStatusObserver {
 	
 	@Ignore
 	@Before
-	public void setUp() {
+	public void setUp() throws InvalidArgumentException {
 		RepositoryConfiguration repositoryConfiguration = new RepositoryConfigurationImpl("staging");
 		repositoryConfiguration.setCollectionId("2");
 		repositoryConfiguration.setPathToSettingsFiles(Paths.get("/home/andreas/bitmagasinet/bitrepository-client-1.6/conf"));

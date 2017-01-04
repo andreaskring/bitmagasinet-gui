@@ -41,7 +41,7 @@ public class TestConfigurationIOHandler {
 	}
 	
 	@Test
-	public void writeFollowedByReadShouldBeConsistent() throws IOException {
+	public void writeFollowedByReadShouldBeConsistent() throws IOException, InvalidArgumentException {
 		RepositoryConfiguration repositoryConfiguration = new RepositoryConfigurationImpl("repo");
 		repositoryConfiguration.setCollectionId("id");
 		repositoryConfiguration.setPathToCertificate(certificate);

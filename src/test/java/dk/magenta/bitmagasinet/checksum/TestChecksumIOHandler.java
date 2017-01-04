@@ -20,6 +20,7 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import dk.magenta.bitmagasinet.configuration.InvalidArgumentException;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfiguration;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfigurationImpl;
 
@@ -110,7 +111,7 @@ public class TestChecksumIOHandler {
 	}
 
 	@Test
-	public void writeChecksumFileRoundTrip() throws IOException, InvalidChecksumFileException {
+	public void writeChecksumFileRoundTrip() throws IOException, InvalidChecksumFileException, InvalidArgumentException {
 		List<FileChecksum> fileChecksumList = checksumIOHandler.readChecksumList(checksumFile);
 		fileChecksumList.get(0).setRemoteChecksum("0f2dd3c5a366a1e860e2f8a1afc29987");
 		fileChecksumList.get(1).setRemoteChecksum("0f2dd3c5a366a1e860e2f8a1afc29987");
@@ -130,7 +131,7 @@ public class TestChecksumIOHandler {
 	// TODO: this test case is not complete - need to finish this
 	@Ignore
 	@Test
-	public void writeHeaderFileRoundTrip() throws IOException, InvalidChecksumFileException {
+	public void writeHeaderFileRoundTrip() throws IOException, InvalidChecksumFileException, InvalidArgumentException {
 		List<FileChecksum> fileChecksumList = checksumIOHandler.readChecksumList(checksumFile);
 		fileChecksumList.get(0).setRemoteChecksum("0f2dd3c5a366a1e860e2f8a1afc29987");
 		fileChecksumList.get(1).setRemoteChecksum("0f2dd3c5a366a1e860e2f8a1afc29987");
