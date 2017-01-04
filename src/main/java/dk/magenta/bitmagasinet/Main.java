@@ -18,9 +18,11 @@ import javax.swing.JSplitPane;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.JList;
 import javax.swing.AbstractListModel;
+import javax.swing.DefaultListModel;
 import javax.swing.border.TitledBorder;
 import java.awt.Font;
 import javax.swing.SwingConstants;
@@ -73,6 +75,10 @@ public class Main extends JFrame {
 
 	private void initComponents() {
 
+		DefaultListModel<String> bitRepoListModel = new DefaultListModel<String>();
+//		bitRepoListModel.addElement("Statsbiblioteket");
+//		bitRepoListModel.addElement("Det Kongelige Bibliotek");
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1012, 642);
 		contentPane = new JPanel();
@@ -102,6 +108,9 @@ public class Main extends JFrame {
 		JScrollPane bitRepoScrollPane = new JScrollPane();
 		
 		btnGetConfiguration = new JButton("Hent konfiguration");
+		if (bitRepoListModel.isEmpty()) {
+			btnGetConfiguration.setVisible(false);
+		}
 		btnGetConfiguration.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String repositoryName = (String) bitRepoList.getSelectedValue();
@@ -119,16 +128,35 @@ public class Main extends JFrame {
 		lblCurrentConfiguration = new JLabel("Konfiguration for");
 		lblCurrentConfiguration.setFont(new Font("Dialog", Font.BOLD, 12));
 		lblCurrentConfiguration.setVisible(false);
+		
+		JButton btnTest = new JButton("test");
+		btnTest.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+					bitRepoListModel.addElement("hurra");
+				
+			}
+		});
+		
+		JButton btnTilfjNy = new JButton("Tilføj ny");
 		GroupLayout gl_pnlInputList = new GroupLayout(pnlInputList);
 		gl_pnlInputList.setHorizontalGroup(
 			gl_pnlInputList.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_pnlInputList.createSequentialGroup()
-					.addContainerGap()
 					.addGroup(gl_pnlInputList.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_pnlInputList.createParallelGroup(Alignment.TRAILING)
-							.addComponent(btnGetConfiguration)
-							.addComponent(bitRepoScrollPane, GroupLayout.PREFERRED_SIZE, 263, GroupLayout.PREFERRED_SIZE))
-						.addComponent(lblVlgBitmagasin))
+						.addGroup(gl_pnlInputList.createSequentialGroup()
+							.addContainerGap()
+							.addGroup(gl_pnlInputList.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_pnlInputList.createParallelGroup(Alignment.TRAILING)
+									.addGroup(Alignment.LEADING, gl_pnlInputList.createSequentialGroup()
+										.addComponent(btnTilfjNy)
+										.addPreferredGap(ComponentPlacement.RELATED)
+										.addComponent(btnGetConfiguration))
+									.addComponent(bitRepoScrollPane, GroupLayout.PREFERRED_SIZE, 263, GroupLayout.PREFERRED_SIZE))
+								.addComponent(lblVlgBitmagasin)))
+						.addGroup(gl_pnlInputList.createSequentialGroup()
+							.addGap(101)
+							.addComponent(btnTest)))
 					.addGap(72)
 					.addGroup(gl_pnlInputList.createParallelGroup(Alignment.LEADING)
 						.addComponent(lblCurrentConfiguration)
@@ -147,9 +175,13 @@ public class Main extends JFrame {
 						.addGroup(gl_pnlInputList.createSequentialGroup()
 							.addComponent(bitRepoScrollPane, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnGetConfiguration))
+							.addGroup(gl_pnlInputList.createParallelGroup(Alignment.BASELINE)
+								.addComponent(btnTilfjNy)
+								.addComponent(btnGetConfiguration))
+							.addGap(157)
+							.addComponent(btnTest))
 						.addComponent(currentConfigurationPane, GroupLayout.PREFERRED_SIZE, 298, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap(204, Short.MAX_VALUE))
+					.addContainerGap(188, Short.MAX_VALUE))
 		);
 		GroupLayout gl_currentConfigurationPane = new GroupLayout(currentConfigurationPane);
 		gl_currentConfigurationPane.setHorizontalGroup(
@@ -164,15 +196,7 @@ public class Main extends JFrame {
 		
 		bitRepoList = new JList();
 		bitRepoList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		bitRepoList.setModel(new AbstractListModel() {
-			String[] values = new String[] {"Statsbiblioteket", "Det Kongelige Bibliotek", "Bitmagasin no 1", "Prima Bitmagasin", "Bitmagasin no 7", "Superlageret", "Aarhus Universitet"};
-			public int getSize() {
-				return values.length;
-			}
-			public Object getElementAt(int index) {
-				return values[index];
-			}
-		});
+		bitRepoList.setModel(bitRepoListModel);
 		bitRepoList.setSelectedIndex(0);
 		bitRepoScrollPane.setViewportView(bitRepoList);
 		pnlInputList.setLayout(gl_pnlInputList);
