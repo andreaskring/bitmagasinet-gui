@@ -1,10 +1,13 @@
 package dk.magenta.bitmagasinet.configuration;
 
 import java.nio.file.Path;
+import java.util.List;
 
 public interface ConfigurationHandler {
 
 	public RepositoryConfiguration getRepositoryConfiguration(String name);
+	
+	public List<String> getRepositoryConfigurationNames();
 	
 	/**
 	 * Pre-condition: repositoryConfiguration must not be null

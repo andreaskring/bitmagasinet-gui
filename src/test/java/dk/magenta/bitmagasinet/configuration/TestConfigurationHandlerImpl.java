@@ -4,23 +4,32 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.nio.file.FileSystems;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.apache.commons.io.FileSystemUtils;
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestConfigurationHandlerImpl {
 
 	private ConfigurationHandler configurationHandler;
 	private RepositoryConfiguration repositoryConfiguration1;
+	private Path bitMagGUI;
 
 	@Before
 	public void setUp() {
-		configurationHandler = new ConfigurationHandlerImpl(null);
+		bitMagGUI = Paths.get(System.getProperty("java.io.tmpdir")).resolve("BitMagGUI");
+		configurationHandler = new ConfigurationHandlerImpl(bitMagGUI);
 		repositoryConfiguration1 = new RepositoryConfigurationImpl("r1");
+	}
+	
+	@After
+	public void tearDown() throws IOException {
+		FileUtils.deleteDirectory(bitMagGUI.toFile());
 	}
 	
 	@Test
@@ -81,32 +90,23 @@ public class TestConfigurationHandlerImpl {
 	}
 	
 	@Test
-	public void shouldReturn_tmp_WhenPathToLocalConfIs_tmp() {
-		Path localeConfigurationFolder = FileSystems.getDefault().getPath("/tmp");
+	public void shouldReturnBitMagGUIWhenPathToLocalConfIsBitMagGUI() {
+		Path localeConfigurationFolder = bitMagGUI;
 		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl(localeConfigurationFolder);
 		assertEquals(localeConfigurationFolder.toString(), configurationHandler.getPathToLocalConfigurationFolder().toString());
 	}
 
 	@Test
-	public void shouldReturn_tmp_a_WhenPathToLocalConfIs_tmp_a() {
-		Path path = Paths.get("/tmp/a");
-		Path localeConfigurationFolder = FileSystems.getDefault().getPath(path.toString());
-		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl(localeConfigurationFolder);
-		assertEquals(path.toString(), configurationHandler.getPathToLocalConfigurationFolder().toString());
-	}
-	
-	@Test
 	public void shouldReturnRepoConfAsNameOfRepoConfFolder() {
-		Path tmp = Paths.get("tmp");
-		Path repoConf = Paths.get("tmp/repoConf");
-		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl(tmp);
+		Path repoConf = bitMagGUI.resolve("repoConf");
+		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl(bitMagGUI);
 		assertEquals(repoConf.toString(), configurationHandler.getPathToRepositoryConfigurations().toString());
 	}
 	
 	@Test
 	public void shouldHaveLocalConfFolderProgramFiles() {
 		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl();
-		Path path = Paths.get("/Program Files/BitMagGUI");
+		Path path = Paths.get(System.getProperty("user.home")).resolve("BitMagGUI");
 		assertEquals(path.toString(), configurationHandler.getPathToLocalConfigurationFolder().toString());
 	}
 	
@@ -115,4 +115,29 @@ public class TestConfigurationHandlerImpl {
 		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl();
 		assertTrue(configurationHandler.getPathToLocalConfigurationFolder().toFile().isDirectory());
 	}
+	
+	@Test
+	public void shouldReturnEmptyListWhenRepoConfIsEmpty() {
+		assertTrue(configurationHandler.getRepositoryConfigurationNames().isEmpty());
+	}
+
+	@Test
+	public void shouldReturnOneNameWhenRepoConfContainsOneFile() throws IOException {
+		Path repo1 = bitMagGUI.resolve("repoConf").resolve("repo1.conf");
+		repo1.toFile().createNewFile();
+		assertEquals(1, configurationHandler.getRepositoryConfigurationNames().size());
+		assertEquals("repo1", configurationHandler.getRepositoryConfigurationNames().get(0));
+	}
+
+	@Test
+	public void shouldReturnTwoNamesWhenRepoConfContainsTwoFiles() throws IOException {
+		Path repo1 = bitMagGUI.resolve("repoConf").resolve("repo1.conf");
+		Path repo2 = bitMagGUI.resolve("repoConf").resolve("repo2.conf");
+		repo1.toFile().createNewFile();
+		repo2.toFile().createNewFile();
+		assertEquals(2, configurationHandler.getRepositoryConfigurationNames().size());
+		assertEquals("repo1", configurationHandler.getRepositoryConfigurationNames().get(0));
+		assertEquals("repo2", configurationHandler.getRepositoryConfigurationNames().get(1));
+	}
+	
 }
