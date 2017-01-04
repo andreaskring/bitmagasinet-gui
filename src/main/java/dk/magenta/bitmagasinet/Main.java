@@ -1,38 +1,34 @@
 package dk.magenta.bitmagasinet;
 
-import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JToolBar;
-import javax.swing.JTabbedPane;
+import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.UIManager;
-import javax.swing.JSplitPane;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.ListModel;
-import javax.swing.ListSelectionModel;
-import javax.swing.JList;
-import javax.swing.AbstractListModel;
-import javax.swing.DefaultListModel;
-import javax.swing.border.TitledBorder;
-import java.awt.Font;
-import javax.swing.SwingConstants;
-import javax.swing.JTextField;
-import javax.swing.JPasswordField;
 import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import java.awt.Color;
+
+import dk.magenta.bitmagasinet.configuration.ConfigurationHandlerImpl;
+import javax.swing.JTextField;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EtchedBorder;
 
 public class Main extends JFrame {
 
@@ -41,7 +37,13 @@ public class Main extends JFrame {
 	private JLabel lblCurrentConfiguration;
 	private JPanel currentConfigurationPane;
 	private JList bitRepoList;
-
+	private DefaultListModel<String> bitRepoListModel;
+	private GUIFacade guiFacade;
+	private JTextField textField;
+	private JTextField textField_1;
+	private JLabel lblTom;
+	private String repoName;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -68,14 +70,26 @@ public class Main extends JFrame {
 	 */
 	public Main() {
 		
+		guiFacade = new GUIFacadeImpl(new ConfigurationHandlerImpl());
+		
+		loadRepoConfsIntoListModel();
+		
 		initComponents();
 		createEvents();
 		
 	}
+	
+	private void loadRepoConfsIntoListModel() {
+		bitRepoListModel = new DefaultListModel<String>();
+		List<String> repoNames = guiFacade.getRepositoryConfigurationNames();
+		for (String name : repoNames) {
+			bitRepoListModel.addElement(name);
+		}
+	}
 
 	private void initComponents() {
 
-		DefaultListModel<String> bitRepoListModel = new DefaultListModel<String>();
+		
 //		bitRepoListModel.addElement("Statsbiblioteket");
 //		bitRepoListModel.addElement("Det Kongelige Bibliotek");
 		
@@ -114,18 +128,16 @@ public class Main extends JFrame {
 		btnGetConfiguration.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String repositoryName = (String) bitRepoList.getSelectedValue();
-				lblCurrentConfiguration.setText(repositoryName);
-				lblCurrentConfiguration.setVisible(true);
-				currentConfigurationPane.setVisible(true);
-
+				// lblCurrentConfiguration.setText(repositoryName);
+				setConfigurationPaneVisibility(true);
 			}
 		});
 		
 		currentConfigurationPane = new JPanel();
-		currentConfigurationPane.setBorder(new LineBorder(new Color(0, 0, 0)));
+		currentConfigurationPane.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		currentConfigurationPane.setVisible(false);
 		
-		lblCurrentConfiguration = new JLabel("Konfiguration for");
+		lblCurrentConfiguration = new JLabel("Konfiguration");
 		lblCurrentConfiguration.setFont(new Font("Dialog", Font.BOLD, 12));
 		lblCurrentConfiguration.setVisible(false);
 		
@@ -139,6 +151,15 @@ public class Main extends JFrame {
 		});
 		
 		JButton btnTilfjNy = new JButton("Tilføj ny");
+		btnTilfjNy.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				repoName = JOptionPane.showInputDialog("Indtast navn på konfiguration");
+				lblCurrentConfiguration.setText("Konfiguration for " + repoName);
+				lblCurrentConfiguration.setVisible(true);
+				currentConfigurationPane.setVisible(true);
+			}
+		});
+		
 		GroupLayout gl_pnlInputList = new GroupLayout(pnlInputList);
 		gl_pnlInputList.setHorizontalGroup(
 			gl_pnlInputList.createParallelGroup(Alignment.LEADING)
@@ -147,29 +168,28 @@ public class Main extends JFrame {
 						.addGroup(gl_pnlInputList.createSequentialGroup()
 							.addContainerGap()
 							.addGroup(gl_pnlInputList.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_pnlInputList.createParallelGroup(Alignment.TRAILING)
-									.addGroup(Alignment.LEADING, gl_pnlInputList.createSequentialGroup()
-										.addComponent(btnTilfjNy)
-										.addPreferredGap(ComponentPlacement.RELATED)
-										.addComponent(btnGetConfiguration))
-									.addComponent(bitRepoScrollPane, GroupLayout.PREFERRED_SIZE, 263, GroupLayout.PREFERRED_SIZE))
+								.addGroup(gl_pnlInputList.createSequentialGroup()
+									.addComponent(btnTilfjNy)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(btnGetConfiguration))
+								.addComponent(bitRepoScrollPane, GroupLayout.PREFERRED_SIZE, 263, GroupLayout.PREFERRED_SIZE)
 								.addComponent(lblVlgBitmagasin)))
 						.addGroup(gl_pnlInputList.createSequentialGroup()
 							.addGap(101)
 							.addComponent(btnTest)))
-					.addGap(72)
+					.addGap(18)
 					.addGroup(gl_pnlInputList.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblCurrentConfiguration)
-						.addComponent(currentConfigurationPane, GroupLayout.PREFERRED_SIZE, 601, GroupLayout.PREFERRED_SIZE))
-					.addGap(49))
+						.addComponent(currentConfigurationPane, GroupLayout.DEFAULT_SIZE, 674, Short.MAX_VALUE)
+						.addComponent(lblCurrentConfiguration))
+					.addContainerGap())
 		);
 		gl_pnlInputList.setVerticalGroup(
 			gl_pnlInputList.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_pnlInputList.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_pnlInputList.createParallelGroup(Alignment.TRAILING)
-						.addComponent(lblCurrentConfiguration)
-						.addComponent(lblVlgBitmagasin))
+					.addGroup(gl_pnlInputList.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblVlgBitmagasin)
+						.addComponent(lblCurrentConfiguration))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_pnlInputList.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_pnlInputList.createSequentialGroup()
@@ -180,17 +200,52 @@ public class Main extends JFrame {
 								.addComponent(btnGetConfiguration))
 							.addGap(157)
 							.addComponent(btnTest))
-						.addComponent(currentConfigurationPane, GroupLayout.PREFERRED_SIZE, 298, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap(188, Short.MAX_VALUE))
+						.addComponent(currentConfigurationPane, GroupLayout.DEFAULT_SIZE, 495, Short.MAX_VALUE))
+					.addContainerGap())
 		);
+		
+		JLabel lblStiTilRepositorysettingxml = new JLabel("Sti til mappe indeholdende RepositorySetting.xml og ReferenceSettings.xml");
+		
+		textField = new JTextField();
+		textField.setColumns(10);
+		
+		JLabel lblStiTilCertifikat = new JLabel("Sti til certifikat");
+		
+		textField_1 = new JTextField();
+		textField_1.setColumns(10);
+		
+		lblTom = new JLabel("Tom");
 		GroupLayout gl_currentConfigurationPane = new GroupLayout(currentConfigurationPane);
 		gl_currentConfigurationPane.setHorizontalGroup(
 			gl_currentConfigurationPane.createParallelGroup(Alignment.LEADING)
-				.addGap(0, 599, Short.MAX_VALUE)
+				.addGroup(gl_currentConfigurationPane.createSequentialGroup()
+					.addGroup(gl_currentConfigurationPane.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_currentConfigurationPane.createSequentialGroup()
+							.addContainerGap()
+							.addGroup(gl_currentConfigurationPane.createParallelGroup(Alignment.LEADING)
+								.addComponent(textField, GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
+								.addComponent(lblStiTilRepositorysettingxml)
+								.addComponent(lblStiTilCertifikat)
+								.addComponent(textField_1, GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)))
+						.addGroup(gl_currentConfigurationPane.createSequentialGroup()
+							.addGap(168)
+							.addComponent(lblTom)))
+					.addContainerGap())
 		);
 		gl_currentConfigurationPane.setVerticalGroup(
 			gl_currentConfigurationPane.createParallelGroup(Alignment.LEADING)
-				.addGap(0, 296, Short.MAX_VALUE)
+				.addGroup(gl_currentConfigurationPane.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblStiTilRepositorysettingxml)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addGap(18)
+					.addComponent(lblStiTilCertifikat)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(textField_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addGap(146)
+					.addComponent(lblTom)
+					.addContainerGap(208, Short.MAX_VALUE))
 		);
 		currentConfigurationPane.setLayout(gl_currentConfigurationPane);
 		
@@ -217,6 +272,10 @@ public class Main extends JFrame {
 		
 	}
 
+	private void setConfigurationPaneVisibility(boolean b) {
+		lblCurrentConfiguration.setVisible(b);
+		currentConfigurationPane.setVisible(b);
+	}
 	
 	private void createEvents() {
 		// TODO Auto-generated method stub
