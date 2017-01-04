@@ -1,6 +1,8 @@
 package dk.magenta.bitmagasinet.configuration;
 
+import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -11,16 +13,27 @@ import dk.magenta.bitmagasinet.Constants;
 public class ConfigurationHandlerImpl implements ConfigurationHandler {
 
 	private Map<String, RepositoryConfiguration> repositoryMap;
-	private Path localeConfigurationFolder;
+	private Path localConfigurationFolder;
+	
+	public ConfigurationHandlerImpl() {
+		repositoryMap = new TreeMap<String, RepositoryConfiguration>();
+		localConfigurationFolder = Paths.get(Constants.LOCAL_CONFIGURATION_FOLDER);
+		File folder = localConfigurationFolder.toFile();
+		if (!folder.isDirectory()) {
+			folder.mkdir();
+			Path repoConf = localConfigurationFolder.resolve(Constants.REPOCONF_FOLDER);
+			repoConf.toFile().mkdir();
+		}
+	}
 	
 	public ConfigurationHandlerImpl(Path localeConfigurationFolder) {
-		this.localeConfigurationFolder = localeConfigurationFolder;
+		this.localConfigurationFolder = localeConfigurationFolder;
 		repositoryMap = new TreeMap<String, RepositoryConfiguration>();
 	}
 	
 	@Override
 	public Path getPathToLocalConfigurationFolder() {
-		return localeConfigurationFolder;
+		return localConfigurationFolder;
 	}
 	
 	@Override

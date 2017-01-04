@@ -8,10 +8,11 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.commons.io.FileSystemUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestConfigurationHandler {
+public class TestConfigurationHandlerImpl {
 
 	private ConfigurationHandler configurationHandler;
 	private RepositoryConfiguration repositoryConfiguration1;
@@ -100,5 +101,18 @@ public class TestConfigurationHandler {
 		Path repoConf = Paths.get("tmp/repoConf");
 		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl(tmp);
 		assertEquals(repoConf.toString(), configurationHandler.getPathToRepositoryConfigurations().toString());
+	}
+	
+	@Test
+	public void shouldHaveLocalConfFolderProgramFiles() {
+		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl();
+		Path path = Paths.get("/Program Files/BitMagGUI");
+		assertEquals(path.toString(), configurationHandler.getPathToLocalConfigurationFolder().toString());
+	}
+	
+	@Test
+	public void theLocalConfFolderShouldExist() {
+		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl();
+		assertTrue(configurationHandler.getPathToLocalConfigurationFolder().toFile().isDirectory());
 	}
 }
