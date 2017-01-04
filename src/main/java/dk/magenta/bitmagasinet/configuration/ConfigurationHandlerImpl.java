@@ -19,7 +19,6 @@ public class ConfigurationHandlerImpl implements ConfigurationHandler {
 	private Path localConfigurationFolder;
 	
 	public ConfigurationHandlerImpl() {
-		System.out.println(Paths.get(System.getProperty("user.home")).resolve(Constants.LOCAL_CONFIGURATION_FOLDER));
 		localConfigurationFolder = Paths.get(System.getProperty("user.home")).resolve(Constants.LOCAL_CONFIGURATION_FOLDER);
 		setUpFoldersAndRepositoryMap();
 	}

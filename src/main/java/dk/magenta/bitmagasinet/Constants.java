@@ -2,7 +2,7 @@ package dk.magenta.bitmagasinet;
 
 public class Constants {
 
-	public static final String LOCAL_CONFIGURATION_FOLDER = "/Program Files/BitMagGUI/";
+	public static final String LOCAL_CONFIGURATION_FOLDER = "BitMagGUI";
 	
 	public static final String REPOCONF_FOLDER = "repoConf";
 	public static final String REPOFILE_EXT = ".conf";
