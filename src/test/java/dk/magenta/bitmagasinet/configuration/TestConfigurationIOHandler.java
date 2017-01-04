@@ -58,4 +58,24 @@ public class TestConfigurationIOHandler {
 		assertTrue(repositoryConfiguration.equals(roundTrip));
 		
 	}
+	
+//	@Test
+//	public void writeFollowedByReadUsingThePathShouldBeConsistent() throws IOException, InvalidArgumentException {
+//		RepositoryConfiguration repositoryConfiguration = new RepositoryConfigurationImpl("repo");
+//		repositoryConfiguration.setCollectionId("id");
+//		repositoryConfiguration.setPathToCertificate(certificate);
+//		repositoryConfiguration.setPathToChecksumList(certificate);
+//		repositoryConfiguration.setPathToSettingsFiles(settingsFolder);
+//		repositoryConfiguration.setPillarId("id");
+//
+//		configurationHandler = new ConfigurationHandlerImpl(Paths.get(tmp));
+//		ConfigurationIOHandler configurationIOHandler = new ConfigurationIOHandlerImpl(configurationHandler);
+//		
+//		configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration);
+//		RepositoryConfiguration roundTrip = configurationIOHandler.readRepositoryConfiguration("repo");
+//		
+//		assertTrue(repositoryConfiguration.equals(roundTrip));
+//		
+//	}
+
 }

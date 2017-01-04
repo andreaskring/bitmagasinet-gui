@@ -117,7 +117,7 @@ public class RepositoryConfigurationImpl implements RepositoryConfiguration {
 
 	private void checkIfPathIsFile(Path path) throws InvalidArgumentException {
 		if (!path.toFile().isFile()) {
-			throw new InvalidArgumentException("Stien henviser ikke til en fil");
+			throw new InvalidArgumentException("Stien " + path.toString() + " henviser ikke til en fil");
 		}
 	}
 	

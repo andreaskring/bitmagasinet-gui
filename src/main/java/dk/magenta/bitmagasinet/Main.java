@@ -1,10 +1,10 @@
 package dk.magenta.bitmagasinet;
 
-import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.nio.file.Paths;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
@@ -18,21 +18,17 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
+import javax.swing.border.EtchedBorder;
 
 import dk.magenta.bitmagasinet.configuration.ConfigurationHandlerImpl;
 import dk.magenta.bitmagasinet.configuration.InvalidArgumentException;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfiguration;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfigurationImpl;
-
-import javax.swing.JTextField;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EtchedBorder;
 
 public class Main extends JFrame {
 
@@ -90,15 +86,12 @@ public class Main extends JFrame {
 		List<String> repoNames = guiFacade.getRepositoryConfigurationNames();
 		for (String name : repoNames) {
 			bitRepoListModel.addElement(name);
+			
 		}
 	}
 
 	private void initComponents() {
 
-		
-//		bitRepoListModel.addElement("Statsbiblioteket");
-//		bitRepoListModel.addElement("Det Kongelige Bibliotek");
-		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1012, 642);
 		contentPane = new JPanel();
@@ -122,8 +115,8 @@ public class Main extends JFrame {
 		pnlInputList.setName("");
 		tabbedPane.addTab("Bitmagasiner", null, pnlInputList, null);
 		
-		JLabel lblVlgBitmagasin = new JLabel("Vælg Bitmagasin");
-		lblVlgBitmagasin.setFont(new Font("Dialog", Font.BOLD, 12));
+		JLabel lblChooseRepo = new JLabel("Vælg Bitmagasin");
+		lblChooseRepo.setFont(new Font("Dialog", Font.BOLD, 12));
 		
 		JScrollPane bitRepoScrollPane = new JScrollPane();
 		
@@ -147,19 +140,14 @@ public class Main extends JFrame {
 		lblCurrentConfiguration.setFont(new Font("Dialog", Font.BOLD, 12));
 		lblCurrentConfiguration.setVisible(false);
 		
-		JButton btnTest = new JButton("test");
-		btnTest.addActionListener(new ActionListener() {
+		JButton btnAddNewRepo = new JButton("Tilføj ny");
+		btnAddNewRepo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
-					bitRepoListModel.addElement("hurra");
-				
-			}
-		});
-		
-		JButton btnTilfjNy = new JButton("Tilføj ny");
-		btnTilfjNy.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				repoName = JOptionPane.showInputDialog("Indtast navn på konfiguration");
+				repoName = JOptionPane.showInputDialog("Indtast navn på konfiguration").trim();
+				if (bitRepoListModel.contains(repoName)) {
+					JOptionPane.showMessageDialog(contentPane, "Der findes allerede en konfiguration med det navn");
+					return;
+				}
 				lblCurrentConfiguration.setText("Konfiguration for " + repoName);
 				lblCurrentConfiguration.setVisible(true);
 				currentConfigurationPane.setVisible(true);
@@ -170,19 +158,14 @@ public class Main extends JFrame {
 		gl_pnlInputList.setHorizontalGroup(
 			gl_pnlInputList.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_pnlInputList.createSequentialGroup()
+					.addContainerGap()
 					.addGroup(gl_pnlInputList.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_pnlInputList.createSequentialGroup()
-							.addContainerGap()
-							.addGroup(gl_pnlInputList.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_pnlInputList.createSequentialGroup()
-									.addComponent(btnTilfjNy)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btnGetConfiguration))
-								.addComponent(bitRepoScrollPane, GroupLayout.PREFERRED_SIZE, 263, GroupLayout.PREFERRED_SIZE)
-								.addComponent(lblVlgBitmagasin)))
-						.addGroup(gl_pnlInputList.createSequentialGroup()
-							.addGap(101)
-							.addComponent(btnTest)))
+							.addComponent(btnAddNewRepo)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnGetConfiguration))
+						.addComponent(bitRepoScrollPane, GroupLayout.PREFERRED_SIZE, 263, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblChooseRepo))
 					.addGap(18)
 					.addGroup(gl_pnlInputList.createParallelGroup(Alignment.LEADING)
 						.addComponent(currentConfigurationPane, GroupLayout.DEFAULT_SIZE, 674, Short.MAX_VALUE)
@@ -194,7 +177,7 @@ public class Main extends JFrame {
 				.addGroup(gl_pnlInputList.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_pnlInputList.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblVlgBitmagasin)
+						.addComponent(lblChooseRepo)
 						.addComponent(lblCurrentConfiguration))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_pnlInputList.createParallelGroup(Alignment.LEADING)
@@ -202,10 +185,8 @@ public class Main extends JFrame {
 							.addComponent(bitRepoScrollPane, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(gl_pnlInputList.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnTilfjNy)
-								.addComponent(btnGetConfiguration))
-							.addGap(157)
-							.addComponent(btnTest))
+								.addComponent(btnAddNewRepo)
+								.addComponent(btnGetConfiguration)))
 						.addComponent(currentConfigurationPane, GroupLayout.DEFAULT_SIZE, 495, Short.MAX_VALUE))
 					.addContainerGap())
 		);
@@ -220,12 +201,12 @@ public class Main extends JFrame {
 		txtPathToCertificate = new JTextField();
 		txtPathToCertificate.setColumns(10);
 		
-		JLabel lblCollectionId = new JLabel("Samling (Collection ID)");
+		JLabel lblCollectionId = new JLabel("Samling (CollectionID)");
 		
 		txtCollectionId = new JTextField();
 		txtCollectionId.setColumns(10);
 		
-		JLabel lblSjlepillarId = new JLabel("Søjle (Pillar ID)");
+		JLabel lblSjlepillarId = new JLabel("Søjle (PillarID)");
 		
 		txtPillarId = new JTextField();
 		txtPillarId.setColumns(10);
@@ -240,8 +221,15 @@ public class Main extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
 					RepositoryConfiguration repositoryConfiguration = new RepositoryConfigurationImpl(repoName);
+					repositoryConfiguration.setPathToSettingsFiles(Paths.get(txtPathToSettingsFolder.getText()));
+					repositoryConfiguration.setPathToCertificate(Paths.get(txtPathToCertificate.getText()));
+					repositoryConfiguration.setCollectionId(txtCollectionId.getText());
+					repositoryConfiguration.setPillarId(txtPillarId.getText());
+					repositoryConfiguration.setPathToChecksumList(Paths.get(txtPathToLocalChecksumList.getText()));
+					JOptionPane.showMessageDialog(contentPane, "Hurra");
 				} catch (InvalidArgumentException e) {
-					JOptionPane.showMessageDialog(contentPane, e.getMessage());
+					JOptionPane.showMessageDialog(
+							contentPane, e.getMessage());
 				}
 			}
 		});
