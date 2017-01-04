@@ -11,7 +11,6 @@ import java.nio.file.Paths;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestConfigurationHandlerImpl {
@@ -136,8 +135,8 @@ public class TestConfigurationHandlerImpl {
 		repo1.toFile().createNewFile();
 		repo2.toFile().createNewFile();
 		assertEquals(2, configurationHandler.getRepositoryConfigurationNames().size());
-		assertEquals("repo1", configurationHandler.getRepositoryConfigurationNames().get(0));
-		assertEquals("repo2", configurationHandler.getRepositoryConfigurationNames().get(1));
+		assertTrue("repo1", configurationHandler.getRepositoryConfigurationNames().contains("repo1"));
+		assertTrue("repo2", configurationHandler.getRepositoryConfigurationNames().contains("repo2"));
 	}
 	
 }

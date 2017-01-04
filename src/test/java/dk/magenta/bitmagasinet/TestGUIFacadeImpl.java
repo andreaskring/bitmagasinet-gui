@@ -1,6 +1,6 @@
 package dk.magenta.bitmagasinet;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -24,8 +24,8 @@ public class TestGUIFacadeImpl {
 		repo2.toFile().createNewFile();
 		
 		assertEquals(2, guiFacade.getRepositoryConfigurationNames().size());
-		assertEquals("repo1", guiFacade.getRepositoryConfigurationNames().get(0));
-		assertEquals("repo2", guiFacade.getRepositoryConfigurationNames().get(1));
+		assertTrue("repo1", guiFacade.getRepositoryConfigurationNames().contains("repo1"));
+		assertTrue("repo2", guiFacade.getRepositoryConfigurationNames().contains("repo2"));
 
 		FileUtils.deleteDirectory(bitMagGUI.toFile());
 		
