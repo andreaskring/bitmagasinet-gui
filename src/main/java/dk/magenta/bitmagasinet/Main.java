@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.Map;
 
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
@@ -28,6 +27,8 @@ import javax.swing.border.EtchedBorder;
 
 import dk.magenta.bitmagasinet.configuration.ConfigurationHandler;
 import dk.magenta.bitmagasinet.configuration.ConfigurationHandlerImpl;
+import dk.magenta.bitmagasinet.configuration.ConfigurationIOHandler;
+import dk.magenta.bitmagasinet.configuration.ConfigurationIOHandlerImpl;
 import dk.magenta.bitmagasinet.configuration.InvalidArgumentException;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfiguration;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfigurationImpl;
@@ -49,6 +50,7 @@ public class Main extends JFrame {
 	private JTextField txtPathToLocalChecksumList;
 	
 	private ConfigurationHandler configurationHandler;
+	private ConfigurationIOHandler configurationIOHandler;
 	// private Map<String, RepositoryConfiguration> repositoryConfigurations;
 	
 	/**
@@ -81,6 +83,7 @@ public class Main extends JFrame {
 		
 		
 		configurationHandler = new ConfigurationHandlerImpl();
+		configurationIOHandler = new ConfigurationIOHandlerImpl(configurationHandler);
 		bitRepoListModel = new DefaultListModel<String>();
 		
 		initComponents();
@@ -248,9 +251,11 @@ public class Main extends JFrame {
 			
 					configurationHandler.addRepositoryConfiguration(repositoryConfiguration);
 					updateBitRepoListModel();
+					
+					configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration);
 
-					JOptionPane.showMessageDialog(contentPane, "Hurra");
-				} catch (InvalidArgumentException e) {
+					JOptionPane.showMessageDialog(contentPane, "Konfiguration gemt");
+				} catch (InvalidArgumentException | IOException e) {
 					JOptionPane.showMessageDialog(
 							contentPane, e.getMessage());
 				}
