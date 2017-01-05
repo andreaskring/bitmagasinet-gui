@@ -6,7 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.List;
+import java.util.Map;
 
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
@@ -26,6 +26,7 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
+import dk.magenta.bitmagasinet.configuration.ConfigurationHandler;
 import dk.magenta.bitmagasinet.configuration.ConfigurationHandlerImpl;
 import dk.magenta.bitmagasinet.configuration.InvalidArgumentException;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfiguration;
@@ -39,13 +40,16 @@ public class Main extends JFrame {
 	private JPanel currentConfigurationPane;
 	private JList bitRepoList;
 	private DefaultListModel<String> bitRepoListModel;
-	private GUIFacade guiFacade;
+	// private GUIFacade guiFacade;
 	private JTextField txtPathToSettingsFolder;
 	private JTextField txtPathToCertificate;
 	private String repoName;
 	private JTextField txtCollectionId;
 	private JTextField txtPillarId;
 	private JTextField txtPathToLocalChecksumList;
+	
+	private ConfigurationHandler configurationHandler;
+	// private Map<String, RepositoryConfiguration> repositoryConfigurations;
 	
 	/**
 	 * Launch the application.
@@ -73,33 +77,23 @@ public class Main extends JFrame {
 	 */
 	public Main() {
 		
-		guiFacade = new GUIFacadeImpl(new ConfigurationHandlerImpl());
+		// guiFacade = new GUIFacadeImpl(new ConfigurationHandlerImpl());
 		
-		loadRepoConfsIntoListModel();
+		
+		configurationHandler = new ConfigurationHandlerImpl();
+		bitRepoListModel = new DefaultListModel<String>();
 		
 		initComponents();
 		createEvents();
 		
 	}
 	
-	private void loadRepoConfsIntoListModel() {
-		bitRepoListModel = new DefaultListModel<String>();
-		List<String> repoNames = null;
-		try {
-			repoNames = guiFacade.getRepositoryConfigurationNames();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		for (String name : repoNames) {
+	private void updateBitRepoListModel() {
+		for (String name : configurationHandler.getRepositoryConfigurations().keySet()) {
 			bitRepoListModel.addElement(name);
-			
 		}
 	}
-
+	
 	private void initComponents() {
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -107,6 +101,21 @@ public class Main extends JFrame {
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
+
+		// TODO: put into private method
+		// Load repository configurations
+		try {
+			configurationHandler.getRepositoryConfigurationsFromFolder();
+			if (!configurationHandler.getRepositoryConfigurations().isEmpty()) {
+				updateBitRepoListModel();
+			}
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(contentPane, e.getMessage());
+			e.printStackTrace();
+		} catch (InvalidArgumentException e) {
+			JOptionPane.showMessageDialog(contentPane, e.getMessage());
+			e.printStackTrace();
+		}
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
@@ -154,7 +163,7 @@ public class Main extends JFrame {
 		btnAddNewRepo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				repoName = JOptionPane.showInputDialog("Indtast navn på konfiguration").trim();
-				if (bitRepoListModel.contains(repoName)) {
+				if (configurationHandler.getRepositoryConfigurations().containsKey(repoName)) {
 					JOptionPane.showMessageDialog(contentPane, "Der findes allerede en konfiguration med det navn");
 					return;
 				}
@@ -236,6 +245,10 @@ public class Main extends JFrame {
 					repositoryConfiguration.setCollectionId(txtCollectionId.getText());
 					repositoryConfiguration.setPillarId(txtPillarId.getText());
 					repositoryConfiguration.setPathToChecksumList(Paths.get(txtPathToLocalChecksumList.getText()));
+			
+					configurationHandler.addRepositoryConfiguration(repositoryConfiguration);
+					updateBitRepoListModel();
+
 					JOptionPane.showMessageDialog(contentPane, "Hurra");
 				} catch (InvalidArgumentException e) {
 					JOptionPane.showMessageDialog(

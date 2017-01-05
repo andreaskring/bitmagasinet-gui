@@ -10,7 +10,7 @@ import java.util.Properties;
 
 import dk.magenta.bitmagasinet.Constants;
 
-class ConfigurationIOHandlerImpl implements ConfigurationIOHandler {
+public class ConfigurationIOHandlerImpl implements ConfigurationIOHandler {
 
 	private ConfigurationHandler configurationHandler;
 	private Properties properties;

@@ -155,7 +155,7 @@ public class TestConfigurationHandlerImpl {
 	@Test
 	public void shouldReturnEmptyListWhenThereAreNoRepoConfsInTheRepoConfFolder() throws IOException, InvalidArgumentException {
 		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl(bitMagGUI);
-		assertTrue(configurationHandler.getRepositoryConfigurations().isEmpty());
+		assertTrue(configurationHandler.getRepositoryConfigurationsFromFolder().isEmpty());
 	}
 	
 	@Test
@@ -169,7 +169,7 @@ public class TestConfigurationHandlerImpl {
 		ConfigurationIOHandler configurationIOHandler = new ConfigurationIOHandlerImpl(configurationHandler);
 		configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration2);
 
-		assertEquals(1, configurationHandler.getRepositoryConfigurations().size());
+		assertEquals(1, configurationHandler.getRepositoryConfigurationsFromFolder().size());
 		assertNotNull(configurationHandler.getRepositoryConfiguration("repo"));
 	}
 
@@ -185,7 +185,7 @@ public class TestConfigurationHandlerImpl {
 		configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration2);
 		configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration3);
 
-		assertEquals(2, configurationHandler.getRepositoryConfigurations().size());
+		assertEquals(2, configurationHandler.getRepositoryConfigurationsFromFolder().size());
 		assertNotNull(configurationHandler.getRepositoryConfiguration("repo"));
 		assertNotNull(configurationHandler.getRepositoryConfiguration("repo2"));
 	}

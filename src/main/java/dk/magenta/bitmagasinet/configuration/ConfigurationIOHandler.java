@@ -3,15 +3,15 @@ package dk.magenta.bitmagasinet.configuration;
 import java.io.IOException;
 import java.nio.file.Path;
 
-interface ConfigurationIOHandler {
+public interface ConfigurationIOHandler {
 
-	RepositoryConfiguration readRepositoryConfiguration(String name) throws IOException, InvalidArgumentException;
+	public RepositoryConfiguration readRepositoryConfiguration(String name) throws IOException, InvalidArgumentException;
 	
-	RepositoryConfiguration readRepositoryConfiguration(Path path) throws IOException, InvalidArgumentException;
+	public RepositoryConfiguration readRepositoryConfiguration(Path path) throws IOException, InvalidArgumentException;
 	
 	/**
 	 * Pre-condition: repositoryConfiguration must not be null
 	 * @param repositoryConfiguration
 	 */
-	void writeRepositoryConfiguration(RepositoryConfiguration repositoryConfiguration) throws IOException;
+	public void writeRepositoryConfiguration(RepositoryConfiguration repositoryConfiguration) throws IOException;
 }

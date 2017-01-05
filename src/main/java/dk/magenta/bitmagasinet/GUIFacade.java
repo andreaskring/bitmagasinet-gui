@@ -6,6 +6,7 @@ import java.util.List;
 import dk.magenta.bitmagasinet.configuration.InvalidArgumentException;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfiguration;
 
+// TODO: implement the facade
 public interface GUIFacade {
 	
 	public List<String> getRepositoryConfigurationNames() throws IOException, InvalidArgumentException;

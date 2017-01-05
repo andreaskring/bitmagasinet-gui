@@ -10,12 +10,14 @@ public interface ConfigurationHandler {
 	public RepositoryConfiguration getRepositoryConfiguration(String name) throws InvalidArgumentException;
 	
 	/**
-	 * Get the RepositoryConfigurations from the repoConf folder
+	 * Get the RepositoryConfigurations from the repoConf folder and load these into the map
 	 * @return
 	 * @throws InvalidArgumentException 
 	 * @throws IOException 
 	 */
-	public Map<String, RepositoryConfiguration> getRepositoryConfigurations() throws IOException, InvalidArgumentException;
+	public Map<String, RepositoryConfiguration> getRepositoryConfigurationsFromFolder() throws IOException, InvalidArgumentException;
+	
+	public Map<String, RepositoryConfiguration> getRepositoryConfigurations();
 	
 	/**
 	 * Get the RepositoryConfiguration names (i.e. the file basename (before .conf)) from the repoConf folder 
