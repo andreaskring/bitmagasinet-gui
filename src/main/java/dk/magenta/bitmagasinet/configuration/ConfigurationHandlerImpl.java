@@ -1,6 +1,7 @@
 package dk.magenta.bitmagasinet.configuration;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -17,15 +18,16 @@ public class ConfigurationHandlerImpl implements ConfigurationHandler {
 
 	private Map<String, RepositoryConfiguration> repositoryMap;
 	private Path localConfigurationFolder;
+	private ConfigurationIOHandler configurationIOHandler;
 	
 	public ConfigurationHandlerImpl() {
 		localConfigurationFolder = Paths.get(System.getProperty("user.home")).resolve(Constants.LOCAL_CONFIGURATION_FOLDER);
-		setUpFoldersAndRepositoryMap();
+		setUpFoldersAndRepositoryMapAndIOHandler();
 	}
 	
 	public ConfigurationHandlerImpl(Path localeConfigurationFolder) {
 		this.localConfigurationFolder = localeConfigurationFolder;
-		setUpFoldersAndRepositoryMap();
+		setUpFoldersAndRepositoryMapAndIOHandler();
 	}
 	
 	@Override
@@ -34,11 +36,26 @@ public class ConfigurationHandlerImpl implements ConfigurationHandler {
 	}
 	
 	@Override
-	public RepositoryConfiguration getRepositoryConfiguration(String name) {
+	public RepositoryConfiguration getRepositoryConfiguration(String name) throws InvalidArgumentException {
 		if (StringUtils.isBlank(name)) {
-			throw new IllegalArgumentException("Navn på konfiguration må ikke være blank");
+			throw new InvalidArgumentException("Navn på konfiguration må ikke være blank");
 		}
 		return repositoryMap.get(name);
+	}
+	
+	// TODO: refactor the two methods below
+	@Override
+	public Map<String, RepositoryConfiguration> getRepositoryConfigurations() throws IOException, InvalidArgumentException {
+		File[] repoConf = getPathToRepositoryConfigurations().toFile().listFiles();
+		for (File file : repoConf) {
+			String filename = file.toString();
+			if (file.isFile() && FilenameUtils.getExtension(filename).equals("conf")) {
+				String repoName = FilenameUtils.getBaseName(filename);
+				RepositoryConfiguration repositoryConfiguration = configurationIOHandler.readRepositoryConfiguration(repoName);
+				repositoryMap.put(repoName, repositoryConfiguration);
+			}
+		}
+		return repositoryMap;
 	}
 
 	@Override
@@ -56,17 +73,17 @@ public class ConfigurationHandlerImpl implements ConfigurationHandler {
 
 	
 	@Override
-	public void addRepositoryConfiguration(RepositoryConfiguration repositoryConfiguration) throws IllegalArgumentException {
+	public void addRepositoryConfiguration(RepositoryConfiguration repositoryConfiguration) throws InvalidArgumentException {
 		if (repositoryMap.containsKey(repositoryConfiguration.getName())) {
-			throw new IllegalArgumentException("Konfiguration med dette navn findes allerede");
+			throw new InvalidArgumentException("Konfiguration med dette navn findes allerede");
 		}
 		repositoryMap.put(repositoryConfiguration.getName(), repositoryConfiguration);
 	}
 
 	@Override
-	public void deleteRepositoryConfiguration(String name) throws IllegalArgumentException {
+	public void deleteRepositoryConfiguration(String name) throws InvalidArgumentException {
 		if (!containsRepositoryConfiguration(name)) {
-			throw new IllegalArgumentException("Ingen konfiguration med dette navn");
+			throw new InvalidArgumentException("Ingen konfiguration med dette navn");
 		}
 		repositoryMap.remove(name);
 	}
@@ -81,7 +98,8 @@ public class ConfigurationHandlerImpl implements ConfigurationHandler {
 		return getPathToLocalConfigurationFolder().resolve(Constants.REPOCONF_FOLDER);
 	}
 
-	private void setUpFoldersAndRepositoryMap() {
+	private void setUpFoldersAndRepositoryMapAndIOHandler() {
+		configurationIOHandler = new ConfigurationIOHandlerImpl(this);
 		repositoryMap = new TreeMap<String, RepositoryConfiguration>();
 		File folder = localConfigurationFolder.toFile();
 		if (!folder.isDirectory()) {

@@ -17,6 +17,7 @@ class ConfigurationIOHandlerImpl implements ConfigurationIOHandler {
 
 	public ConfigurationIOHandlerImpl(ConfigurationHandler configurationHandler) {
 		this.configurationHandler = configurationHandler;
+		properties = new Properties();
 	}
 
 	@Override

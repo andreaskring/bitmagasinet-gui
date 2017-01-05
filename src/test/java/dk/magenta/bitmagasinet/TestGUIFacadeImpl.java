@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -60,6 +61,7 @@ public class TestGUIFacadeImpl {
 	 * @throws InvalidArgumentException 
 	 * @throws InterruptedException 
 	 */
+	@Ignore
 	@Test
 	public void shouldWriteRepositoryConfigurationCorrectly() throws IOException, InvalidArgumentException {
 		

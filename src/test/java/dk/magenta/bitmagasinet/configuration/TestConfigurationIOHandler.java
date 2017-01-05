@@ -59,6 +59,8 @@ public class TestConfigurationIOHandler {
 		
 	}
 	
+	//TODO: found bug - add test where we use the read method first
+	
 //	@Test
 //	public void writeFollowedByReadUsingThePathShouldBeConsistent() throws IOException, InvalidArgumentException {
 //		RepositoryConfiguration repositoryConfiguration = new RepositoryConfigurationImpl("repo");

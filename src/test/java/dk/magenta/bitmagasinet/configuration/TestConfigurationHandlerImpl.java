@@ -1,8 +1,6 @@
 package dk.magenta.bitmagasinet.configuration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -32,7 +30,7 @@ public class TestConfigurationHandlerImpl {
 	}
 	
 	@Test
-	public void shouldGetRepositoryConfigurationWithNameR1() {
+	public void shouldGetRepositoryConfigurationWithNameR1() throws InvalidArgumentException {
 		configurationHandler.addRepositoryConfiguration(repositoryConfiguration1);
 		assertEquals("r1", configurationHandler.getRepositoryConfiguration("r1").getName());
 	}
@@ -43,24 +41,24 @@ public class TestConfigurationHandlerImpl {
 		assertEquals("r2", configurationHandler.getRepositoryConfiguration("r2").getName());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void shouldNotAllowNullName() {
+	@Test(expected = InvalidArgumentException.class)
+	public void shouldNotAllowNullName() throws InvalidArgumentException {
 		configurationHandler.getRepositoryConfiguration(null);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void shouldNotAllowEmptykName() {
+	@Test(expected = InvalidArgumentException.class)
+	public void shouldNotAllowEmptykName() throws InvalidArgumentException{
 		configurationHandler.getRepositoryConfiguration("");
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void shouldNotAllowBlankName() {
+	@Test(expected = InvalidArgumentException.class)
+	public void shouldNotAllowBlankName() throws InvalidArgumentException {
 		configurationHandler.getRepositoryConfiguration(" ");
 	}
 
 	
-	@Test(expected = IllegalArgumentException.class)
-	public void shouldThrowExceptionWhenAddedTwoRepositoryConfigurationsWithTheSameName() {
+	@Test(expected = InvalidArgumentException.class)
+	public void shouldThrowExceptionWhenAddedTwoRepositoryConfigurationsWithTheSameName() throws InvalidArgumentException {
 		configurationHandler.addRepositoryConfiguration(repositoryConfiguration1);
 		configurationHandler.addRepositoryConfiguration(repositoryConfiguration1);
 	}
@@ -71,20 +69,20 @@ public class TestConfigurationHandlerImpl {
 	}
 
 	@Test
-	public void shouldReturnTrueWhenRepoConfigIsInMap() {
+	public void shouldReturnTrueWhenRepoConfigIsInMap() throws InvalidArgumentException {
 		configurationHandler.addRepositoryConfiguration(repositoryConfiguration1);
 		assertTrue(configurationHandler.containsRepositoryConfiguration("r1"));
 	}
 	
 	@Test
-	public void shouldDeleteRepositoryConfiguration() {
+	public void shouldDeleteRepositoryConfiguration() throws InvalidArgumentException {
 		configurationHandler.addRepositoryConfiguration(repositoryConfiguration1);
 		configurationHandler.deleteRepositoryConfiguration(repositoryConfiguration1.getName());
 		assertFalse(configurationHandler.containsRepositoryConfiguration(repositoryConfiguration1.getName()));
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
-	public void shouldThrowExceptionWhenTryingToDeleteUnknownRepoConfig() {
+	@Test(expected = InvalidArgumentException.class)
+	public void shouldThrowExceptionWhenTryingToDeleteUnknownRepoConfig() throws InvalidArgumentException {
 		configurationHandler.deleteRepositoryConfiguration("unknown");
 	}
 	
@@ -137,6 +135,76 @@ public class TestConfigurationHandlerImpl {
 		assertEquals(2, configurationHandler.getRepositoryConfigurationNames().size());
 		assertTrue("repo1", configurationHandler.getRepositoryConfigurationNames().contains("repo1"));
 		assertTrue("repo2", configurationHandler.getRepositoryConfigurationNames().contains("repo2"));
+	}
+
+
+	@Test
+	public void shouldReturnEmptyListWhenThereAreNoRepoConfsInTheRepoConfFolder() throws IOException, InvalidArgumentException {
+		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl(bitMagGUI);
+		assertTrue(configurationHandler.getRepositoryConfigurations().isEmpty());
+	}
+	
+	@Test
+	public void shouldReturnOneRepoConfWhenThereIsOneRepoConfInTheRepoConfFolder() throws IOException, InvalidArgumentException {
+
+		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl(bitMagGUI);
+		// repoConf folder now created
+		
+		Path settings = bitMagGUI.resolve("settings");
+		settings.toFile().mkdir();
+		settings.resolve("RepositorySettings.xml").toFile().createNewFile();
+		settings.resolve("ReferenceSettings.xml").toFile().createNewFile();
+		Path certificate = settings.resolve("cert.pem");
+		certificate.toFile().createNewFile();
+
+		RepositoryConfiguration repositoryConfiguration = new RepositoryConfigurationImpl("repo");
+		repositoryConfiguration.setPathToSettingsFiles(settings);
+		repositoryConfiguration.setPathToCertificate(certificate);
+		repositoryConfiguration.setCollectionId("2");
+		repositoryConfiguration.setPillarId("test");
+		repositoryConfiguration.setPathToChecksumList(certificate); // Just using a random file
+
+		ConfigurationIOHandler configurationIOHandler = new ConfigurationIOHandlerImpl(configurationHandler);
+		configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration);
+
+		assertEquals(1, configurationHandler.getRepositoryConfigurations().size());
+		assertNotNull(configurationHandler.getRepositoryConfiguration("repo"));
+	}
+
+	@Test
+	public void shouldReturnTwoRepoConfWhenThereAreTwoRepoConfInTheRepoConfFolder() throws IOException, InvalidArgumentException {
+
+		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl(bitMagGUI);
+		// repoConf folder now created
+		
+		Path settings = bitMagGUI.resolve("settings");
+		settings.toFile().mkdir();
+		settings.resolve("RepositorySettings.xml").toFile().createNewFile();
+		settings.resolve("ReferenceSettings.xml").toFile().createNewFile();
+		Path certificate = settings.resolve("cert.pem");
+		certificate.toFile().createNewFile();
+
+		RepositoryConfiguration repositoryConfiguration = new RepositoryConfigurationImpl("repo");
+		repositoryConfiguration.setPathToSettingsFiles(settings);
+		repositoryConfiguration.setPathToCertificate(certificate);
+		repositoryConfiguration.setCollectionId("2");
+		repositoryConfiguration.setPillarId("test");
+		repositoryConfiguration.setPathToChecksumList(certificate); // Just using a random file
+
+		RepositoryConfiguration repositoryConfiguration2 = new RepositoryConfigurationImpl("repo2");
+		repositoryConfiguration2.setPathToSettingsFiles(settings);
+		repositoryConfiguration2.setPathToCertificate(certificate);
+		repositoryConfiguration2.setCollectionId("2");
+		repositoryConfiguration2.setPillarId("test");
+		repositoryConfiguration2.setPathToChecksumList(certificate); // Just using a random file
+		
+		ConfigurationIOHandler configurationIOHandler = new ConfigurationIOHandlerImpl(configurationHandler);
+		configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration);
+		configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration2);
+
+		assertEquals(2, configurationHandler.getRepositoryConfigurations().size());
+		assertNotNull(configurationHandler.getRepositoryConfiguration("repo"));
+		assertNotNull(configurationHandler.getRepositoryConfiguration("repo2"));
 	}
 	
 }
