@@ -15,6 +15,8 @@ public class TestConfigurationHandlerImpl {
 
 	private ConfigurationHandler configurationHandler;
 	private RepositoryConfiguration repositoryConfiguration1;
+	private RepositoryConfiguration repositoryConfiguration2;
+	private RepositoryConfiguration repositoryConfiguration3;
 	private Path bitMagGUI;
 
 	@Before
@@ -149,23 +151,11 @@ public class TestConfigurationHandlerImpl {
 
 		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl(bitMagGUI);
 		// repoConf folder now created
-		
-		Path settings = bitMagGUI.resolve("settings");
-		settings.toFile().mkdir();
-		settings.resolve("RepositorySettings.xml").toFile().createNewFile();
-		settings.resolve("ReferenceSettings.xml").toFile().createNewFile();
-		Path certificate = settings.resolve("cert.pem");
-		certificate.toFile().createNewFile();
 
-		RepositoryConfiguration repositoryConfiguration = new RepositoryConfigurationImpl("repo");
-		repositoryConfiguration.setPathToSettingsFiles(settings);
-		repositoryConfiguration.setPathToCertificate(certificate);
-		repositoryConfiguration.setCollectionId("2");
-		repositoryConfiguration.setPillarId("test");
-		repositoryConfiguration.setPathToChecksumList(certificate); // Just using a random file
+		setUpRepositoryConfigurations();
 
 		ConfigurationIOHandler configurationIOHandler = new ConfigurationIOHandlerImpl(configurationHandler);
-		configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration);
+		configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration2);
 
 		assertEquals(1, configurationHandler.getRepositoryConfigurations().size());
 		assertNotNull(configurationHandler.getRepositoryConfiguration("repo"));
@@ -177,6 +167,18 @@ public class TestConfigurationHandlerImpl {
 		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl(bitMagGUI);
 		// repoConf folder now created
 		
+		setUpRepositoryConfigurations();
+		
+		ConfigurationIOHandler configurationIOHandler = new ConfigurationIOHandlerImpl(configurationHandler);
+		configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration2);
+		configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration3);
+
+		assertEquals(2, configurationHandler.getRepositoryConfigurations().size());
+		assertNotNull(configurationHandler.getRepositoryConfiguration("repo"));
+		assertNotNull(configurationHandler.getRepositoryConfiguration("repo2"));
+	}
+	
+	private void setUpRepositoryConfigurations() throws IOException, InvalidArgumentException {
 		Path settings = bitMagGUI.resolve("settings");
 		settings.toFile().mkdir();
 		settings.resolve("RepositorySettings.xml").toFile().createNewFile();
@@ -184,27 +186,19 @@ public class TestConfigurationHandlerImpl {
 		Path certificate = settings.resolve("cert.pem");
 		certificate.toFile().createNewFile();
 
-		RepositoryConfiguration repositoryConfiguration = new RepositoryConfigurationImpl("repo");
-		repositoryConfiguration.setPathToSettingsFiles(settings);
-		repositoryConfiguration.setPathToCertificate(certificate);
-		repositoryConfiguration.setCollectionId("2");
-		repositoryConfiguration.setPillarId("test");
-		repositoryConfiguration.setPathToChecksumList(certificate); // Just using a random file
-
-		RepositoryConfiguration repositoryConfiguration2 = new RepositoryConfigurationImpl("repo2");
+		repositoryConfiguration2 = new RepositoryConfigurationImpl("repo");
 		repositoryConfiguration2.setPathToSettingsFiles(settings);
 		repositoryConfiguration2.setPathToCertificate(certificate);
 		repositoryConfiguration2.setCollectionId("2");
 		repositoryConfiguration2.setPillarId("test");
 		repositoryConfiguration2.setPathToChecksumList(certificate); // Just using a random file
-		
-		ConfigurationIOHandler configurationIOHandler = new ConfigurationIOHandlerImpl(configurationHandler);
-		configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration);
-		configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration2);
 
-		assertEquals(2, configurationHandler.getRepositoryConfigurations().size());
-		assertNotNull(configurationHandler.getRepositoryConfiguration("repo"));
-		assertNotNull(configurationHandler.getRepositoryConfiguration("repo2"));
+		repositoryConfiguration3 = new RepositoryConfigurationImpl("repo2");
+		repositoryConfiguration3.setPathToSettingsFiles(settings);
+		repositoryConfiguration3.setPathToCertificate(certificate);
+		repositoryConfiguration3.setCollectionId("2");
+		repositoryConfiguration3.setPillarId("test");
+		repositoryConfiguration3.setPathToChecksumList(certificate); // Just using a random file
 	}
 	
 }
