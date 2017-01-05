@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import dk.magenta.bitmagasinet.configuration.ConfigurationHandler;
+import dk.magenta.bitmagasinet.configuration.InvalidArgumentException;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfiguration;
 
 public class GUIFacadeImpl implements GUIFacade {
@@ -15,7 +16,7 @@ public class GUIFacadeImpl implements GUIFacade {
 	}
 	
 	@Override
-	public List<String> getRepositoryConfigurationNames() {
+	public List<String> getRepositoryConfigurationNames() throws IOException, InvalidArgumentException {
 		return configurationHandler.getRepositoryConfigurationNames();
 	}
 

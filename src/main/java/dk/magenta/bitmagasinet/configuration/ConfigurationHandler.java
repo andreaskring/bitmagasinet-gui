@@ -20,8 +20,10 @@ public interface ConfigurationHandler {
 	/**
 	 * Get the RepositoryConfiguration names (i.e. the file basename (before .conf)) from the repoConf folder 
 	 * @return
+	 * @throws InvalidArgumentException 
+	 * @throws IOException 
 	 */
-	public List<String> getRepositoryConfigurationNames();
+	public List<String> getRepositoryConfigurationNames() throws IOException, InvalidArgumentException;
 	
 	/**
 	 * Pre-condition: repositoryConfiguration must not be null

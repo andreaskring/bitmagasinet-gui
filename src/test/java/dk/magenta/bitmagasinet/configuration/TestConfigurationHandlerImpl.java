@@ -116,26 +116,38 @@ public class TestConfigurationHandlerImpl {
 	}
 	
 	@Test
-	public void shouldReturnEmptyListWhenRepoConfIsEmpty() {
+	public void shouldReturnEmptyListWhenRepoConfIsEmpty() throws IOException, InvalidArgumentException {
+		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl(bitMagGUI);
 		assertTrue(configurationHandler.getRepositoryConfigurationNames().isEmpty());
 	}
 
 	@Test
-	public void shouldReturnOneNameWhenRepoConfContainsOneFile() throws IOException {
-		Path repo1 = bitMagGUI.resolve("repoConf").resolve("repo1.conf");
-		repo1.toFile().createNewFile();
+	public void shouldReturnOneNameWhenRepoConfContainsOneFile() throws IOException, InvalidArgumentException {
+		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl(bitMagGUI);
+		// repoConf folder now created
+		
+		setUpRepositoryConfigurations();
+		
+		ConfigurationIOHandler configurationIOHandler = new ConfigurationIOHandlerImpl(configurationHandler);
+		configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration2);
+
 		assertEquals(1, configurationHandler.getRepositoryConfigurationNames().size());
-		assertEquals("repo1", configurationHandler.getRepositoryConfigurationNames().get(0));
+		assertEquals("repo", configurationHandler.getRepositoryConfigurationNames().get(0));
 	}
 
 	@Test
-	public void shouldReturnTwoNamesWhenRepoConfContainsTwoFiles() throws IOException {
-		Path repo1 = bitMagGUI.resolve("repoConf").resolve("repo1.conf");
-		Path repo2 = bitMagGUI.resolve("repoConf").resolve("repo2.conf");
-		repo1.toFile().createNewFile();
-		repo2.toFile().createNewFile();
+	public void shouldReturnTwoNamesWhenRepoConfContainsTwoFiles() throws IOException, InvalidArgumentException {
+		ConfigurationHandler configurationHandler = new ConfigurationHandlerImpl(bitMagGUI);
+		// repoConf folder now created
+		
+		setUpRepositoryConfigurations();
+		
+		ConfigurationIOHandler configurationIOHandler = new ConfigurationIOHandlerImpl(configurationHandler);
+		configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration2);
+		configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration3);
+
 		assertEquals(2, configurationHandler.getRepositoryConfigurationNames().size());
-		assertTrue("repo1", configurationHandler.getRepositoryConfigurationNames().contains("repo1"));
+		assertTrue("repo", configurationHandler.getRepositoryConfigurationNames().contains("repo"));
 		assertTrue("repo2", configurationHandler.getRepositoryConfigurationNames().contains("repo2"));
 	}
 

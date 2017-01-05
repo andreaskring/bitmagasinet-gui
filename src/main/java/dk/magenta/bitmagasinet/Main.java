@@ -4,6 +4,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -83,7 +84,16 @@ public class Main extends JFrame {
 	
 	private void loadRepoConfsIntoListModel() {
 		bitRepoListModel = new DefaultListModel<String>();
-		List<String> repoNames = guiFacade.getRepositoryConfigurationNames();
+		List<String> repoNames = null;
+		try {
+			repoNames = guiFacade.getRepositoryConfigurationNames();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		for (String name : repoNames) {
 			bitRepoListModel.addElement(name);
 			

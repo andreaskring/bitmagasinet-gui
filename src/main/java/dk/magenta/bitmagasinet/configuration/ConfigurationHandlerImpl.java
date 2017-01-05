@@ -43,7 +43,6 @@ public class ConfigurationHandlerImpl implements ConfigurationHandler {
 		return repositoryMap.get(name);
 	}
 	
-	// TODO: refactor the two methods below
 	@Override
 	public Map<String, RepositoryConfiguration> getRepositoryConfigurations() throws IOException, InvalidArgumentException {
 		File[] repoConf = getPathToRepositoryConfigurations().toFile().listFiles();
@@ -59,16 +58,11 @@ public class ConfigurationHandlerImpl implements ConfigurationHandler {
 	}
 
 	@Override
-	public List<String> getRepositoryConfigurationNames() {
-		File[] repoConf = getPathToRepositoryConfigurations().toFile().listFiles();
-		List<String> repoFiles = new ArrayList<String>();
-		for (File file : repoConf) {
-			String filename = file.toString();
-			if (file.isFile() && FilenameUtils.getExtension(filename).equals("conf")) {
-				repoFiles.add(FilenameUtils.getBaseName(filename));
-			}
-		}
-		return repoFiles;
+	public List<String> getRepositoryConfigurationNames() throws IOException, InvalidArgumentException {
+		getRepositoryConfigurations();
+		List<String> names = new ArrayList<String>();
+		names.addAll(repositoryMap.keySet());
+		return names;
 	}
 
 	
