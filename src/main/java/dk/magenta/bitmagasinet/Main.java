@@ -92,9 +92,18 @@ public class Main extends JFrame {
 	}
 	
 	private void updateBitRepoListModel() {
+		bitRepoListModel.clear();
 		for (String name : configurationHandler.getRepositoryConfigurations().keySet()) {
 			bitRepoListModel.addElement(name);
 		}
+	}
+
+	private void clearRepositoryConfigurationFields() {
+		txtPathToSettingsFolder.setText(null);
+		txtPathToCertificate.setText(null);
+		txtCollectionId.setText(null);
+		txtPillarId.setText(null);
+		txtPathToLocalChecksumList.setText(null);
 	}
 	
 	private void initComponents() {
@@ -149,8 +158,23 @@ public class Main extends JFrame {
 		btnGetConfiguration.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String repositoryName = (String) bitRepoList.getSelectedValue();
-				// lblCurrentConfiguration.setText(repositoryName);
+				lblCurrentConfiguration.setText("Konfiguration for " + repositoryName);
 				setConfigurationPaneVisibility(true);
+				
+				RepositoryConfiguration repositoryConfiguration;
+				try {
+					repositoryConfiguration = configurationHandler.getRepositoryConfiguration(repositoryName);
+					txtPathToSettingsFolder.setText(repositoryConfiguration.getPathToSettingsFiles().toString());
+					txtPathToCertificate.setText(repositoryConfiguration.getPathToCertificate().toString());
+					txtCollectionId.setText(repositoryConfiguration.getCollectionId());
+					txtPillarId.setText(repositoryConfiguration.getPillarId());
+					txtPathToLocalChecksumList.setText(repositoryConfiguration.getPathToChecksumList().toString());
+				} catch (InvalidArgumentException e) {
+					// This should never happen
+					e.printStackTrace();
+				}
+				
+				
 			}
 		});
 		
@@ -171,6 +195,7 @@ public class Main extends JFrame {
 					return;
 				}
 				lblCurrentConfiguration.setText("Konfiguration for " + repoName);
+				clearRepositoryConfigurationFields();
 				lblCurrentConfiguration.setVisible(true);
 				currentConfigurationPane.setVisible(true);
 			}
@@ -253,6 +278,7 @@ public class Main extends JFrame {
 					updateBitRepoListModel();
 					
 					configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration);
+					btnGetConfiguration.setVisible(true);
 
 					JOptionPane.showMessageDialog(contentPane, "Konfiguration gemt");
 				} catch (InvalidArgumentException | IOException e) {
@@ -265,11 +291,7 @@ public class Main extends JFrame {
 		JButton btnRydFelter = new JButton("Ryd felter");
 		btnRydFelter.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				txtPathToSettingsFolder.setText(null);
-				txtPathToCertificate.setText(null);
-				txtCollectionId.setText(null);
-				txtPillarId.setText(null);
-				txtPathToLocalChecksumList.setText(null);
+				clearRepositoryConfigurationFields();
 			}
 		});
 		GroupLayout gl_currentConfigurationPane = new GroupLayout(currentConfigurationPane);
