@@ -356,14 +356,22 @@ public class Main extends JFrame {
 		
 		JPanel pnlChecksumList = new JPanel();
 		tabbedPane.addTab("Kontrolsummer", null, pnlChecksumList, null);
+		
+		JButton btnHentKontrolsummer = new JButton("Hent kontrolsummer");
 		GroupLayout gl_pnlChecksumList = new GroupLayout(pnlChecksumList);
 		gl_pnlChecksumList.setHorizontalGroup(
 			gl_pnlChecksumList.createParallelGroup(Alignment.LEADING)
-				.addGap(0, 697, Short.MAX_VALUE)
+				.addGroup(Alignment.TRAILING, gl_pnlChecksumList.createSequentialGroup()
+					.addContainerGap(870, Short.MAX_VALUE)
+					.addComponent(btnHentKontrolsummer)
+					.addContainerGap())
 		);
 		gl_pnlChecksumList.setVerticalGroup(
 			gl_pnlChecksumList.createParallelGroup(Alignment.LEADING)
-				.addGap(0, 552, Short.MAX_VALUE)
+				.addGroup(Alignment.TRAILING, gl_pnlChecksumList.createSequentialGroup()
+					.addContainerGap(506, Short.MAX_VALUE)
+					.addComponent(btnHentKontrolsummer)
+					.addContainerGap())
 		);
 		pnlChecksumList.setLayout(gl_pnlChecksumList);
 		contentPane.setLayout(gl_contentPane);
