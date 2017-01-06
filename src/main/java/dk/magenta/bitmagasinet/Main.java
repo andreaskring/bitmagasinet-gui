@@ -301,6 +301,7 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 			
 					configurationHandler.addRepositoryConfiguration(repositoryConfiguration);
 					updateBitRepoListModel();
+					bitRepoList.setSelectedValue(repoName, true);
 					
 					configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration);
 					btnGetConfiguration.setVisible(true);
