@@ -1,5 +1,6 @@
 package dk.magenta.bitmagasinet;
 
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -8,12 +9,18 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -37,6 +44,10 @@ import dk.magenta.bitmagasinet.checksum.ChecksumIOHandler;
 import dk.magenta.bitmagasinet.checksum.ClockBasedDateStrategy;
 import dk.magenta.bitmagasinet.checksum.FileChecksum;
 import dk.magenta.bitmagasinet.checksum.InvalidChecksumFileException;
+import dk.magenta.bitmagasinet.comparators.ChecksumComparator;
+import dk.magenta.bitmagasinet.comparators.ChecksumMatchComparator;
+import dk.magenta.bitmagasinet.comparators.ChecksumType;
+import dk.magenta.bitmagasinet.comparators.FilenameComparator;
 import dk.magenta.bitmagasinet.configuration.ConfigurationHandler;
 import dk.magenta.bitmagasinet.configuration.ConfigurationHandlerImpl;
 import dk.magenta.bitmagasinet.configuration.ConfigurationIOHandler;
@@ -47,7 +58,6 @@ import dk.magenta.bitmagasinet.configuration.RepositoryConfigurationImpl;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnector;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnectorRandomResultStub;
 import dk.magenta.bitmagasinet.remote.ThreadStatus;
-import java.awt.Color;
 
 public class Main extends JFrame implements ProcessHandlerObserver {
 
@@ -72,8 +82,10 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 	
 	private String repoName;
 	private List<FileChecksum> fileChecksums;
+	private Map<String, Comparator> comparatorMap;
 	private DefaultListModel<String> bitRepoListModel;
 	private DefaultTableModel checksumTableModel;
+	
 	
 	/**
 	 * Launch the application.
@@ -108,6 +120,11 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 		
 		bitRepoListModel = new DefaultListModel<String>();
 		fileChecksums = new ArrayList<FileChecksum>();
+		comparatorMap = new TreeMap<String, Comparator>();
+		comparatorMap.put(Constants.FILENAME, new FilenameComparator());
+		comparatorMap.put(Constants.MATCH, new ChecksumMatchComparator());
+		comparatorMap.put(Constants.LOCAL_CHECKSUM, new ChecksumComparator(ChecksumType.LOCAL));
+		comparatorMap.put(Constants.REMOTE_CHECKSUM, new ChecksumComparator(ChecksumType.REMOTE));
 
 		initChecksumTableModel();
 		
@@ -434,18 +451,41 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 
 			}
 		});
+		
+		JComboBox sortDropDown = new JComboBox();
+		sortDropDown.setModel(new DefaultComboBoxModel(new String[] {Constants.FILENAME, Constants.MATCH, 
+				Constants.LOCAL_CHECKSUM, Constants.REMOTE_CHECKSUM}));
+		
+		JLabel lblSortAfter = new JLabel("Sortér efter:");
+		
+		JButton btnSort = new JButton("Sortér");
+		btnSort.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String sortAfter = (String) sortDropDown.getSelectedItem();
+				Collections.sort(processHandler.getProcessedFileChecksums(),comparatorMap.get(sortAfter));
+				update(processHandler);
+			}
+		});
+		
 		GroupLayout gl_pnlChecksums = new GroupLayout(pnlChecksums);
 		gl_pnlChecksums.setHorizontalGroup(
 			gl_pnlChecksums.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_pnlChecksums.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_pnlChecksums.createParallelGroup(Alignment.LEADING)
+					.addGroup(gl_pnlChecksums.createParallelGroup(Alignment.TRAILING)
 						.addGroup(gl_pnlChecksums.createSequentialGroup()
 							.addGroup(gl_pnlChecksums.createParallelGroup(Alignment.LEADING)
 								.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 955, Short.MAX_VALUE)
-								.addComponent(btnGetChecksums, Alignment.TRAILING))
+								.addGroup(Alignment.TRAILING, gl_pnlChecksums.createSequentialGroup()
+									.addComponent(lblSortAfter)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(sortDropDown, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(btnSort)
+									.addPreferredGap(ComponentPlacement.RELATED, 473, Short.MAX_VALUE)
+									.addComponent(btnGetChecksums)))
 							.addContainerGap())
-						.addGroup(Alignment.TRAILING, gl_pnlChecksums.createSequentialGroup()
+						.addGroup(gl_pnlChecksums.createSequentialGroup()
 							.addComponent(btnAddData)
 							.addGap(220))))
 		);
@@ -455,7 +495,11 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 					.addGap(27)
 					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 197, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnGetChecksums)
+					.addGroup(gl_pnlChecksums.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnGetChecksums)
+						.addComponent(lblSortAfter)
+						.addComponent(sortDropDown, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnSort))
 					.addGap(89)
 					.addComponent(btnAddData)
 					.addContainerGap(174, Short.MAX_VALUE))
@@ -481,7 +525,7 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 	
 	private void initChecksumTableModel() {
 		checksumTableModel = new DefaultTableModel(new Object[][] {}, 
-				new String[] {"Filnavn", "Stemmer", "Lokal kontrolsum", "Salt", "Nedhentet kontrolsum"});
+				new String[] {Constants.FILENAME, Constants.MATCH, Constants.LOCAL_CHECKSUM, "Salt", Constants.REMOTE_CHECKSUM});
 	}
 	
 	private void createEvents() {
@@ -500,6 +544,8 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 	@Override
 	public void update(ProcessHandler processHandler) {
 
+		checksumTableModel.setRowCount(0);
+		
 		for (int i = 0; i < processHandler.getProcessedFileChecksums().size(); i++) {
 			FileChecksum fileChecksum = processHandler.getProcessedFileChecksums().get(i);
 			String[] row = new String[] {fileChecksum.getFilename(), 
