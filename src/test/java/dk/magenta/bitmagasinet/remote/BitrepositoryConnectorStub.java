@@ -34,7 +34,7 @@ public class BitrepositoryConnectorStub implements BitrepositoryConnector {
 		observers.add(observer);
 	}
 
-	private void notifyObservers(BitrepositoryConnectionResult bitrepositoryConnectionResult) {
+	protected void notifyObservers(BitrepositoryConnectionResult bitrepositoryConnectionResult) {
 		for (ThreadStatusObserver observer : observers) {
 			observer.update(bitrepositoryConnectionResult);
 		}
@@ -44,4 +44,11 @@ public class BitrepositoryConnectorStub implements BitrepositoryConnector {
 		this.threadStatus = threadStatus;
 	}
 
+	protected FileChecksum getReturnFileChecksum() {
+		return returnFileChecksum;
+	}
+	
+	protected ThreadStatus getThreadStatus() {
+		return threadStatus;
+	}
 }
