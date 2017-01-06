@@ -46,6 +46,7 @@ import dk.magenta.bitmagasinet.configuration.RepositoryConfigurationImpl;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnector;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnectorRandomResultStub;
 import dk.magenta.bitmagasinet.remote.ThreadStatus;
+import java.awt.Color;
 
 public class Main extends JFrame implements ProcessHandlerObserver {
 
@@ -106,9 +107,8 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 		
 		bitRepoListModel = new DefaultListModel<String>();
 		fileChecksums = new ArrayList<FileChecksum>();
-		
-		checksumTableModel = new DefaultTableModel(new Object[][] {}, 
-				new String[] {"Filnavn", "Match", "Lokal checksum", "Salt", "Remote checksum"});
+
+		initChecksumTableModel();
 		
 		initComponents();
 		createEvents();
@@ -414,6 +414,7 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 		});
 		
 		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBackground(Color.WHITE);
 		
 		JButton btnAddData = new JButton("Add data");
 		btnAddData.addActionListener(new ActionListener() {
@@ -451,7 +452,12 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 		);
 		
 		checksumTable = new JTable();
+		checksumTable.setShowGrid(false);
+		checksumTable.setBackground(Color.WHITE);
+		checksumTable.setFillsViewportHeight(true);
 		checksumTable.setModel(checksumTableModel);
+		checksumTable.getColumnModel().getColumn(1).setMaxWidth(100);
+		checksumTable.getColumnModel().getColumn(3).setMaxWidth(100);
 		scrollPane.setViewportView(checksumTable);
 		pnlChecksums.setLayout(gl_pnlChecksums);
 		contentPane.setLayout(gl_contentPane);
@@ -461,6 +467,11 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 	private void setConfigurationPaneVisibility(boolean b) {
 		lblCurrentConfiguration.setVisible(b);
 		currentConfigurationPane.setVisible(b);
+	}
+	
+	private void initChecksumTableModel() {
+		checksumTableModel = new DefaultTableModel(new Object[][] {}, 
+				new String[] {"Filnavn", "Match", "Lokal checksum", "Salt", "Remote checksum"});
 	}
 	
 	private void createEvents() {
