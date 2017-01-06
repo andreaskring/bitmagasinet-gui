@@ -72,10 +72,7 @@ public class ConfigurationHandlerImpl implements ConfigurationHandler {
 
 	
 	@Override
-	public void addRepositoryConfiguration(RepositoryConfiguration repositoryConfiguration) throws InvalidArgumentException {
-		if (repositoryMap.containsKey(repositoryConfiguration.getName())) {
-			throw new InvalidArgumentException("Konfiguration med dette navn findes allerede");
-		}
+	public void addRepositoryConfiguration(RepositoryConfiguration repositoryConfiguration) {
 		repositoryMap.put(repositoryConfiguration.getName(), repositoryConfiguration);
 	}
 

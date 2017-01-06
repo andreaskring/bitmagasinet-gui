@@ -59,7 +59,7 @@ public class RepositoryConfigurationImpl implements RepositoryConfiguration {
 
 	@Override
 	public void setName(String name) throws InvalidArgumentException {
-		throwExceptionIfStringBlank(name, "Navn må ikke være blank");
+		throwExceptionIfStringBlank(name, "Navn på konfiguration må ikke være blank");
 		this.name = name.trim();
 	}
 

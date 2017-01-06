@@ -33,7 +33,7 @@ public interface ConfigurationHandler {
 	 * @throws IllegalArgumentException if the name of the repositoryConfiguration already exists
 	 * @throws InvalidArgumentException 
 	 */
-	public void addRepositoryConfiguration(RepositoryConfiguration repositoryConfiguration) throws InvalidArgumentException;
+	public void addRepositoryConfiguration(RepositoryConfiguration repositoryConfiguration);
 	
 	public boolean containsRepositoryConfiguration(String name);
 	

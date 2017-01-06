@@ -157,13 +157,13 @@ public class Main extends JFrame {
 		}
 		btnGetConfiguration.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String repositoryName = (String) bitRepoList.getSelectedValue();
-				lblCurrentConfiguration.setText("Konfiguration for " + repositoryName);
+				repoName = (String) bitRepoList.getSelectedValue();
+				lblCurrentConfiguration.setText("Konfiguration for " + repoName);
 				setConfigurationPaneVisibility(true);
 				
 				RepositoryConfiguration repositoryConfiguration;
 				try {
-					repositoryConfiguration = configurationHandler.getRepositoryConfiguration(repositoryName);
+					repositoryConfiguration = configurationHandler.getRepositoryConfiguration(repoName);
 					txtPathToSettingsFolder.setText(repositoryConfiguration.getPathToSettingsFiles().toString());
 					txtPathToCertificate.setText(repositoryConfiguration.getPathToCertificate().toString());
 					txtCollectionId.setText(repositoryConfiguration.getCollectionId());

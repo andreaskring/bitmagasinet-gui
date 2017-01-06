@@ -58,13 +58,6 @@ public class TestConfigurationHandlerImpl {
 		configurationHandler.getRepositoryConfiguration(" ");
 	}
 
-	
-	@Test(expected = InvalidArgumentException.class)
-	public void shouldThrowExceptionWhenAddedTwoRepositoryConfigurationsWithTheSameName() throws InvalidArgumentException {
-		configurationHandler.addRepositoryConfiguration(repositoryConfiguration1);
-		configurationHandler.addRepositoryConfiguration(repositoryConfiguration1);
-	}
-	
 	@Test
 	public void shouldReturnFalseWhenRepoConfigNotInMap() {
 		assertFalse(configurationHandler.containsRepositoryConfiguration("r1"));
