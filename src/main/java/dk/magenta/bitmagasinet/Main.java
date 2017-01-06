@@ -453,12 +453,14 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 		});
 		
 		JComboBox sortDropDown = new JComboBox();
+		sortDropDown.setEnabled(false);
 		sortDropDown.setModel(new DefaultComboBoxModel(new String[] {Constants.FILENAME, Constants.MATCH, 
 				Constants.LOCAL_CHECKSUM, Constants.REMOTE_CHECKSUM}));
 		
 		JLabel lblSortAfter = new JLabel("Sortér efter:");
 		
 		JButton btnSort = new JButton("Sortér");
+		btnSort.setEnabled(false);
 		btnSort.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String sortAfter = (String) sortDropDown.getSelectedItem();
