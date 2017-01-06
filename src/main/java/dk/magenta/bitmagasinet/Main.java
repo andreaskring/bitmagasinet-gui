@@ -32,6 +32,9 @@ import dk.magenta.bitmagasinet.configuration.ConfigurationIOHandlerImpl;
 import dk.magenta.bitmagasinet.configuration.InvalidArgumentException;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfiguration;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfigurationImpl;
+import javax.swing.JTextArea;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 public class Main extends JFrame {
 
@@ -51,6 +54,7 @@ public class Main extends JFrame {
 	
 	private ConfigurationHandler configurationHandler;
 	private ConfigurationIOHandler configurationIOHandler;
+	private JTable table;
 	// private Map<String, RepositoryConfiguration> repositoryConfigurations;
 	
 	/**
@@ -142,9 +146,9 @@ public class Main extends JFrame {
 					.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 607, Short.MAX_VALUE))
 		);
 		
-		JPanel pnlInputList = new JPanel();
-		pnlInputList.setName("");
-		tabbedPane.addTab("Bitmagasiner", null, pnlInputList, null);
+		JPanel pnlBitrepositories = new JPanel();
+		pnlBitrepositories.setName("");
+		tabbedPane.addTab("Bitmagasiner", null, pnlBitrepositories, null);
 		
 		JLabel lblChooseRepo = new JLabel("Vælg Bitmagasin");
 		lblChooseRepo.setFont(new Font("Dialog", Font.BOLD, 12));
@@ -201,37 +205,37 @@ public class Main extends JFrame {
 			}
 		});
 		
-		GroupLayout gl_pnlInputList = new GroupLayout(pnlInputList);
-		gl_pnlInputList.setHorizontalGroup(
-			gl_pnlInputList.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_pnlInputList.createSequentialGroup()
+		GroupLayout gl_pnlBitrepositories = new GroupLayout(pnlBitrepositories);
+		gl_pnlBitrepositories.setHorizontalGroup(
+			gl_pnlBitrepositories.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_pnlBitrepositories.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_pnlInputList.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_pnlInputList.createSequentialGroup()
+					.addGroup(gl_pnlBitrepositories.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_pnlBitrepositories.createSequentialGroup()
 							.addComponent(btnAddNewRepo)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(btnGetConfiguration))
 						.addComponent(bitRepoScrollPane, GroupLayout.PREFERRED_SIZE, 263, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblChooseRepo))
 					.addGap(18)
-					.addGroup(gl_pnlInputList.createParallelGroup(Alignment.LEADING)
+					.addGroup(gl_pnlBitrepositories.createParallelGroup(Alignment.LEADING)
 						.addComponent(currentConfigurationPane, GroupLayout.DEFAULT_SIZE, 674, Short.MAX_VALUE)
 						.addComponent(lblCurrentConfiguration))
 					.addContainerGap())
 		);
-		gl_pnlInputList.setVerticalGroup(
-			gl_pnlInputList.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_pnlInputList.createSequentialGroup()
+		gl_pnlBitrepositories.setVerticalGroup(
+			gl_pnlBitrepositories.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_pnlBitrepositories.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_pnlInputList.createParallelGroup(Alignment.BASELINE)
+					.addGroup(gl_pnlBitrepositories.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblChooseRepo)
 						.addComponent(lblCurrentConfiguration))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_pnlInputList.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_pnlInputList.createSequentialGroup()
+					.addGroup(gl_pnlBitrepositories.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_pnlBitrepositories.createSequentialGroup()
 							.addComponent(bitRepoScrollPane, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_pnlInputList.createParallelGroup(Alignment.BASELINE)
+							.addGroup(gl_pnlBitrepositories.createParallelGroup(Alignment.BASELINE)
 								.addComponent(btnAddNewRepo)
 								.addComponent(btnGetConfiguration)))
 						.addComponent(currentConfigurationPane, GroupLayout.DEFAULT_SIZE, 495, Short.MAX_VALUE))
@@ -352,28 +356,50 @@ public class Main extends JFrame {
 		bitRepoList.setModel(bitRepoListModel);
 		bitRepoList.setSelectedIndex(0);
 		bitRepoScrollPane.setViewportView(bitRepoList);
-		pnlInputList.setLayout(gl_pnlInputList);
+		pnlBitrepositories.setLayout(gl_pnlBitrepositories);
 		
-		JPanel pnlChecksumList = new JPanel();
-		tabbedPane.addTab("Kontrolsummer", null, pnlChecksumList, null);
+		JPanel pnlChecksums = new JPanel();
+		tabbedPane.addTab("Kontrolsummer", null, pnlChecksums, null);
 		
 		JButton btnHentKontrolsummer = new JButton("Hent kontrolsummer");
-		GroupLayout gl_pnlChecksumList = new GroupLayout(pnlChecksumList);
-		gl_pnlChecksumList.setHorizontalGroup(
-			gl_pnlChecksumList.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, gl_pnlChecksumList.createSequentialGroup()
-					.addContainerGap(870, Short.MAX_VALUE)
-					.addComponent(btnHentKontrolsummer)
+		btnHentKontrolsummer.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				// Get checksum list from local file
+				
+			}
+		});
+		
+		JScrollPane scrollPane = new JScrollPane();
+		GroupLayout gl_pnlChecksums = new GroupLayout(pnlChecksums);
+		gl_pnlChecksums.setHorizontalGroup(
+			gl_pnlChecksums.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_pnlChecksums.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_pnlChecksums.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 955, Short.MAX_VALUE)
+						.addComponent(btnHentKontrolsummer, Alignment.TRAILING))
 					.addContainerGap())
 		);
-		gl_pnlChecksumList.setVerticalGroup(
-			gl_pnlChecksumList.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, gl_pnlChecksumList.createSequentialGroup()
-					.addContainerGap(506, Short.MAX_VALUE)
+		gl_pnlChecksums.setVerticalGroup(
+			gl_pnlChecksums.createParallelGroup(Alignment.TRAILING)
+				.addGroup(Alignment.LEADING, gl_pnlChecksums.createSequentialGroup()
+					.addGap(27)
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 197, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnHentKontrolsummer)
-					.addContainerGap())
+					.addContainerGap(288, Short.MAX_VALUE))
 		);
-		pnlChecksumList.setLayout(gl_pnlChecksumList);
+		
+		table = new JTable();
+		table.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"Filnavn", "Match", "Lokal checksum", "Salt", "Remote checksum"
+			}
+		));
+		scrollPane.setViewportView(table);
+		pnlChecksums.setLayout(gl_pnlChecksums);
 		contentPane.setLayout(gl_contentPane);
 		
 	}
