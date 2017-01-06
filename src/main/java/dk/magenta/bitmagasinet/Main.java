@@ -30,6 +30,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.commons.lang.StringUtils;
 import org.bitrepository.common.utils.Base16Utils;
 
 import dk.magenta.bitmagasinet.checksum.ChecksumIOHandler;
@@ -385,6 +386,14 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 		btnGetChecksums.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
+				if (StringUtils.isBlank(repoName)) {
+					JOptionPane.showMessageDialog(contentPane, "Vælg først en konfiguration");
+					return;
+				}
+				
+				// Clear table
+				checksumTableModel.setRowCount(0);
+				
 				// Get checksum list from local file
 				File checksumFile = new File(txtPathToLocalChecksumList.getText().trim());
 				try {
@@ -471,12 +480,20 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 	
 	private void initChecksumTableModel() {
 		checksumTableModel = new DefaultTableModel(new Object[][] {}, 
-				new String[] {"Filnavn", "Match", "Lokal checksum", "Salt", "Remote checksum"});
+				new String[] {"Filnavn", "Stemmer", "Lokal kontrolsum", "Salt", "Nedhentet kontrolsum"});
 	}
 	
 	private void createEvents() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private String convertBooleanToString(boolean b) {
+		if (b) {
+			return "Ja";
+		} else {
+			return "Nej";
+		}
 	}
 	
 	@Override
@@ -485,7 +502,7 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 		for (int i = 0; i < processHandler.getProcessedFileChecksums().size(); i++) {
 			FileChecksum fileChecksum = processHandler.getProcessedFileChecksums().get(i);
 			String[] row = new String[] {fileChecksum.getFilename(), 
-					String.valueOf(fileChecksum.checksumsMatch()),
+					convertBooleanToString(fileChecksum.checksumsMatch()),
 					fileChecksum.getLocalChecksum(),
 					Base16Utils.decodeBase16(fileChecksum.getSalt()),
 					fileChecksum.getRemoteChecksum()};
