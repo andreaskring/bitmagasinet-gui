@@ -4,8 +4,11 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
@@ -18,13 +21,21 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.table.DefaultTableModel;
 
+import org.bitrepository.common.utils.Base16Utils;
+
+import dk.magenta.bitmagasinet.checksum.ChecksumIOHandler;
+import dk.magenta.bitmagasinet.checksum.ClockBasedDateStrategy;
+import dk.magenta.bitmagasinet.checksum.FileChecksum;
+import dk.magenta.bitmagasinet.checksum.InvalidChecksumFileException;
 import dk.magenta.bitmagasinet.configuration.ConfigurationHandler;
 import dk.magenta.bitmagasinet.configuration.ConfigurationHandlerImpl;
 import dk.magenta.bitmagasinet.configuration.ConfigurationIOHandler;
@@ -32,30 +43,35 @@ import dk.magenta.bitmagasinet.configuration.ConfigurationIOHandlerImpl;
 import dk.magenta.bitmagasinet.configuration.InvalidArgumentException;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfiguration;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfigurationImpl;
-import javax.swing.JTextArea;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
+import dk.magenta.bitmagasinet.remote.BitrepositoryConnector;
+import dk.magenta.bitmagasinet.remote.BitrepositoryConnectorRandomResultStub;
+import dk.magenta.bitmagasinet.remote.ThreadStatus;
 
-public class Main extends JFrame {
+public class Main extends JFrame implements ProcessHandlerObserver {
 
 	private JPanel contentPane;
 	private JButton btnGetConfiguration;
 	private JLabel lblCurrentConfiguration;
 	private JPanel currentConfigurationPane;
-	private JList bitRepoList;
-	private DefaultListModel<String> bitRepoListModel;
-	// private GUIFacade guiFacade;
+	private JTable checksumTable;
+	private JList<String> bitRepoList;
+
 	private JTextField txtPathToSettingsFolder;
 	private JTextField txtPathToCertificate;
-	private String repoName;
 	private JTextField txtCollectionId;
 	private JTextField txtPillarId;
 	private JTextField txtPathToLocalChecksumList;
 	
 	private ConfigurationHandler configurationHandler;
 	private ConfigurationIOHandler configurationIOHandler;
-	private JTable table;
-	// private Map<String, RepositoryConfiguration> repositoryConfigurations;
+	private ChecksumIOHandler checksumIOHandler;
+	private BitrepositoryConnector bitrepositoryConnector;
+	private ProcessHandlerImpl processHandler;
+	
+	private String repoName;
+	private List<FileChecksum> fileChecksums;
+	private DefaultListModel<String> bitRepoListModel;
+	private DefaultTableModel checksumTableModel;
 	
 	/**
 	 * Launch the application.
@@ -83,12 +99,16 @@ public class Main extends JFrame {
 	 */
 	public Main() {
 		
-		// guiFacade = new GUIFacadeImpl(new ConfigurationHandlerImpl());
-		
-		
 		configurationHandler = new ConfigurationHandlerImpl();
 		configurationIOHandler = new ConfigurationIOHandlerImpl(configurationHandler);
+		checksumIOHandler = new ChecksumIOHandler(new ClockBasedDateStrategy());
+		// bitrepositoryConnector = new BitrepositoryConnectorRandomResultStub(null, ThreadStatus.SUCCESS);
+		
 		bitRepoListModel = new DefaultListModel<String>();
+		fileChecksums = new ArrayList<FileChecksum>();
+		
+		checksumTableModel = new DefaultTableModel(new Object[][] {}, 
+				new String[] {"Filnavn", "Match", "Lokal checksum", "Salt", "Remote checksum"});
 		
 		initComponents();
 		createEvents();
@@ -361,44 +381,78 @@ public class Main extends JFrame {
 		JPanel pnlChecksums = new JPanel();
 		tabbedPane.addTab("Kontrolsummer", null, pnlChecksums, null);
 		
-		JButton btnHentKontrolsummer = new JButton("Hent kontrolsummer");
-		btnHentKontrolsummer.addActionListener(new ActionListener() {
+		JButton btnGetChecksums = new JButton("Hent kontrolsummer");
+		btnGetChecksums.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+
 				// Get checksum list from local file
+				File checksumFile = new File(txtPathToLocalChecksumList.getText().trim());
+				try {
+					fileChecksums = checksumIOHandler.readChecksumList(checksumFile);
+				} catch (IOException e) {
+					JOptionPane.showMessageDialog(contentPane, "Der opstod en fejl under læsning af filen " + txtPathToLocalChecksumList.getText());
+					e.printStackTrace();
+				} catch (InvalidChecksumFileException e) {
+					JOptionPane.showMessageDialog(contentPane, e.getMessage());
+					e.printStackTrace();
+				}
+				
+				bitrepositoryConnector = new BitrepositoryConnectorRandomResultStub(fileChecksums.get(0), ThreadStatus.SUCCESS);
+				processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, true);
+				bitrepositoryConnector.addObserver(processHandler);
+				
+				processHandler.addObserver(Main.this);
+				processHandler.processNext();
+				
+				// Put result data into the checksum table
+//				try {
+//					Thread.sleep(2000);
+//				} catch (InterruptedException e) {
+//				}
 				
 			}
 		});
 		
 		JScrollPane scrollPane = new JScrollPane();
+		
+		JButton btnAddData = new JButton("Add data");
+		btnAddData.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String[] row = new String[] {"1", "2", "3", "4", "5"};
+				checksumTableModel.addRow(row);
+
+			}
+		});
 		GroupLayout gl_pnlChecksums = new GroupLayout(pnlChecksums);
 		gl_pnlChecksums.setHorizontalGroup(
 			gl_pnlChecksums.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_pnlChecksums.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_pnlChecksums.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 955, Short.MAX_VALUE)
-						.addComponent(btnHentKontrolsummer, Alignment.TRAILING))
-					.addContainerGap())
+						.addGroup(gl_pnlChecksums.createSequentialGroup()
+							.addGroup(gl_pnlChecksums.createParallelGroup(Alignment.LEADING)
+								.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 955, Short.MAX_VALUE)
+								.addComponent(btnGetChecksums, Alignment.TRAILING))
+							.addContainerGap())
+						.addGroup(Alignment.TRAILING, gl_pnlChecksums.createSequentialGroup()
+							.addComponent(btnAddData)
+							.addGap(220))))
 		);
 		gl_pnlChecksums.setVerticalGroup(
-			gl_pnlChecksums.createParallelGroup(Alignment.TRAILING)
-				.addGroup(Alignment.LEADING, gl_pnlChecksums.createSequentialGroup()
+			gl_pnlChecksums.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_pnlChecksums.createSequentialGroup()
 					.addGap(27)
 					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 197, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnHentKontrolsummer)
-					.addContainerGap(288, Short.MAX_VALUE))
+					.addComponent(btnGetChecksums)
+					.addGap(89)
+					.addComponent(btnAddData)
+					.addContainerGap(174, Short.MAX_VALUE))
 		);
 		
-		table = new JTable();
-		table.setModel(new DefaultTableModel(
-			new Object[][] {
-			},
-			new String[] {
-				"Filnavn", "Match", "Lokal checksum", "Salt", "Remote checksum"
-			}
-		));
-		scrollPane.setViewportView(table);
+		checksumTable = new JTable();
+		checksumTable.setModel(checksumTableModel);
+		scrollPane.setViewportView(checksumTable);
 		pnlChecksums.setLayout(gl_pnlChecksums);
 		contentPane.setLayout(gl_contentPane);
 		
@@ -411,6 +465,21 @@ public class Main extends JFrame {
 	
 	private void createEvents() {
 		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void update(ProcessHandler processHandler) {
+
+		for (int i = 0; i < processHandler.getProcessedFileChecksums().size(); i++) {
+			FileChecksum fileChecksum = processHandler.getProcessedFileChecksums().get(i);
+			String[] row = new String[] {fileChecksum.getFilename(), 
+					String.valueOf(fileChecksum.checksumsMatch()),
+					fileChecksum.getLocalChecksum(),
+					Base16Utils.decodeBase16(fileChecksum.getSalt()),
+					fileChecksum.getRemoteChecksum()};
+			checksumTableModel.addRow(row);
+		}
 		
 	}
 }

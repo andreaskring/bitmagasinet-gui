@@ -19,7 +19,7 @@ import dk.magenta.bitmagasinet.Constants;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfiguration;
 
 // TODO: make interface
-class ChecksumIOHandler {
+public class ChecksumIOHandler {
 
 	private static final String TAB = "\t";
 	private static final String LINEFEED = "\n";
