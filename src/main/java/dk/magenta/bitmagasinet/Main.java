@@ -55,11 +55,14 @@ import dk.magenta.bitmagasinet.configuration.ConfigurationIOHandlerImpl;
 import dk.magenta.bitmagasinet.configuration.InvalidArgumentException;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfiguration;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfigurationImpl;
+import dk.magenta.bitmagasinet.remote.BitrepositoryConnectionResult;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnector;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnectorRandomResultStub;
 import dk.magenta.bitmagasinet.remote.ThreadStatus;
+import dk.magenta.bitmagasinet.remote.ThreadStatusObserver;
+import javax.swing.JProgressBar;
 
-public class Main extends JFrame implements ProcessHandlerObserver {
+public class Main extends JFrame implements ThreadStatusObserver, ProcessHandlerObserver {
 
 	private JPanel contentPane;
 	private JButton btnGetConfiguration;
@@ -81,10 +84,16 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 	private ProcessHandlerImpl processHandler;
 	
 	private String repoName;
+	private boolean configurationSaved;
 	private List<FileChecksum> fileChecksums;
 	private Map<String, Comparator> comparatorMap;
 	private DefaultListModel<String> bitRepoListModel;
 	private DefaultTableModel checksumTableModel;
+	private JProgressBar progressBar;
+	private JLabel lblProgressBar;
+	private JButton btnGetChecksums;
+	private JButton btnSort;
+	private JComboBox sortDropDown;
 	
 	
 	/**
@@ -120,6 +129,8 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 		
 		bitRepoListModel = new DefaultListModel<String>();
 		fileChecksums = new ArrayList<FileChecksum>();
+		configurationSaved = false;
+		
 		comparatorMap = new TreeMap<String, Comparator>();
 		comparatorMap.put(Constants.FILENAME, new FilenameComparator());
 		comparatorMap.put(Constants.MATCH, new ChecksumMatchComparator());
@@ -195,7 +206,7 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 		
 		btnGetConfiguration = new JButton("Hent konfiguration");
 		if (bitRepoListModel.isEmpty()) {
-			btnGetConfiguration.setVisible(false);
+			btnGetConfiguration.setEnabled(false);
 		}
 		btnGetConfiguration.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -211,6 +222,7 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 					txtCollectionId.setText(repositoryConfiguration.getCollectionId());
 					txtPillarId.setText(repositoryConfiguration.getPillarId());
 					txtPathToLocalChecksumList.setText(repositoryConfiguration.getPathToChecksumList().toString());
+					btnGetChecksums.setEnabled(true);
 				} catch (InvalidArgumentException e) {
 					// This should never happen
 					e.printStackTrace();
@@ -321,7 +333,7 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 					bitRepoList.setSelectedValue(repoName, true);
 					
 					configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration);
-					btnGetConfiguration.setVisible(true);
+					btnGetConfiguration.setEnabled(true);
 
 					JOptionPane.showMessageDialog(contentPane, "Konfiguration gemt");
 				} catch (InvalidArgumentException | IOException e) {
@@ -400,14 +412,21 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 		JPanel pnlChecksums = new JPanel();
 		tabbedPane.addTab("Kontrolsummer", null, pnlChecksums, null);
 		
-		JButton btnGetChecksums = new JButton("Hent kontrolsummer");
+		btnGetChecksums = new JButton("Hent kontrolsummer");
+		btnGetChecksums.setEnabled(false);
 		btnGetChecksums.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
+				// Remove this...
+				
 				if (StringUtils.isBlank(repoName)) {
 					JOptionPane.showMessageDialog(contentPane, "Vælg først en konfiguration");
 					return;
 				}
+				
+				progressBar.setValue(0);
+				sortDropDown.setEnabled(false);
+				btnSort.setEnabled(false);
 				
 				// Clear table
 				checksumTableModel.setRowCount(0);
@@ -427,15 +446,13 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 				bitrepositoryConnector = new BitrepositoryConnectorRandomResultStub(fileChecksums.get(0), ThreadStatus.SUCCESS);
 				processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, true);
 				bitrepositoryConnector.addObserver(processHandler);
+				bitrepositoryConnector.addObserver(Main.this);
 				
 				processHandler.addObserver(Main.this);
 				processHandler.processNext();
 				
-				// Put result data into the checksum table
-//				try {
-//					Thread.sleep(2000);
-//				} catch (InterruptedException e) {
-//				}
+				lblProgressBar.setVisible(true);
+				progressBar.setVisible(true);
 				
 			}
 		});
@@ -443,31 +460,31 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBackground(Color.WHITE);
 		
-		JButton btnAddData = new JButton("Add data");
-		btnAddData.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				String[] row = new String[] {"1", "2", "3", "4", "5"};
-				checksumTableModel.addRow(row);
-
-			}
-		});
-		
-		JComboBox sortDropDown = new JComboBox();
+		sortDropDown = new JComboBox();
 		sortDropDown.setEnabled(false);
 		sortDropDown.setModel(new DefaultComboBoxModel(new String[] {Constants.FILENAME, Constants.MATCH, 
 				Constants.LOCAL_CHECKSUM, Constants.REMOTE_CHECKSUM}));
 		
 		JLabel lblSortAfter = new JLabel("Sortér efter:");
 		
-		JButton btnSort = new JButton("Sortér");
+		btnSort = new JButton("Sortér");
 		btnSort.setEnabled(false);
 		btnSort.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String sortAfter = (String) sortDropDown.getSelectedItem();
 				Collections.sort(processHandler.getProcessedFileChecksums(),comparatorMap.get(sortAfter));
-				update(processHandler);
+				updateChecksumResultList();
 			}
 		});
+		
+		progressBar = new JProgressBar();
+		progressBar.setVisible(false);
+		progressBar.setStringPainted(true);
+		progressBar.setToolTipText("");
+		
+		lblProgressBar = new JLabel("Status for nedhenting");
+		lblProgressBar.setVisible(false);
+		lblProgressBar.setFont(new Font("Tahoma", Font.BOLD, 13));
 		
 		GroupLayout gl_pnlChecksums = new GroupLayout(pnlChecksums);
 		gl_pnlChecksums.setHorizontalGroup(
@@ -478,18 +495,21 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 						.addGroup(gl_pnlChecksums.createSequentialGroup()
 							.addGroup(gl_pnlChecksums.createParallelGroup(Alignment.LEADING)
 								.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 955, Short.MAX_VALUE)
-								.addGroup(Alignment.TRAILING, gl_pnlChecksums.createSequentialGroup()
+								.addGroup(gl_pnlChecksums.createSequentialGroup()
 									.addComponent(lblSortAfter)
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(sortDropDown, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(btnSort)
-									.addPreferredGap(ComponentPlacement.RELATED, 473, Short.MAX_VALUE)
+									.addPreferredGap(ComponentPlacement.RELATED, 501, Short.MAX_VALUE)
 									.addComponent(btnGetChecksums)))
 							.addContainerGap())
 						.addGroup(gl_pnlChecksums.createSequentialGroup()
-							.addComponent(btnAddData)
-							.addGap(220))))
+							.addComponent(lblProgressBar)
+							.addContainerGap(824, Short.MAX_VALUE))
+						.addGroup(gl_pnlChecksums.createSequentialGroup()
+							.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, 201, GroupLayout.PREFERRED_SIZE)
+							.addContainerGap(766, Short.MAX_VALUE))))
 		);
 		gl_pnlChecksums.setVerticalGroup(
 			gl_pnlChecksums.createParallelGroup(Alignment.LEADING)
@@ -502,9 +522,11 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 						.addComponent(lblSortAfter)
 						.addComponent(sortDropDown, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnSort))
-					.addGap(89)
-					.addComponent(btnAddData)
-					.addContainerGap(174, Short.MAX_VALUE))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(lblProgressBar)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(217, Short.MAX_VALUE))
 		);
 		
 		checksumTable = new JTable();
@@ -543,9 +565,32 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 		}
 	}
 	
+	
+	/**
+	 * Callback from ProcessHandlerObserver
+	 */
 	@Override
 	public void update(ProcessHandler processHandler) {
-
+		sortDropDown.setEnabled(true);
+		btnSort.setEnabled(true);
+	}
+	
+	/**
+	 * Callback from ThreadStatusObserver
+	 */
+	@Override
+	public void update(BitrepositoryConnectionResult bitrepositoryConnectionResult) {
+		if (bitrepositoryConnectionResult.getStatus() == ThreadStatus.SUCCESS) {
+			
+			updateChecksumResultList();
+			
+			FileChecksum fileChecksum = bitrepositoryConnectionResult.getFileChecksum();
+			progressBar.setValue(processHandler.getProgressHandler().getProgress());
+		}
+		
+	}
+	
+	private void updateChecksumResultList() {
 		checksumTableModel.setRowCount(0);
 		
 		for (int i = 0; i < processHandler.getProcessedFileChecksums().size(); i++) {
@@ -557,6 +602,13 @@ public class Main extends JFrame implements ProcessHandlerObserver {
 					fileChecksum.getRemoteChecksum()};
 			checksumTableModel.addRow(row);
 		}
+		
+	}
+	
+	@Override
+	public void messageBusErrorCallback() {
+		// TODO Auto-generated method stub
+
 		
 	}
 }

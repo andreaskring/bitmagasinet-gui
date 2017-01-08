@@ -14,6 +14,12 @@ public class BitrepositoryConnectorRandomResultStub extends BitrepositoryConnect
 	public void run() {
 		
 		int randomNumber = ThreadLocalRandom.current().nextInt(0, 2);
+		long delay = ThreadLocalRandom.current().nextLong(200, 500);
+		
+		try {
+			Thread.sleep(delay);
+		} catch (InterruptedException e) {
+		}
 		
 		FileChecksum returnFileChecksum = super.getReturnFileChecksum();
 		if (randomNumber == 0) {
