@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
@@ -39,7 +41,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 
-import org.apache.commons.lang.StringUtils;
 import org.bitrepository.common.utils.Base16Utils;
 
 import dk.magenta.bitmagasinet.checksum.ChecksumIOHandler;
@@ -62,7 +63,6 @@ import dk.magenta.bitmagasinet.remote.BitrepositoryConnector;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnectorRandomResultStub;
 import dk.magenta.bitmagasinet.remote.ThreadStatus;
 import dk.magenta.bitmagasinet.remote.ThreadStatusObserver;
-import javax.swing.JProgressBar;
 
 public class Main extends JFrame implements ThreadStatusObserver, ProcessHandlerObserver {
 
@@ -94,9 +94,12 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 	private JLabel lblProgressBar;
 	private JButton btnGetChecksums;
 	private JButton btnSort;
-	private JComboBox sortDropDown;
+	private JComboBox<String> sortDropDown;
 	
 	private DocumentListener documentListener;
+	private JTextField txtPathToResultFile;
+	private JLabel lblPathToResultFile;
+	private JButton btnPathToResultFile;
 	
 	/**
 	 * Launch the application.
@@ -487,17 +490,52 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		progressBar.setStringPainted(true);
 		progressBar.setToolTipText("");
 		
-		lblProgressBar = new JLabel("Status for nedhenting");
+		lblProgressBar = new JLabel("Status for nedhentning");
 		lblProgressBar.setVisible(false);
 		lblProgressBar.setFont(new Font("Tahoma", Font.BOLD, 13));
+		
+		lblPathToResultFile = new JLabel("Angiv sti til mappe hvor resultatfilen skal gemmes:");
+		lblPathToResultFile.setVisible(false);
+		
+		txtPathToResultFile = new JTextField();
+		txtPathToResultFile.setVisible(false);
+		txtPathToResultFile.setColumns(10);
+		
+		btnPathToResultFile = new JButton("Gem");
+		btnPathToResultFile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Path path = Paths.get(txtPathToResultFile.getText().trim());
+				File file = path.toFile();
+				if (!file.isDirectory()) {
+					JOptionPane.showMessageDialog(contentPane, "Stien henviser ikke til en mappe");
+					return;
+				}
+				if (!file.canWrite()) {
+					JOptionPane.showMessageDialog(contentPane, "Kan ikke skrive til den angivne mappe!");
+					return;
+				}
+				try {
+					checksumIOHandler.writeResultFiles(path, processHandler.getProcessedFileChecksums(), 
+							configurationHandler.getRepositoryConfiguration(repoName));
+					JOptionPane.showMessageDialog(contentPane, "Filen er blevet gemt");
+				} catch (IOException e) {
+					JOptionPane.showConfirmDialog(contentPane, "Der opstod en fejl: " + e.getMessage());
+					e.printStackTrace();
+				} catch (InvalidArgumentException e) {
+					JOptionPane.showConfirmDialog(contentPane, "Der opstod en fejl: " + e.getMessage());
+					e.printStackTrace();
+				}
+			}
+		});
+		btnPathToResultFile.setVisible(false);
 		
 		GroupLayout gl_pnlChecksums = new GroupLayout(pnlChecksums);
 		gl_pnlChecksums.setHorizontalGroup(
 			gl_pnlChecksums.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_pnlChecksums.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_pnlChecksums.createParallelGroup(Alignment.TRAILING)
+					.addGroup(gl_pnlChecksums.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_pnlChecksums.createSequentialGroup()
+							.addContainerGap()
 							.addGroup(gl_pnlChecksums.createParallelGroup(Alignment.LEADING)
 								.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 955, Short.MAX_VALUE)
 								.addGroup(gl_pnlChecksums.createSequentialGroup()
@@ -507,14 +545,19 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(btnSort)
 									.addPreferredGap(ComponentPlacement.RELATED, 501, Short.MAX_VALUE)
-									.addComponent(btnGetChecksums)))
-							.addContainerGap())
+									.addComponent(btnGetChecksums))
+								.addGroup(gl_pnlChecksums.createSequentialGroup()
+									.addComponent(lblPathToResultFile)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(txtPathToResultFile, GroupLayout.PREFERRED_SIZE, 299, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(btnPathToResultFile))))
 						.addGroup(gl_pnlChecksums.createSequentialGroup()
-							.addComponent(lblProgressBar)
-							.addContainerGap(824, Short.MAX_VALUE))
-						.addGroup(gl_pnlChecksums.createSequentialGroup()
-							.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, 201, GroupLayout.PREFERRED_SIZE)
-							.addContainerGap(766, Short.MAX_VALUE))))
+							.addGap(381)
+							.addGroup(gl_pnlChecksums.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblProgressBar)
+								.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, 201, GroupLayout.PREFERRED_SIZE))))
+					.addContainerGap())
 		);
 		gl_pnlChecksums.setVerticalGroup(
 			gl_pnlChecksums.createParallelGroup(Alignment.LEADING)
@@ -527,11 +570,16 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 						.addComponent(lblSortAfter)
 						.addComponent(sortDropDown, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnSort))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGap(59)
 					.addComponent(lblProgressBar)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(217, Short.MAX_VALUE))
+					.addGap(65)
+					.addGroup(gl_pnlChecksums.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblPathToResultFile)
+						.addComponent(txtPathToResultFile, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnPathToResultFile))
+					.addContainerGap(90, Short.MAX_VALUE))
 		);
 		
 		checksumTable = new JTable();
@@ -578,6 +626,10 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 	public void update(ProcessHandler processHandler) {
 		sortDropDown.setEnabled(true);
 		btnSort.setEnabled(true);
+		
+		lblPathToResultFile.setVisible(true);
+		txtPathToResultFile.setVisible(true);
+		btnPathToResultFile.setVisible(true);
 	}
 	
 	/**
