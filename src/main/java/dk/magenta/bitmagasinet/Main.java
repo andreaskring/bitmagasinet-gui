@@ -84,7 +84,6 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 	private ProcessHandlerImpl processHandler;
 	
 	private String repoName;
-	private boolean configurationSaved;
 	private List<FileChecksum> fileChecksums;
 	private Map<String, Comparator> comparatorMap;
 	private DefaultListModel<String> bitRepoListModel;
@@ -125,11 +124,9 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		configurationHandler = new ConfigurationHandlerImpl();
 		configurationIOHandler = new ConfigurationIOHandlerImpl(configurationHandler);
 		checksumIOHandler = new ChecksumIOHandler(new ClockBasedDateStrategy());
-		// bitrepositoryConnector = new BitrepositoryConnectorRandomResultStub(null, ThreadStatus.SUCCESS);
 		
 		bitRepoListModel = new DefaultListModel<String>();
 		fileChecksums = new ArrayList<FileChecksum>();
-		configurationSaved = false;
 		
 		comparatorMap = new TreeMap<String, Comparator>();
 		comparatorMap.put(Constants.FILENAME, new FilenameComparator());
@@ -402,7 +399,7 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		);
 		currentConfigurationPane.setLayout(gl_currentConfigurationPane);
 		
-		bitRepoList = new JList();
+		bitRepoList = new JList<String>();
 		bitRepoList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		bitRepoList.setModel(bitRepoListModel);
 		bitRepoList.setSelectedIndex(0);
