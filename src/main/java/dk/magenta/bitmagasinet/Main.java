@@ -35,6 +35,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.lang.StringUtils;
@@ -94,6 +96,7 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 	private JButton btnSort;
 	private JComboBox sortDropDown;
 	
+	private DocumentListener documentListener;
 	
 	/**
 	 * Launch the application.
@@ -116,6 +119,7 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		});
 	}
 
+	
 	/**
 	 * Create the frame.
 	 */
@@ -124,6 +128,8 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		configurationHandler = new ConfigurationHandlerImpl();
 		configurationIOHandler = new ConfigurationIOHandlerImpl(configurationHandler);
 		checksumIOHandler = new ChecksumIOHandler(new ClockBasedDateStrategy());
+		
+		documentListener = getDocumentListener(); 
 		
 		bitRepoListModel = new DefaultListModel<String>();
 		fileChecksums = new ArrayList<FileChecksum>();
@@ -293,26 +299,31 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		
 		txtPathToSettingsFolder = new JTextField();
 		txtPathToSettingsFolder.setColumns(10);
+		txtPathToSettingsFolder.getDocument().addDocumentListener(documentListener);
 		
-		JLabel lblStiTilCertifikat = new JLabel("Sti til certifikat");
+		JLabel lblpathToCertificate = new JLabel("Sti til certifikat");
 		
 		txtPathToCertificate = new JTextField();
 		txtPathToCertificate.setColumns(10);
+		txtPathToCertificate.getDocument().addDocumentListener(documentListener);
 		
 		JLabel lblCollectionId = new JLabel("Samling (CollectionID)");
 		
 		txtCollectionId = new JTextField();
 		txtCollectionId.setColumns(10);
+		txtCollectionId.getDocument().addDocumentListener(documentListener);
 		
-		JLabel lblSjlepillarId = new JLabel("Søjle (PillarID)");
+		JLabel lblPillarId = new JLabel("Søjle (PillarID)");
 		
 		txtPillarId = new JTextField();
 		txtPillarId.setColumns(10);
+		txtPillarId.getDocument().addDocumentListener(documentListener);
 		
-		JLabel lblStiTilLokal = new JLabel("Sti til lokal kontrolsumsliste");
+		JLabel lblPathToLocalChecksumList = new JLabel("Sti til lokal kontrolsumsliste");
 		
 		txtPathToLocalChecksumList = new JTextField();
 		txtPathToLocalChecksumList.setColumns(10);
+		txtPathToLocalChecksumList.getDocument().addDocumentListener(documentListener);
 		
 		JButton btnSaveRepoConf = new JButton("Gem");
 		btnSaveRepoConf.addActionListener(new ActionListener() {
@@ -331,6 +342,8 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 					
 					configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration);
 					btnGetConfiguration.setEnabled(true);
+					
+					btnGetChecksums.setEnabled(true);
 
 					JOptionPane.showMessageDialog(contentPane, "Konfiguration gemt");
 				} catch (InvalidArgumentException | IOException e) {
@@ -354,13 +367,13 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 					.addGroup(gl_currentConfigurationPane.createParallelGroup(Alignment.LEADING)
 						.addComponent(txtPathToSettingsFolder, GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
 						.addComponent(lblStiTilRepositorysettingxml)
-						.addComponent(lblStiTilCertifikat)
+						.addComponent(lblpathToCertificate)
 						.addComponent(txtPathToCertificate, GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
 						.addComponent(lblCollectionId)
 						.addComponent(txtCollectionId, GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
-						.addComponent(lblSjlepillarId)
+						.addComponent(lblPillarId)
 						.addComponent(txtPillarId, GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
-						.addComponent(lblStiTilLokal)
+						.addComponent(lblPathToLocalChecksumList)
 						.addComponent(txtPathToLocalChecksumList, GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
 						.addGroup(Alignment.TRAILING, gl_currentConfigurationPane.createSequentialGroup()
 							.addComponent(btnRydFelter)
@@ -376,7 +389,7 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(txtPathToSettingsFolder, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGap(18)
-					.addComponent(lblStiTilCertifikat)
+					.addComponent(lblpathToCertificate)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(txtPathToCertificate, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGap(18)
@@ -384,11 +397,11 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(txtCollectionId, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGap(18)
-					.addComponent(lblSjlepillarId)
+					.addComponent(lblPillarId)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(txtPillarId, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGap(18)
-					.addComponent(lblStiTilLokal)
+					.addComponent(lblPathToLocalChecksumList)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(txtPathToLocalChecksumList, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGap(18)
@@ -410,17 +423,10 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		tabbedPane.addTab("Kontrolsummer", null, pnlChecksums, null);
 		
 		btnGetChecksums = new JButton("Hent kontrolsummer");
-		btnGetChecksums.setEnabled(false);
+		// btnGetChecksums.setEnabled(false);
 		btnGetChecksums.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
-				// Remove this...
-				
-				if (StringUtils.isBlank(repoName)) {
-					JOptionPane.showMessageDialog(contentPane, "Vælg først en konfiguration");
-					return;
-				}
-				
 				progressBar.setValue(0);
 				sortDropDown.setEnabled(false);
 				btnSort.setEnabled(false);
@@ -458,14 +464,14 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		scrollPane.setBackground(Color.WHITE);
 		
 		sortDropDown = new JComboBox();
-		sortDropDown.setEnabled(false);
+		// sortDropDown.setEnabled(false);
 		sortDropDown.setModel(new DefaultComboBoxModel(new String[] {Constants.FILENAME, Constants.MATCH, 
 				Constants.LOCAL_CHECKSUM, Constants.REMOTE_CHECKSUM}));
 		
 		JLabel lblSortAfter = new JLabel("Sortér efter:");
 		
 		btnSort = new JButton("Sortér");
-		btnSort.setEnabled(false);
+		// btnSort.setEnabled(false);
 		btnSort.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String sortAfter = (String) sortDropDown.getSelectedItem();
@@ -473,6 +479,8 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 				updateChecksumResultList();
 			}
 		});
+		
+		disableGetChecksums();
 		
 		progressBar = new JProgressBar();
 		progressBar.setVisible(false);
@@ -600,6 +608,32 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 			checksumTableModel.addRow(row);
 		}
 		
+	}
+	
+	private DocumentListener getDocumentListener() {
+		return new DocumentListener() {
+			
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				btnGetChecksums.setEnabled(false);
+			}
+			
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				btnGetChecksums.setEnabled(false);
+			}
+			
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				btnGetChecksums.setEnabled(false);
+			}
+		};
+	}
+	
+	private void disableGetChecksums() {
+		btnGetChecksums.setEnabled(false);
+		sortDropDown.setEnabled(false);
+		btnSort.setEnabled(false);
 	}
 	
 	@Override
