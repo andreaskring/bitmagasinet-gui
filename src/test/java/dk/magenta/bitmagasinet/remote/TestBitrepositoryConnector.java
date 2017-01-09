@@ -23,8 +23,10 @@ public class TestBitrepositoryConnector implements ThreadStatusObserver {
 	public void setUp() throws InvalidArgumentException {
 		RepositoryConfiguration repositoryConfiguration = new RepositoryConfigurationImpl("staging");
 		repositoryConfiguration.setCollectionId("2");
-		repositoryConfiguration.setPathToSettingsFiles(Paths.get("/home/andreas/bitmagasinet/bitrepository-client-1.6/conf"));
-		repositoryConfiguration.setPathToCertificate(Paths.get("/home/andreas/bitmagasinet/bitrepository-client-1.6/conf/rigsark-store-client-certkey.pem"));
+		// repositoryConfiguration.setPathToSettingsFiles(Paths.get("/home/andreas/bitmagasinet/bitrepository-client-1.6/conf"));
+		repositoryConfiguration.setPathToSettingsFiles(Paths.get("/Users/andreas/BitMagGUI/certs"));
+		// repositoryConfiguration.setPathToCertificate(Paths.get("/home/andreas/bitmagasinet/bitrepository-client-1.6/conf/rigsark-store-client-certkey.pem"));
+		repositoryConfiguration.setPathToCertificate(Paths.get("/Users/andreas/BitMagGUI/certs/client-certificate.pem"));
 		repositoryConfiguration.setPillarId("rigsarkivnearline1");
 		
 		FileChecksum fileChecksum = new FileChecksumImpl("Something.txt", "474cc7f5020f952447044e93438d0ea6", "64");
@@ -35,6 +37,7 @@ public class TestBitrepositoryConnector implements ThreadStatusObserver {
 		Thread t = new Thread(connector);
 		t.start();
 	}
+	
 	
 	@Ignore
 	@Test
