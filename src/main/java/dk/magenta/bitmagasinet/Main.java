@@ -443,10 +443,12 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		// btnGetChecksums.setEnabled(false);
 		btnGetChecksums.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-
+				
+				// Disable/hide buttons
 				progressBar.setValue(0);
 				sortDropDown.setEnabled(false);
 				btnSort.setEnabled(false);
+				setResultFileInputVisibility(false);
 				
 				// Clear table
 				checksumTableModel.setRowCount(0);
@@ -647,11 +649,7 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		sortDropDown.setEnabled(true);
 		btnSort.setEnabled(true);
 		
-		lblPathToResultFile.setVisible(true);
-		txtPathToResultFile.setVisible(true);
-		btnPathToResultFile.setVisible(true);
-		
-		// bitrepositoryConnector.closeMessageBus();
+		setResultFileInputVisibility(true);
 	}
 	
 	/**
@@ -704,6 +702,12 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		btnGetChecksums.setEnabled(false);
 		sortDropDown.setEnabled(false);
 		btnSort.setEnabled(false);
+	}
+	
+	private void setResultFileInputVisibility(boolean b) {
+		lblPathToResultFile.setVisible(b);
+		txtPathToResultFile.setVisible(b);
+		btnPathToResultFile.setVisible(b);
 	}
 	
 	@Override
