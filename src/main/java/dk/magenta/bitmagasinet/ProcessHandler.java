@@ -1,5 +1,6 @@
 package dk.magenta.bitmagasinet;
 
+import java.util.Date;
 import java.util.List;
 
 import dk.magenta.bitmagasinet.checksum.FileChecksum;
@@ -13,4 +14,6 @@ public interface ProcessHandler {
 	public BitrepositoryProgressHandler getProgressHandler();
 	public void addObserver(ProcessHandlerObserver processHandlerObserver);
 	public void notifyObservers();
+	public Date getStartDate();
+	public Date getEndDate();
 }

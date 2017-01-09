@@ -68,9 +68,10 @@ public class ChecksumIOHandler {
 		return fileChecksumList;
 	};
 
-	public void writeResultFiles(Path path, List<FileChecksum> fileChecksums, RepositoryConfiguration repositoryConfiguration) throws IOException {
+	public void writeResultFiles(Path path, List<FileChecksum> fileChecksums, RepositoryConfiguration repositoryConfiguration,
+			Date startDate, Date endDate) throws IOException {
 		writeChecksumList(path, fileChecksums);
-		writeHeaderFile(path, repositoryConfiguration);
+		writeHeaderFile(path, repositoryConfiguration, startDate, endDate);
 	}
 
 	private void writeChecksumList(Path path, List<FileChecksum> fileChecksums) throws IOException {
@@ -97,14 +98,15 @@ public class ChecksumIOHandler {
 		}
 	}
 	
-	private void writeHeaderFile(Path path, RepositoryConfiguration repositoryConfiguration) throws IOException {
+	private void writeHeaderFile(Path path, RepositoryConfiguration repositoryConfiguration,
+			Date startDate, Date endDate) throws IOException {
 		// TODO: write test case to verify output from this method (method not yet stable)
 		
 		Path file = path.resolve(getRelativePathToHeaderFile());
 		try (FileWriter writer = new FileWriter(file.toFile())) {
 			String line = new StringBuilder()
 				.append(Constants.DO_NOT_EDIT_FILE)
-				.append("\n")
+				.append(LINEFEED)
 				.append("Repository navn: ")
 				.append(repositoryConfiguration.getName())
 				.append(LINEFEED)
@@ -114,11 +116,14 @@ public class ChecksumIOHandler {
 				.append("Pillar ID: ")
 				.append(repositoryConfiguration.getPillarId())
 				.append(LINEFEED)
-				.append("Dato: ")
-				.append(simpleDateFormat.format(date))
+				.append("Dato (start): ")
+				.append(simpleDateFormat.format(startDate))
+				.append(LINEFEED)
+				.append("Dato (slut): ")
+				.append(simpleDateFormat.format(endDate))
 				.append(LINEFEED)
 				.append(LINEFEED)
-				.append("Filnavn\tChecksum match\tSalt\tLokal checksum\tRemote checksum")
+				.append("Filnavn\tStemmer\tSalt\tLokal checksum\tRemote checksum")
 				.append(LINEFEED)
 				.toString();
 			writer.write(line);

@@ -1,14 +1,15 @@
 package dk.magenta.bitmagasinet;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import dk.magenta.bitmagasinet.checksum.DateStrategy;
 import dk.magenta.bitmagasinet.checksum.FileChecksum;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnectionResult;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnector;
 import dk.magenta.bitmagasinet.remote.BitrepositoryProgressHandler;
 import dk.magenta.bitmagasinet.remote.BitrepositoryProgressHandlerImpl;
-import dk.magenta.bitmagasinet.remote.ThreadStatus;
 import dk.magenta.bitmagasinet.remote.ThreadStatusObserver;
 
 public class ProcessHandlerImpl implements ProcessHandler, ThreadStatusObserver {
@@ -18,16 +19,21 @@ public class ProcessHandlerImpl implements ProcessHandler, ThreadStatusObserver 
 	private List<ProcessHandlerObserver> observers;
 	private BitrepositoryProgressHandler bitrepositoryProgressHandler;
 	private BitrepositoryConnector bitrepositoryConnector;
+	private DateStrategy dateStrategy;
 	private boolean processAutomatically;
+	private Date startDate;
+	private Date endDate;
 
-	public ProcessHandlerImpl(List<FileChecksum> fileChecksums, BitrepositoryConnector bitrepositoryConnector,
+	public ProcessHandlerImpl(List<FileChecksum> fileChecksums, BitrepositoryConnector bitrepositoryConnector, DateStrategy dateStrategy,
 			boolean processAutomatically) {
 		this.bitrepositoryConnector = bitrepositoryConnector;
+		this.dateStrategy = dateStrategy;
 		this.processAutomatically = processAutomatically;
 		remainingFileChecksums = fileChecksums;
 		processedFileChecksums = new ArrayList<FileChecksum>();
 		bitrepositoryProgressHandler = new BitrepositoryProgressHandlerImpl(fileChecksums);
 		observers = new ArrayList<ProcessHandlerObserver>();
+		startDate = dateStrategy.getDate();
 	}
 
 	@Override
@@ -57,6 +63,7 @@ public class ProcessHandlerImpl implements ProcessHandler, ThreadStatusObserver 
 				processNext();
 			}
 		} else {
+			endDate = dateStrategy.getDate();
 			notifyObservers();
 		}
 	}
@@ -68,7 +75,7 @@ public class ProcessHandlerImpl implements ProcessHandler, ThreadStatusObserver 
 
 	@Override
 	public void messageBusErrorCallback() {
-		// TODO Auto-generated method stub
+		// Handled in the GUI
 	}
 
 	@Override
@@ -85,4 +92,14 @@ public class ProcessHandlerImpl implements ProcessHandler, ThreadStatusObserver 
 		}
 	}
 
+	@Override
+	public Date getStartDate() {
+		return startDate;
+	}
+	
+	@Override
+	public Date getEndDate() {
+		return endDate;
+	}
+	
 }

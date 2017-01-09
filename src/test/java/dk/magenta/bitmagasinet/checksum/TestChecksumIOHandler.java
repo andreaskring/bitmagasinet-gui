@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -118,7 +119,7 @@ public class TestChecksumIOHandler {
 		fileChecksumList.get(2).setRemoteChecksum("c100d3c5a366a1e860e2f8a1afc21110");
 		assertEquals("c100d3c5a366a1e860e2f8a1afc21110", fileChecksumList.get(2).getRemoteChecksum());
 		
-		checksumIOHandler.writeResultFiles(path, fileChecksumList, new RepositoryConfigurationImpl("repo"));
+		checksumIOHandler.writeResultFiles(path, fileChecksumList, new RepositoryConfigurationImpl("repo"), new Date(), new Date());
 		
 		Path outputFile = path.resolve(checksumIOHandler.getRelativePathToResultChecksumFile());
 		List<String> lines = Files.readAllLines(outputFile);
@@ -142,7 +143,7 @@ public class TestChecksumIOHandler {
 		repositoryConfiguration.setCollectionId("collectionID");
 		repositoryConfiguration.setPillarId("pillarID");
 		
-		checksumIOHandler.writeResultFiles(path, fileChecksumList, repositoryConfiguration);
+		checksumIOHandler.writeResultFiles(path, fileChecksumList, repositoryConfiguration, null, null);
 	}
 	
 }

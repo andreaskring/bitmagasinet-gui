@@ -1,16 +1,22 @@
 package dk.magenta.bitmagasinet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
+import dk.magenta.bitmagasinet.checksum.DateStrategy;
 import dk.magenta.bitmagasinet.checksum.FileChecksum;
 import dk.magenta.bitmagasinet.checksum.FileChecksumImpl;
+import dk.magenta.bitmagasinet.checksum.FixedDateStrategy;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnector;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnectorStub;
 import dk.magenta.bitmagasinet.remote.ThreadStatus;
@@ -23,23 +29,25 @@ public class TestProcessHandlerImpl {
 	private FileChecksum fileChecksum2;
 	private FileChecksum fileChecksum3;
 	private BitrepositoryConnector bitrepositoryConnector;
+	private DateStrategy dateStrategy;
 
 	@Before
 	public void setUp() {
 		fileChecksums = new ArrayList<FileChecksum>();
+		dateStrategy = new FixedDateStrategy(1900, Calendar.JANUARY, 1, 0, 0, 0);
 	}
 
 	@Test
 	public void shouldReturnSizeZeroWhenRemainingFileChecksumListEmpty() {
 		List<FileChecksum> fileChecksums = new ArrayList<FileChecksum>();
-		ProcessHandler controller = new ProcessHandlerImpl(fileChecksums, null, false);
+		ProcessHandler controller = new ProcessHandlerImpl(fileChecksums, null, dateStrategy, false);
 		assertEquals(0, controller.getRemainingFileChecksums().size());
 	}
 
 	@Test
 	public void shouldReturnSizeOneWhenRemainingFileChecksumListHasOneElement() {
 		addFileChecksum1();
-		processHandler = new ProcessHandlerImpl(fileChecksums, null, false);
+		processHandler = new ProcessHandlerImpl(fileChecksums, null, dateStrategy, false);
 		assertEquals(1, processHandler.getRemainingFileChecksums().size());
 		assertEquals("file1.bin", processHandler.getRemainingFileChecksums().get(0).getFilename());
 	}
@@ -48,7 +56,7 @@ public class TestProcessHandlerImpl {
 	public void shouldReturnSizeTwoWhenRemainingFileChecksumListHasTwoElement() {
 		addFileChecksum1();
 		addFileChecksum2();
-		processHandler = new ProcessHandlerImpl(fileChecksums, null, false);
+		processHandler = new ProcessHandlerImpl(fileChecksums, null, dateStrategy, false);
 
 		assertEquals(2, processHandler.getRemainingFileChecksums().size());
 		assertEquals("file1.bin", processHandler.getRemainingFileChecksums().get(0).getFilename());
@@ -58,7 +66,7 @@ public class TestProcessHandlerImpl {
 	@Test
 	public void shouldReturnSize0ForProcessedFileChecksumsWhenNoneHaveBeenProcessed() {
 		addFileChecksum1();
-		processHandler = new ProcessHandlerImpl(fileChecksums, null, false);
+		processHandler = new ProcessHandlerImpl(fileChecksums, null, dateStrategy, false);
 		assertEquals(0, processHandler.getProcessedFileChecksums().size());
 	}
 	
@@ -67,7 +75,7 @@ public class TestProcessHandlerImpl {
 		addFileChecksum1();
 		addFileChecksum2();
 		bitrepositoryConnector = getBitrepositoryConnector(fileChecksum1, ThreadStatus.SUCCESS);
-		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, false);
+		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, dateStrategy, false);
 		bitrepositoryConnector.addObserver(processHandler);
 		
 		// Two FileChecksums are now in the remaining list
@@ -83,7 +91,7 @@ public class TestProcessHandlerImpl {
 		addFileChecksum1();
 		addFileChecksum2();
 		bitrepositoryConnector = getBitrepositoryConnector(fileChecksum1, ThreadStatus.SUCCESS);
-		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, false);
+		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, dateStrategy, false);
 		bitrepositoryConnector.addObserver(processHandler);
 		
 		// Two FileChecksums are now in the remaining list
@@ -101,7 +109,7 @@ public class TestProcessHandlerImpl {
 		addFileChecksum2();
 		addFileChecksum3();
 		bitrepositoryConnector = getBitrepositoryConnector(fileChecksum1, ThreadStatus.SUCCESS);
-		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, false);
+		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, dateStrategy, false);
 		bitrepositoryConnector.addObserver(processHandler);
 		
 		// Three FileChecksums are now in the remaining list
@@ -143,7 +151,7 @@ public class TestProcessHandlerImpl {
 		addFileChecksum2();
 		addFileChecksum3();
 		bitrepositoryConnector = getBitrepositoryConnector(fileChecksum1, ThreadStatus.SUCCESS);
-		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, true);
+		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, dateStrategy, true);
 		bitrepositoryConnector.addObserver(processHandler);
 		
 		// Three FileChecksums are now in the remaining list
@@ -185,7 +193,7 @@ public class TestProcessHandlerImpl {
 	public void shouldReturnProgressHandler() {
 		addFileChecksum1();
 		bitrepositoryConnector = getBitrepositoryConnector(fileChecksum1, ThreadStatus.SUCCESS);
-		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, false);
+		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, dateStrategy, false);
 		bitrepositoryConnector.addObserver(processHandler);
 		assertNotNull(processHandler.getProgressHandler());
 	}
@@ -196,7 +204,7 @@ public class TestProcessHandlerImpl {
 		addFileChecksum2();
 		addFileChecksum3();
 		bitrepositoryConnector = getBitrepositoryConnector(fileChecksum1, ThreadStatus.SUCCESS);
-		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, false);
+		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, dateStrategy, false);
 		bitrepositoryConnector.addObserver(processHandler);
 		assertEquals(0, processHandler.getProgressHandler().getProgress());
 	}
@@ -207,7 +215,7 @@ public class TestProcessHandlerImpl {
 		addFileChecksum2();
 		addFileChecksum3();
 		bitrepositoryConnector = getBitrepositoryConnector(fileChecksum1, ThreadStatus.SUCCESS);
-		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, false);
+		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, dateStrategy, false);
 		bitrepositoryConnector.addObserver(processHandler);
 		
 		processFileChecksum();
@@ -220,7 +228,7 @@ public class TestProcessHandlerImpl {
 		addFileChecksum2();
 		addFileChecksum3();
 		bitrepositoryConnector = getBitrepositoryConnector(fileChecksum1, ThreadStatus.SUCCESS);
-		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, false);
+		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, dateStrategy, false);
 		bitrepositoryConnector.addObserver(processHandler);
 		
 		processFileChecksum();
@@ -234,7 +242,7 @@ public class TestProcessHandlerImpl {
 		addFileChecksum2();
 		addFileChecksum3();
 		bitrepositoryConnector = getBitrepositoryConnector(fileChecksum1, ThreadStatus.SUCCESS);
-		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, false);
+		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, dateStrategy, false);
 		bitrepositoryConnector.addObserver(processHandler);
 		
 		processFileChecksum();
@@ -280,7 +288,7 @@ public class TestProcessHandlerImpl {
 		ProcessHandlerObserverDummy processHandlerObserver = new ProcessHandlerObserverDummy();
 		
 		bitrepositoryConnector = getBitrepositoryConnector(fileChecksum1, ThreadStatus.SUCCESS);
-		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, true);
+		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, dateStrategy, true);
 		processHandler.addObserver(processHandlerObserver);
 		
 		bitrepositoryConnector.addObserver(processHandler);
@@ -313,7 +321,7 @@ public class TestProcessHandlerImpl {
 		ProcessHandlerObserverDummy processHandlerObserver = new ProcessHandlerObserverDummy();
 		
 		bitrepositoryConnector = getBitrepositoryConnector(fileChecksum1, ThreadStatus.SUCCESS);
-		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, true);
+		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, dateStrategy, true);
 		processHandler.addObserver(processHandlerObserver);
 		
 		bitrepositoryConnector.addObserver(processHandler);
@@ -348,7 +356,7 @@ public class TestProcessHandlerImpl {
 		ProcessHandlerObserverDummy processHandlerObserver2 = new ProcessHandlerObserverDummy();
 		
 		bitrepositoryConnector = getBitrepositoryConnector(fileChecksum1, ThreadStatus.SUCCESS);
-		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, true);
+		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, dateStrategy, true);
 		processHandler.addObserver(processHandlerObserver1);
 		processHandler.addObserver(processHandlerObserver2);
 		
@@ -381,7 +389,7 @@ public class TestProcessHandlerImpl {
 		addFileChecksum3();
 		
 		BitrepositoryConnectorStub bitrepositoryConnector = new BitrepositoryConnectorStub(fileChecksum1, ThreadStatus.SUCCESS);
-		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, false);
+		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, dateStrategy, false);
 		bitrepositoryConnector.addObserver(processHandler);
 		
 		// Three FileChecksums are now in the remaining list
@@ -419,6 +427,36 @@ public class TestProcessHandlerImpl {
 		assertEquals("file3.bin", processHandler.getProcessedFileChecksums().get(2).getFilename());
 	}
 
+	@Test
+	public void shouldReturnStartDate2000_01_01WhenDateIs2000_01_01() {
+		addFileChecksum1();
+		DateStrategy dateStrategy = new FixedDateStrategy(2000, Calendar.JANUARY, 1, 0, 0, 0);
+		
+		BitrepositoryConnector bitrepositoryConnector = new BitrepositoryConnectorStub(fileChecksum1, ThreadStatus.SUCCESS);
+		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, dateStrategy, false);
+		bitrepositoryConnector.addObserver(processHandler);
+		
+		Date date = dateStrategy.getDate();
+		assertEquals(DateUtils.truncate(processHandler.getStartDate(), Calendar.SECOND),
+				DateUtils.truncate(date, Calendar.SECOND));
+	}
+	
+	@Test
+	public void shouldReturnEndDate2000_01_01WhenDateIs2000_01_01() {
+		addFileChecksum1();
+		DateStrategy dateStrategy = new FixedDateStrategy(2000, Calendar.JANUARY, 1, 0, 0, 0);
+		
+		BitrepositoryConnector bitrepositoryConnector = new BitrepositoryConnectorStub(fileChecksum1, ThreadStatus.SUCCESS);
+		processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, dateStrategy, false);
+		bitrepositoryConnector.addObserver(processHandler);
+		processFileChecksum();
+		
+		Date date = dateStrategy.getDate();
+		assertEquals(DateUtils.truncate(processHandler.getEndDate(), Calendar.SECOND),
+				DateUtils.truncate(date, Calendar.SECOND));
+	}
+
+	
 	private void addFileChecksum1() {
 		fileChecksum1 = new FileChecksumImpl("file1.bin", "9e5aae9572765f8bec9bca8c818188da", "64");
 		fileChecksum1.setRemoteChecksum("9e5aae9572765f8bec9bca8c818188da");

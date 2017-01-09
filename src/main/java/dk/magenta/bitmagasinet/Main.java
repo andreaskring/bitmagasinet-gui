@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -472,7 +473,7 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 				} catch (InvalidArgumentException e) {
 					e.printStackTrace();
 				}
-				processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, true);
+				processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, new ClockBasedDateStrategy(), true);
 				bitrepositoryConnector.addObserver(processHandler);
 				bitrepositoryConnector.addObserver(Main.this);
 				
@@ -538,7 +539,8 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 				}
 				try {
 					checksumIOHandler.writeResultFiles(path, processHandler.getProcessedFileChecksums(), 
-							configurationHandler.getRepositoryConfiguration(repoName));
+							configurationHandler.getRepositoryConfiguration(repoName), 
+							processHandler.getStartDate(), processHandler.getEndDate());
 					JOptionPane.showMessageDialog(contentPane, "Filen er blevet gemt");
 				} catch (IOException e) {
 					JOptionPane.showConfirmDialog(contentPane, "Der opstod en fejl: " + e.getMessage());
