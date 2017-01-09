@@ -25,7 +25,7 @@ public class BitrepositoryConnectorRandomResultStub extends BitrepositoryConnect
 		if (randomNumber == 0) {
 			returnFileChecksum.setRemoteChecksum(returnFileChecksum.getLocalChecksum());
 		} else {
-			returnFileChecksum.setRemoteChecksum("00000000000000000000000000000000");
+			returnFileChecksum.setRemoteChecksum("ERROR");
 		}
 		
 		BitrepositoryConnectionResult bitrepositoryConnectionResult = new BitrepositoryConnectionResultImpl(

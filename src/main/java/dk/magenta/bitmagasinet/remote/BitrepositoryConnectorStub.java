@@ -34,6 +34,11 @@ public class BitrepositoryConnectorStub implements BitrepositoryConnector {
 		observers.add(observer);
 	}
 
+	@Override
+	public void closeMessageBus() {
+		// Nothing to do
+	}
+	
 	protected void notifyObservers(BitrepositoryConnectionResult bitrepositoryConnectionResult) {
 		for (ThreadStatusObserver observer : observers) {
 			observer.update(bitrepositoryConnectionResult);

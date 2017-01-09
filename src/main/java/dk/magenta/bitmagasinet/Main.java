@@ -60,6 +60,7 @@ import dk.magenta.bitmagasinet.configuration.RepositoryConfiguration;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfigurationImpl;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnectionResult;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnector;
+import dk.magenta.bitmagasinet.remote.BitrepositoryConnectorImpl;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnectorRandomResultStub;
 import dk.magenta.bitmagasinet.remote.ThreadStatus;
 import dk.magenta.bitmagasinet.remote.ThreadStatusObserver;
@@ -449,7 +450,13 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 					e.printStackTrace();
 				}
 				
-				bitrepositoryConnector = new BitrepositoryConnectorRandomResultStub(fileChecksums.get(0), ThreadStatus.SUCCESS);
+				// bitrepositoryConnector = new BitrepositoryConnectorRandomResultStub(fileChecksums.get(0), ThreadStatus.SUCCESS);
+				try {
+					bitrepositoryConnector = new BitrepositoryConnectorImpl(configurationHandler.getRepositoryConfiguration(repoName), 
+							fileChecksums.get(0));
+				} catch (InvalidArgumentException e) {
+					e.printStackTrace();
+				}
 				processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, true);
 				bitrepositoryConnector.addObserver(processHandler);
 				bitrepositoryConnector.addObserver(Main.this);
@@ -630,6 +637,8 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		lblPathToResultFile.setVisible(true);
 		txtPathToResultFile.setVisible(true);
 		btnPathToResultFile.setVisible(true);
+		
+		// bitrepositoryConnector.closeMessageBus();
 	}
 	
 	/**
@@ -637,14 +646,10 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 	 */
 	@Override
 	public void update(BitrepositoryConnectionResult bitrepositoryConnectionResult) {
-		if (bitrepositoryConnectionResult.getStatus() == ThreadStatus.SUCCESS) {
+		updateChecksumResultList();
 			
-			updateChecksumResultList();
-			
-			FileChecksum fileChecksum = bitrepositoryConnectionResult.getFileChecksum();
-			progressBar.setValue(processHandler.getProgressHandler().getProgress());
-		}
-		
+		FileChecksum fileChecksum = bitrepositoryConnectionResult.getFileChecksum();
+		progressBar.setValue(processHandler.getProgressHandler().getProgress());
 	}
 	
 	private void updateChecksumResultList() {
@@ -690,8 +695,6 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 	
 	@Override
 	public void messageBusErrorCallback() {
-		// TODO Auto-generated method stub
-
-		
+		JOptionPane.showMessageDialog(contentPane, "Der opstod et problem under lukning af forbindelsen til bitmagasinet");
 	}
 }

@@ -11,4 +11,5 @@ public interface BitrepositoryConnector extends Runnable {
 
 	public void addObserver(ThreadStatusObserver observer);
 	public void setFileChecksum(FileChecksum fileChecksum);
+	public void closeMessageBus();
 }

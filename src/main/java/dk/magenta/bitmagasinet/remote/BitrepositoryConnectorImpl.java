@@ -115,6 +115,14 @@ public class BitrepositoryConnectorImpl implements BitrepositoryConnector {
 			bitrepositoryConnectionResult = new BitrepositoryConnectionResultImpl(ThreadStatus.ERROR, fileChecksum);
 		}
 		
+		//TODO: handle interruptions...
+		
+		notifyObservers(bitrepositoryConnectionResult);
+		
+	}
+	
+	@Override
+	public void closeMessageBus() {
 		// Closing down after use
 		MessageBus messageBus = MessageBusManager.getMessageBus();
 		if (messageBus != null) {
@@ -125,14 +133,9 @@ public class BitrepositoryConnectorImpl implements BitrepositoryConnector {
 				messageBusError();
 			}
 		}
-
-		//TODO: handle interruptions...
-		
-		notifyObservers(bitrepositoryConnectionResult);
-		
 	}
 	
-
+	
 	private void notifyObservers(BitrepositoryConnectionResult bitrepositoryConnectionResult) {
 		if (!threadStatusObservers.isEmpty()) {
 			for (ThreadStatusObserver observer : threadStatusObservers) {
