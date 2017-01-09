@@ -49,19 +49,15 @@ public class ProcessHandlerImpl implements ProcessHandler, ThreadStatusObserver 
 	@Override
 	public void update(BitrepositoryConnectionResult bitrepositoryConnectionResult) {
 		remainingFileChecksums.remove(0);
-		if (bitrepositoryConnectionResult.getStatus() == ThreadStatus.SUCCESS) {
-			processedFileChecksums.add(bitrepositoryConnectionResult.getFileChecksum());
-			bitrepositoryProgressHandler.fileCompleted();
-			if (!remainingFileChecksums.isEmpty()) {
-				bitrepositoryConnector.setFileChecksum(remainingFileChecksums.get(0));
-				if (processAutomatically) {
-					processNext();
-				}
-			} else {
-				notifyObservers();
+		processedFileChecksums.add(bitrepositoryConnectionResult.getFileChecksum());
+		bitrepositoryProgressHandler.fileCompleted();
+		if (!remainingFileChecksums.isEmpty()) {
+			bitrepositoryConnector.setFileChecksum(remainingFileChecksums.get(0));
+			if (processAutomatically) {
+				processNext();
 			}
 		} else {
-			remainingFileChecksums.add(bitrepositoryConnectionResult.getFileChecksum());
+			notifyObservers();
 		}
 	}
 

@@ -110,7 +110,9 @@ public class BitrepositoryConnectorImpl implements BitrepositoryConnector {
 			}
 			bitrepositoryConnectionResult = new BitrepositoryConnectionResultImpl(ThreadStatus.SUCCESS, fileChecksum);
 		} else {
-			bitrepositoryConnectionResult = new BitrepositoryConnectionResultImpl(ThreadStatus.ERROR, null);
+			// In case the file is not found in the bitrepository, the event type is just OperationEventType.FAILED
+			fileChecksum.setRemoteChecksum("ERROR");
+			bitrepositoryConnectionResult = new BitrepositoryConnectionResultImpl(ThreadStatus.ERROR, fileChecksum);
 		}
 		
 		// Closing down after use
