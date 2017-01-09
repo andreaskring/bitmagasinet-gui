@@ -135,7 +135,7 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		
 		configurationHandler = new ConfigurationHandlerImpl();
 		configurationIOHandler = new ConfigurationIOHandlerImpl(configurationHandler);
-		checksumIOHandler = new ChecksumIOHandler(new ClockBasedDateStrategy());
+		checksumIOHandler = new ChecksumIOHandler();
 		
 		documentListener = getDocumentListener(); 
 		

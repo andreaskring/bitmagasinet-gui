@@ -24,12 +24,9 @@ public class ChecksumIOHandler {
 	private static final String TAB = "\t";
 	private static final String LINEFEED = "\n";
 	
-	private DateStrategy dateStrategy;
 	private SimpleDateFormat simpleDateFormat;
-	private Date date;
 
-	public ChecksumIOHandler(DateStrategy dateStrategy) {
-		this.dateStrategy = dateStrategy;
+	public ChecksumIOHandler() {
 		this.simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd_kkmmss_z");
 	}
 	
@@ -70,12 +67,12 @@ public class ChecksumIOHandler {
 
 	public void writeResultFiles(Path path, List<FileChecksum> fileChecksums, RepositoryConfiguration repositoryConfiguration,
 			Date startDate, Date endDate) throws IOException {
-		writeChecksumList(path, fileChecksums);
+		writeChecksumList(path, fileChecksums, endDate);
 		writeHeaderFile(path, repositoryConfiguration, startDate, endDate);
 	}
 
-	private void writeChecksumList(Path path, List<FileChecksum> fileChecksums) throws IOException {
-		Path file = path.resolve(getRelativePathToResultChecksumFile());
+	private void writeChecksumList(Path path, List<FileChecksum> fileChecksums, Date endDate) throws IOException {
+		Path file = path.resolve(getRelativePathToResultChecksumFile(endDate));
 		try (FileWriter writer = new FileWriter(file.toFile())) {
 			for (FileChecksum fileChecksum : fileChecksums) {
 				String line = new StringBuilder()
@@ -102,7 +99,7 @@ public class ChecksumIOHandler {
 			Date startDate, Date endDate) throws IOException {
 		// TODO: write test case to verify output from this method (method not yet stable)
 		
-		Path file = path.resolve(getRelativePathToHeaderFile());
+		Path file = path.resolve(getRelativePathToHeaderFile(endDate));
 		try (FileWriter writer = new FileWriter(file.toFile())) {
 			String line = new StringBuilder()
 				.append(Constants.DO_NOT_EDIT_FILE)
@@ -133,20 +130,12 @@ public class ChecksumIOHandler {
 		}
 	}
 	
-	Path getRelativePathToResultChecksumFile() {
-		checkDate();
+	Path getRelativePathToResultChecksumFile(Date date) {
 		return Paths.get(Constants.CHECKSUMFILE_PREFIX + simpleDateFormat.format(date) + Constants.CHECKSUMFILE_EXT);
 	}
 
-	Path getRelativePathToHeaderFile() {
-		checkDate();
+	Path getRelativePathToHeaderFile(Date date) {
 		return Paths.get(Constants.HEADERFILE_PREFIX + simpleDateFormat.format(date) + Constants.HEADERFILE_EXT);
 	}
-	
-	private void checkDate() {
-		if (date == null) {
-			date = dateStrategy.getDate();	
-		}
-	}
-	
+
 }

@@ -30,6 +30,8 @@ public class TestChecksumIOHandler {
 	private File checksumFile;
 	private ChecksumIOHandler checksumIOHandler;
 	private static Path path;
+	private DateStrategy fixedDateStrategy12;
+	private DateStrategy fixedDateStrategy13;
 
 	/*
 	@BeforeClass
@@ -65,7 +67,9 @@ public class TestChecksumIOHandler {
 	@Before
 	public void setUp() {
 		checksumFile = new File(TestChecksumIOHandler.class.getResource("/checkSumTestList.txt").getFile());
-		checksumIOHandler = new ChecksumIOHandler(new FixedDateStrategy(1879, Calendar.MARCH, 14, 12, 0, 0));
+		checksumIOHandler = new ChecksumIOHandler();
+		fixedDateStrategy12 = new FixedDateStrategy(1879, Calendar.MARCH, 14, 12, 0, 0);
+		fixedDateStrategy13 = new FixedDateStrategy(1879, Calendar.MARCH, 14, 13, 0, 0);
 	}
 
 	@Test
@@ -91,24 +95,26 @@ public class TestChecksumIOHandler {
 	
 	@Test
 	public void resultFileShouldHaveName_ChecksumCheckResult_1879_03_14_120000_CET() {
-		assertEquals("ChecksumCheckResult-1879-03-14_120000_CET.txt", checksumIOHandler.getRelativePathToResultChecksumFile().toString());
+		assertEquals("ChecksumCheckResult-1879-03-14_120000_CET.txt", 
+				checksumIOHandler.getRelativePathToResultChecksumFile(fixedDateStrategy12.getDate()).toString());
 	}
 
 	@Test
 	public void resultFileShouldHaveName_ChecksumCheckResult_1879_03_14_130000_CET() {
-		ChecksumIOHandler checksumIOHandler = new ChecksumIOHandler(new FixedDateStrategy(1879, Calendar.MARCH, 14, 13, 0, 0));
-		assertEquals("ChecksumCheckResult-1879-03-14_130000_CET.txt", checksumIOHandler.getRelativePathToResultChecksumFile().toString());
+		assertEquals("ChecksumCheckResult-1879-03-14_130000_CET.txt",
+				checksumIOHandler.getRelativePathToResultChecksumFile(fixedDateStrategy13.getDate()).toString());
 	}
 
 	@Test
 	public void headerFileShouldHaveName_Header_1879_03_14_120000_CET() {
-		assertEquals("Header-1879-03-14_120000_CET.txt", checksumIOHandler.getRelativePathToHeaderFile().toString());
+		assertEquals("Header-1879-03-14_120000_CET.txt",
+				checksumIOHandler.getRelativePathToHeaderFile(fixedDateStrategy12.getDate()).toString());
 	}
 
 	@Test
 	public void headerFileShouldHaveName_Header_1879_03_14_130000_CET() {
-		ChecksumIOHandler checksumIOHandler = new ChecksumIOHandler(new FixedDateStrategy(1879, Calendar.MARCH, 14, 13, 0, 0));
-		assertEquals("Header-1879-03-14_130000_CET.txt", checksumIOHandler.getRelativePathToHeaderFile().toString());
+		assertEquals("Header-1879-03-14_130000_CET.txt",
+				checksumIOHandler.getRelativePathToHeaderFile(fixedDateStrategy13.getDate()).toString());
 	}
 
 	@Test
@@ -121,7 +127,7 @@ public class TestChecksumIOHandler {
 		
 		checksumIOHandler.writeResultFiles(path, fileChecksumList, new RepositoryConfigurationImpl("repo"), new Date(), new Date());
 		
-		Path outputFile = path.resolve(checksumIOHandler.getRelativePathToResultChecksumFile());
+		Path outputFile = path.resolve(checksumIOHandler.getRelativePathToResultChecksumFile(new Date()));
 		List<String> lines = Files.readAllLines(outputFile);
 		
 		assertTrue(lines.get(0).matches("file1.bin\\ttrue\\t64\\t0f2dd3c5a366a1e860e2f8a1afc29987\\t0f2dd3c5a366a1e860e2f8a1afc29987"));
