@@ -5,6 +5,9 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -169,6 +172,16 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 	private void initComponents() {
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				if (bitrepositoryConnector != null) {
+					bitrepositoryConnector.closeMessageBus();
+				}
+				super.windowClosing(e);
+				
+			}
+		});
 		setBounds(100, 100, 1012, 642);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
