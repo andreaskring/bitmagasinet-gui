@@ -15,8 +15,8 @@ import java.util.List;
 
 import org.bitrepository.common.utils.Base16Utils;
 
-import dk.magenta.bitmagasinet.Constants;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfiguration;
+import dk.magenta.bitmagasinet.gui.Constants;
 
 // TODO: make interface
 public class ChecksumIOHandler {

@@ -24,6 +24,8 @@ import org.junit.Test;
 import dk.magenta.bitmagasinet.configuration.InvalidArgumentException;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfiguration;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfigurationImpl;
+import dk.magenta.bitmagasinet.process.DateStrategy;
+import dk.magenta.bitmagasinet.process.FixedDateStrategy;
 
 public class TestChecksumIOHandler {
 

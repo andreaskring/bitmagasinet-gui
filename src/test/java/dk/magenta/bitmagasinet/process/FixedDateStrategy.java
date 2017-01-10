@@ -1,9 +1,11 @@
-package dk.magenta.bitmagasinet.checksum;
+package dk.magenta.bitmagasinet.process;
 
 import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.lang.time.DateUtils;
+
+import dk.magenta.bitmagasinet.process.DateStrategy;
 
 public class FixedDateStrategy implements DateStrategy {
 

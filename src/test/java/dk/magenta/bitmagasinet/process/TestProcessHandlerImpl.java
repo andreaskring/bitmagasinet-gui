@@ -1,4 +1,4 @@
-package dk.magenta.bitmagasinet;
+package dk.magenta.bitmagasinet.process;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -13,10 +13,11 @@ import org.apache.commons.lang.time.DateUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import dk.magenta.bitmagasinet.checksum.DateStrategy;
 import dk.magenta.bitmagasinet.checksum.FileChecksum;
 import dk.magenta.bitmagasinet.checksum.FileChecksumImpl;
-import dk.magenta.bitmagasinet.checksum.FixedDateStrategy;
+import dk.magenta.bitmagasinet.process.DateStrategy;
+import dk.magenta.bitmagasinet.process.ProcessHandler;
+import dk.magenta.bitmagasinet.process.ProcessHandlerImpl;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnector;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnectorStub;
 import dk.magenta.bitmagasinet.remote.ThreadStatus;

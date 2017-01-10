@@ -1,4 +1,4 @@
-package dk.magenta.bitmagasinet.checksum;
+package dk.magenta.bitmagasinet.process;
 
 import java.util.Date;
 

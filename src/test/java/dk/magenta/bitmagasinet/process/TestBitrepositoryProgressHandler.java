@@ -1,4 +1,4 @@
-package dk.magenta.bitmagasinet.remote;
+package dk.magenta.bitmagasinet.process;
 
 import static org.junit.Assert.assertEquals;
 
@@ -10,6 +10,8 @@ import org.junit.Test;
 
 import dk.magenta.bitmagasinet.checksum.FileChecksum;
 import dk.magenta.bitmagasinet.checksum.FileChecksumImpl;
+import dk.magenta.bitmagasinet.process.BitrepositoryProgressHandler;
+import dk.magenta.bitmagasinet.process.BitrepositoryProgressHandlerImpl;
 
 public class TestBitrepositoryProgressHandler {
 

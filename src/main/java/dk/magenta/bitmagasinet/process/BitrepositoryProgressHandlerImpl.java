@@ -1,4 +1,4 @@
-package dk.magenta.bitmagasinet.remote;
+package dk.magenta.bitmagasinet.process;
 
 import java.util.Date;
 import java.util.List;

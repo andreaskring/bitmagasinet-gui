@@ -1,10 +1,9 @@
-package dk.magenta.bitmagasinet;
+package dk.magenta.bitmagasinet.process;
 
 import java.util.Date;
 import java.util.List;
 
 import dk.magenta.bitmagasinet.checksum.FileChecksum;
-import dk.magenta.bitmagasinet.remote.BitrepositoryProgressHandler;
 
 public interface ProcessHandler {
 	

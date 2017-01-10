@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
-import dk.magenta.bitmagasinet.Constants;
+import dk.magenta.bitmagasinet.gui.Constants;
 
 public class ConfigurationIOHandlerImpl implements ConfigurationIOHandler {
 

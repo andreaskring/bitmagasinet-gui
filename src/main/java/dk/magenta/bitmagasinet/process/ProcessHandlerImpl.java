@@ -1,15 +1,12 @@
-package dk.magenta.bitmagasinet;
+package dk.magenta.bitmagasinet.process;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import dk.magenta.bitmagasinet.checksum.DateStrategy;
 import dk.magenta.bitmagasinet.checksum.FileChecksum;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnectionResult;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnector;
-import dk.magenta.bitmagasinet.remote.BitrepositoryProgressHandler;
-import dk.magenta.bitmagasinet.remote.BitrepositoryProgressHandlerImpl;
 import dk.magenta.bitmagasinet.remote.ThreadStatusObserver;
 
 public class ProcessHandlerImpl implements ProcessHandler, ThreadStatusObserver {

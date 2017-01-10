@@ -43,7 +43,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>dk.magenta.bitmagasinet.MainTest</mainClass>
+							<mainClass>dk.magenta.bitmagasinet.gui.Main</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>

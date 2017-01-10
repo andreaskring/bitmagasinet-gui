@@ -1,4 +1,4 @@
-package dk.magenta.bitmagasinet;
+package dk.magenta.bitmagasinet.gui;
 
 import java.awt.Color;
 import java.awt.EventQueue;
@@ -46,7 +46,6 @@ import javax.swing.table.DefaultTableModel;
 import org.bitrepository.common.utils.Base16Utils;
 
 import dk.magenta.bitmagasinet.checksum.ChecksumIOHandler;
-import dk.magenta.bitmagasinet.checksum.ClockBasedDateStrategy;
 import dk.magenta.bitmagasinet.checksum.FileChecksum;
 import dk.magenta.bitmagasinet.checksum.InvalidChecksumFileException;
 import dk.magenta.bitmagasinet.comparators.ChecksumComparator;
@@ -60,6 +59,10 @@ import dk.magenta.bitmagasinet.configuration.ConfigurationIOHandlerImpl;
 import dk.magenta.bitmagasinet.configuration.InvalidArgumentException;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfiguration;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfigurationImpl;
+import dk.magenta.bitmagasinet.process.ClockBasedDateStrategy;
+import dk.magenta.bitmagasinet.process.ProcessHandler;
+import dk.magenta.bitmagasinet.process.ProcessHandlerImpl;
+import dk.magenta.bitmagasinet.process.ProcessHandlerObserver;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnectionResult;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnector;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnectorImpl;

@@ -1,4 +1,4 @@
-package dk.magenta.bitmagasinet;
+package dk.magenta.bitmagasinet.process;
 
 public interface ProcessHandlerObserver {
 

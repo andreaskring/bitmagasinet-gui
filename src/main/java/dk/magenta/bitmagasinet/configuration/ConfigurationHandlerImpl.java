@@ -12,7 +12,7 @@ import java.util.TreeMap;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
-import dk.magenta.bitmagasinet.Constants;
+import dk.magenta.bitmagasinet.gui.Constants;
 
 public class ConfigurationHandlerImpl implements ConfigurationHandler {
 

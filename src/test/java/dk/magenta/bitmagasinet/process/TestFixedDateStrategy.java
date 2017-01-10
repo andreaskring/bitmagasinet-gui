@@ -1,4 +1,4 @@
-package dk.magenta.bitmagasinet;
+package dk.magenta.bitmagasinet.process;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
@@ -8,8 +8,7 @@ import org.apache.commons.lang.time.DateUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import dk.magenta.bitmagasinet.checksum.DateStrategy;
-import dk.magenta.bitmagasinet.checksum.FixedDateStrategy;
+import dk.magenta.bitmagasinet.process.DateStrategy;
 
 public class TestFixedDateStrategy {
 	

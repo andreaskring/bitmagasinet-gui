@@ -1,8 +1,10 @@
-package dk.magenta.bitmagasinet.remote;
+package dk.magenta.bitmagasinet.process;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+
+import dk.magenta.bitmagasinet.process.TimeEstimate;
 
 public class TestTimeEstimate {
 

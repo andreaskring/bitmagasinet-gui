@@ -1,4 +1,7 @@
-package dk.magenta.bitmagasinet;
+package dk.magenta.bitmagasinet.process;
+
+import dk.magenta.bitmagasinet.process.ProcessHandler;
+import dk.magenta.bitmagasinet.process.ProcessHandlerObserver;
 
 public class ProcessHandlerObserverDummy implements ProcessHandlerObserver {
 
