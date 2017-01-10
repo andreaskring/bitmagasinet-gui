@@ -37,12 +37,6 @@ public class ConfigurationIOHandlerImpl implements ConfigurationIOHandler {
 	}
 
 	@Override
-	public RepositoryConfiguration readRepositoryConfiguration(Path path) throws IOException, InvalidArgumentException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public void writeRepositoryConfiguration(RepositoryConfiguration repositoryConfiguration) throws IOException {
 
 		properties = PropertiesHandler.convertRepositoryConfigurationToProperties(repositoryConfiguration);

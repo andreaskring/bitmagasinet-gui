@@ -1,7 +1,4 @@
-package dk.magenta.bitmagasinet;
-
-import org.bitrepository.commandline.clients.PagingGetChecksumsClient;
-import org.bitrepository.common.settings.SettingsProvider;
+package dk.magenta.bitmagasinet.sandbox;
 
 public class MainTest {
 

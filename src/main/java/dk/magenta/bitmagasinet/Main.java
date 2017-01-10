@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowStateListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -15,7 +14,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -71,6 +69,8 @@ import dk.magenta.bitmagasinet.remote.ThreadStatusObserver;
 
 public class Main extends JFrame implements ThreadStatusObserver, ProcessHandlerObserver {
 
+	private static final long serialVersionUID = 1719991083148859676L;
+
 	private JPanel contentPane;
 	private JButton btnGetConfiguration;
 	private JLabel lblCurrentConfiguration;
@@ -92,7 +92,7 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 	
 	private String repoName;
 	private List<FileChecksum> fileChecksums;
-	private Map<String, Comparator> comparatorMap;
+	private Map<String, Comparator<FileChecksum>> comparatorMap;
 	private DefaultListModel<String> bitRepoListModel;
 	private DefaultTableModel checksumTableModel;
 	private JProgressBar progressBar;
@@ -129,7 +129,7 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 
 	
 	/**
-	 * Create the frame.
+	 * Create the main frame.
 	 */
 	public Main() {
 		
@@ -142,34 +142,41 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		bitRepoListModel = new DefaultListModel<String>();
 		fileChecksums = new ArrayList<FileChecksum>();
 		
-		comparatorMap = new TreeMap<String, Comparator>();
+		comparatorMap = new TreeMap<String, Comparator<FileChecksum>>();
 		comparatorMap.put(Constants.FILENAME, new FilenameComparator());
 		comparatorMap.put(Constants.MATCH, new ChecksumMatchComparator());
 		comparatorMap.put(Constants.LOCAL_CHECKSUM, new ChecksumComparator(ChecksumType.LOCAL));
 		comparatorMap.put(Constants.REMOTE_CHECKSUM, new ChecksumComparator(ChecksumType.REMOTE));
 
 		initChecksumTableModel();
-		
 		initComponents();
-		createEvents();
-		
-	}
-	
-	private void updateBitRepoListModel() {
-		bitRepoListModel.clear();
-		for (String name : configurationHandler.getRepositoryConfigurations().keySet()) {
-			bitRepoListModel.addElement(name);
-		}
 	}
 
-	private void clearRepositoryConfigurationFields() {
-		txtPathToSettingsFolder.setText(null);
-		txtPathToCertificate.setText(null);
-		txtCollectionId.setText(null);
-		txtPillarId.setText(null);
-		txtPathToLocalChecksumList.setText(null);
+	/**
+	 * Callback from ProcessHandlerObserver
+	 */
+	@Override
+	public void update(ProcessHandler processHandler) {
+		sortDropDown.setEnabled(true);
+		btnSort.setEnabled(true);
+		
+		setResultFileInputVisibility(true);
 	}
 	
+	/**
+	 * Callback from ThreadStatusObserver
+	 */
+	@Override
+	public void update(BitrepositoryConnectionResult bitrepositoryConnectionResult) {
+		updateChecksumResultList();
+		progressBar.setValue(processHandler.getProgressHandler().getProgress());
+	}
+
+	@Override
+	public void messageBusErrorCallback() {
+		JOptionPane.showMessageDialog(contentPane, "Der opstod et problem under lukning af forbindelsen til bitmagasinet");
+	}
+
 	private void initComponents() {
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -188,20 +195,8 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 
-		// TODO: put into private method
 		// Load repository configurations
-		try {
-			configurationHandler.getRepositoryConfigurationsFromFolder();
-			if (!configurationHandler.getRepositoryConfigurations().isEmpty()) {
-				updateBitRepoListModel();
-			}
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(contentPane, e.getMessage());
-			e.printStackTrace();
-		} catch (InvalidArgumentException e) {
-			JOptionPane.showMessageDialog(contentPane, e.getMessage());
-			e.printStackTrace();
-		}
+		loadRepositoryConfigurations();
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
@@ -313,32 +308,27 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 					.addContainerGap())
 		);
 		
-		JLabel lblStiTilRepositorysettingxml = new JLabel("Sti til mappe indeholdende RepositorySetting.xml og ReferenceSettings.xml");
-		
+		JLabel lblPathToRepositorysettingXml = new JLabel("Sti til mappe indeholdende RepositorySetting.xml og ReferenceSettings.xml");
 		txtPathToSettingsFolder = new JTextField();
 		txtPathToSettingsFolder.setColumns(10);
 		txtPathToSettingsFolder.getDocument().addDocumentListener(documentListener);
 		
 		JLabel lblpathToCertificate = new JLabel("Sti til certifikat");
-		
 		txtPathToCertificate = new JTextField();
 		txtPathToCertificate.setColumns(10);
 		txtPathToCertificate.getDocument().addDocumentListener(documentListener);
 		
 		JLabel lblCollectionId = new JLabel("Samling (CollectionID)");
-		
 		txtCollectionId = new JTextField();
 		txtCollectionId.setColumns(10);
 		txtCollectionId.getDocument().addDocumentListener(documentListener);
 		
 		JLabel lblPillarId = new JLabel("Søjle (PillarID)");
-		
 		txtPillarId = new JTextField();
 		txtPillarId.setColumns(10);
 		txtPillarId.getDocument().addDocumentListener(documentListener);
 		
 		JLabel lblPathToLocalChecksumList = new JLabel("Sti til lokal kontrolsumsliste");
-		
 		txtPathToLocalChecksumList = new JTextField();
 		txtPathToLocalChecksumList.setColumns(10);
 		txtPathToLocalChecksumList.getDocument().addDocumentListener(documentListener);
@@ -371,8 +361,8 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 			}
 		});
 		
-		JButton btnRydFelter = new JButton("Ryd felter");
-		btnRydFelter.addActionListener(new ActionListener() {
+		JButton btnClearFields = new JButton("Ryd felter");
+		btnClearFields.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				clearRepositoryConfigurationFields();
 			}
@@ -384,7 +374,7 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 					.addContainerGap()
 					.addGroup(gl_currentConfigurationPane.createParallelGroup(Alignment.LEADING)
 						.addComponent(txtPathToSettingsFolder, GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
-						.addComponent(lblStiTilRepositorysettingxml)
+						.addComponent(lblPathToRepositorysettingXml)
 						.addComponent(lblpathToCertificate)
 						.addComponent(txtPathToCertificate, GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
 						.addComponent(lblCollectionId)
@@ -394,7 +384,7 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 						.addComponent(lblPathToLocalChecksumList)
 						.addComponent(txtPathToLocalChecksumList, GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
 						.addGroup(Alignment.TRAILING, gl_currentConfigurationPane.createSequentialGroup()
-							.addComponent(btnRydFelter)
+							.addComponent(btnClearFields)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(btnSaveRepoConf)))
 					.addContainerGap())
@@ -403,7 +393,7 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 			gl_currentConfigurationPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_currentConfigurationPane.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(lblStiTilRepositorysettingxml)
+					.addComponent(lblPathToRepositorysettingXml)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(txtPathToSettingsFolder, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGap(18)
@@ -425,7 +415,7 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 					.addGap(18)
 					.addGroup(gl_currentConfigurationPane.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnSaveRepoConf)
-						.addComponent(btnRydFelter))
+						.addComponent(btnClearFields))
 					.addContainerGap(138, Short.MAX_VALUE))
 		);
 		currentConfigurationPane.setLayout(gl_currentConfigurationPane);
@@ -441,7 +431,6 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		tabbedPane.addTab("Kontrolsummer", null, pnlChecksums, null);
 		
 		btnGetChecksums = new JButton("Hent kontrolsummer");
-		// btnGetChecksums.setEnabled(false);
 		btnGetChecksums.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
@@ -489,15 +478,12 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBackground(Color.WHITE);
 		
-		sortDropDown = new JComboBox();
-		// sortDropDown.setEnabled(false);
-		sortDropDown.setModel(new DefaultComboBoxModel(new String[] {Constants.FILENAME, Constants.MATCH, 
+		sortDropDown = new JComboBox<String>();
+		sortDropDown.setModel(new DefaultComboBoxModel<String>(new String[] {Constants.FILENAME, Constants.MATCH, 
 				Constants.LOCAL_CHECKSUM, Constants.REMOTE_CHECKSUM}));
 		
 		JLabel lblSortAfter = new JLabel("Sortér efter:");
-		
 		btnSort = new JButton("Sortér");
-		// btnSort.setEnabled(false);
 		btnSort.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String sortAfter = (String) sortDropDown.getSelectedItem();
@@ -629,40 +615,12 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 				new String[] {Constants.FILENAME, Constants.MATCH, Constants.LOCAL_CHECKSUM, "Salt", Constants.REMOTE_CHECKSUM});
 	}
 	
-	private void createEvents() {
-		// TODO Auto-generated method stub
-		
-	}
-	
 	private String convertBooleanToString(boolean b) {
 		if (b) {
 			return Constants.CHECKSUM_MATCH_TRUE;
 		} else {
 			return Constants.CHECKSUM_MATCH_FALSE;
 		}
-	}
-	
-	
-	/**
-	 * Callback from ProcessHandlerObserver
-	 */
-	@Override
-	public void update(ProcessHandler processHandler) {
-		sortDropDown.setEnabled(true);
-		btnSort.setEnabled(true);
-		
-		setResultFileInputVisibility(true);
-	}
-	
-	/**
-	 * Callback from ThreadStatusObserver
-	 */
-	@Override
-	public void update(BitrepositoryConnectionResult bitrepositoryConnectionResult) {
-		updateChecksumResultList();
-			
-		FileChecksum fileChecksum = bitrepositoryConnectionResult.getFileChecksum();
-		progressBar.setValue(processHandler.getProgressHandler().getProgress());
 	}
 	
 	private void updateChecksumResultList() {
@@ -712,8 +670,33 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		btnPathToResultFile.setVisible(b);
 	}
 	
-	@Override
-	public void messageBusErrorCallback() {
-		JOptionPane.showMessageDialog(contentPane, "Der opstod et problem under lukning af forbindelsen til bitmagasinet");
+	private void loadRepositoryConfigurations() {
+		try {
+			configurationHandler.getRepositoryConfigurationsFromFolder();
+			if (!configurationHandler.getRepositoryConfigurations().isEmpty()) {
+				updateBitRepoListModel();
+			}
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(contentPane, e.getMessage());
+			e.printStackTrace();
+		} catch (InvalidArgumentException e) {
+			JOptionPane.showMessageDialog(contentPane, e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	private void updateBitRepoListModel() {
+		bitRepoListModel.clear();
+		for (String name : configurationHandler.getRepositoryConfigurations().keySet()) {
+			bitRepoListModel.addElement(name);
+		}
+	}
+
+	private void clearRepositoryConfigurationFields() {
+		txtPathToSettingsFolder.setText(null);
+		txtPathToCertificate.setText(null);
+		txtCollectionId.setText(null);
+		txtPillarId.setText(null);
+		txtPathToLocalChecksumList.setText(null);
 	}
 }

@@ -54,8 +54,6 @@ public class TestChecksumFileValidator {
 		String line = "file1.bin\tff\t0f2dd3c5a366a1e860e28a1afc29987  ";
 		assertFalse(ChecksumFileValidator.isLineValid(line));
 	}
-	
-	
-	
+
 	//TODO: must check filename
 }
