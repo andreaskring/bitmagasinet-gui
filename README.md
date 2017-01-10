@@ -19,7 +19,7 @@ The GUI part of the code was created in Swing using the WindowsBuilder plugin fo
 ## Installation
 
 In order to build the project you will need to install Java (version 1.8) and [Maven](http://maven.apache.org/) (version 3.3.9 or above). 
-Git will of course also be needed. Do the install following to install the project:
+Git will of course also be needed. Do the following to install the project:
 
 * Clone this project and change directory to the folder containing the project
 * (Run the tests with `$ mvn clean test`)
