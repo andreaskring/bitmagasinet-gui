@@ -466,13 +466,13 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 					e.printStackTrace();
 				}
 				
-				// bitrepositoryConnector = new BitrepositoryConnectorRandomResultStub(fileChecksums.get(0), ThreadStatus.SUCCESS);
-				try {
-					bitrepositoryConnector = new BitrepositoryConnectorImpl(configurationHandler.getRepositoryConfiguration(repoName), 
-							fileChecksums.get(0));
-				} catch (InvalidArgumentException e) {
-					e.printStackTrace();
-				}
+				bitrepositoryConnector = new BitrepositoryConnectorRandomResultStub(fileChecksums.get(0), ThreadStatus.SUCCESS);
+//				try {
+//					bitrepositoryConnector = new BitrepositoryConnectorImpl(configurationHandler.getRepositoryConfiguration(repoName), 
+//							fileChecksums.get(0));
+//				} catch (InvalidArgumentException e) {
+//					e.printStackTrace();
+//				}
 				processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, new ClockBasedDateStrategy(), true);
 				bitrepositoryConnector.addObserver(processHandler);
 				bitrepositoryConnector.addObserver(Main.this);
@@ -636,9 +636,9 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 	
 	private String convertBooleanToString(boolean b) {
 		if (b) {
-			return "Ja";
+			return Constants.CHECKSUM_MATCH_TRUE;
 		} else {
-			return "Nej";
+			return Constants.CHECKSUM_MATCH_FALSE;
 		}
 	}
 	

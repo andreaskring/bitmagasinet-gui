@@ -130,9 +130,9 @@ public class TestChecksumIOHandler {
 		Path outputFile = path.resolve(checksumIOHandler.getRelativePathToResultChecksumFile(new Date()));
 		List<String> lines = Files.readAllLines(outputFile);
 		
-		assertTrue(lines.get(0).matches("file1.bin\\ttrue\\t64\\t0f2dd3c5a366a1e860e2f8a1afc29987\\t0f2dd3c5a366a1e860e2f8a1afc29987"));
-		assertTrue(lines.get(1).matches("file2.bin\\tfalse\\t54\\tef44d3c5a366a1e860e2f8a1afc2da21\\t0f2dd3c5a366a1e860e2f8a1afc29987"));
-		assertTrue(lines.get(2).matches("file3.bin\\ttrue\\t44\\tc100d3c5a366a1e860e2f8a1afc21110\\tc100d3c5a366a1e860e2f8a1afc21110"));
+		assertTrue(lines.get(0).matches("file1.bin\\tJa\\t64\\t0f2dd3c5a366a1e860e2f8a1afc29987\\t0f2dd3c5a366a1e860e2f8a1afc29987"));
+		assertTrue(lines.get(1).matches("file2.bin\\tNej\\t54\\tef44d3c5a366a1e860e2f8a1afc2da21\\t0f2dd3c5a366a1e860e2f8a1afc29987"));
+		assertTrue(lines.get(2).matches("file3.bin\\tJa\\t44\\tc100d3c5a366a1e860e2f8a1afc21110\\tc100d3c5a366a1e860e2f8a1afc21110"));
 	}
 
 	// TODO: this test case is not complete - need to finish this

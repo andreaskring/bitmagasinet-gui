@@ -75,10 +75,13 @@ public class ChecksumIOHandler {
 		Path file = path.resolve(getRelativePathToResultChecksumFile(endDate));
 		try (FileWriter writer = new FileWriter(file.toFile())) {
 			for (FileChecksum fileChecksum : fileChecksums) {
+				
+				String checksumMatch = fileChecksum.checksumsMatch() ? Constants.CHECKSUM_MATCH_TRUE : Constants.CHECKSUM_MATCH_FALSE;
+				
 				String line = new StringBuilder()
 				.append(fileChecksum.getFilename())
 				.append(TAB)
-				.append(fileChecksum.checksumsMatch())
+				.append(checksumMatch)
 				.append(TAB)
 				.append(Base16Utils.decodeBase16(fileChecksum.getSalt()))				
 				.append(TAB)
