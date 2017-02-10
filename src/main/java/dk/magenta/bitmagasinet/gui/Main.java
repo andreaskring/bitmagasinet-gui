@@ -316,7 +316,7 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		txtPathToSettingsFolder.setColumns(10);
 		txtPathToSettingsFolder.getDocument().addDocumentListener(documentListener);
 		
-		JLabel lblpathToCertificate = new JLabel("Sti til certifikat");
+		JLabel lblpathToCertificate = new JLabel("Sti og filnavn til certifikat");
 		txtPathToCertificate = new JTextField();
 		txtPathToCertificate.setColumns(10);
 		txtPathToCertificate.getDocument().addDocumentListener(documentListener);
@@ -458,13 +458,13 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 					e.printStackTrace();
 				}
 				
-				bitrepositoryConnector = new BitrepositoryConnectorRandomResultStub(fileChecksums.get(0), ThreadStatus.SUCCESS);
-//				try {
-//					bitrepositoryConnector = new BitrepositoryConnectorImpl(configurationHandler.getRepositoryConfiguration(repoName), 
-//							fileChecksums.get(0));
-//				} catch (InvalidArgumentException e) {
-//					e.printStackTrace();
-//				}
+//				bitrepositoryConnector = new BitrepositoryConnectorRandomResultStub(fileChecksums.get(0), ThreadStatus.SUCCESS);
+				try {
+					bitrepositoryConnector = new BitrepositoryConnectorImpl(configurationHandler.getRepositoryConfiguration(repoName), 
+							fileChecksums.get(0));
+				} catch (InvalidArgumentException e) {
+					e.printStackTrace();
+				}
 				processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, new ClockBasedDateStrategy(), true);
 				bitrepositoryConnector.addObserver(processHandler);
 				bitrepositoryConnector.addObserver(Main.this);
