@@ -25,7 +25,7 @@ Git will of course also be needed. Do the following to install the project:
 * (Run the tests with `$ mvn clean test`)
 * Build the project with `$ mvn clean package`
 
-This will build an executable jar containing all necessary dependencies in the `target/` folder. The program can be run by just double-clicking the jar file.
+This will build an executable jar and a library folder containing all necessary dependencies in the `target/` folder. The program can be run by just double-clicking the jar file or by running the command `$ java -jar target/bitmagasin-gui.jar` (doing it the latter way will enable you to see the Java log in the terminal).
 
 ## Contact
 [Andreas Kring](https://github.com/andreaskring)@[Magenta Aps](http://www.magenta.dk)
