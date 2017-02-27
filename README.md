@@ -27,5 +27,10 @@ Git will of course also be needed. Do the following to install the project:
 
 This will build an executable jar and a library folder containing all necessary dependencies in the `target/` folder. The program can be run by just double-clicking the jar file or by running the command `$ java -jar target/bitmagasin-gui.jar` (doing it the latter way will enable you to see the Java log in the terminal).
 
+## Releases
+
+A zip file containing the bitmagasin-gui.jar file and the necessary dependencies (in the library folder called `lib`) can be downloaded 
+by clicking the "Release" tab in the menu above.
+
 ## Contact
 [Andreas Kring](https://github.com/andreaskring)@[Magenta Aps](http://www.magenta.dk)
