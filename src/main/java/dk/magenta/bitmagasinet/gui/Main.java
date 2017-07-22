@@ -65,8 +65,6 @@ import dk.magenta.bitmagasinet.process.ProcessHandlerObserver;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnectionResult;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnector;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnectorImpl;
-import dk.magenta.bitmagasinet.remote.BitrepositoryConnectorRandomResultStub;
-import dk.magenta.bitmagasinet.remote.ThreadStatus;
 import dk.magenta.bitmagasinet.remote.ThreadStatusObserver;
 
 public class Main extends JFrame implements ThreadStatusObserver, ProcessHandlerObserver {

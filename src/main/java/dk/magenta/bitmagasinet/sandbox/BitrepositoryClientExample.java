@@ -13,9 +13,7 @@ import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
-import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
-import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.commandline.eventhandler.GetChecksumsEventHandler;
 import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.resultmodel.ChecksumResult;
@@ -42,48 +40,6 @@ public class BitrepositoryClientExample {
 
 	private GetChecksumsResultModel model;
 	
-    private class MyEventHandler implements EventHandler {
-
-        private final Object finishLock = new Object();
-        private boolean finished = false;
-        private OperationEventType finishEventType;
-
-        public void handleEvent(OperationEvent event) {
-            switch(event.getEventType()) {
-                case COMPLETE:
-                	System.out.println("###################################################################");
-                	System.out.println(event.getEventType());
-                    finishEventType = OperationEventType.COMPLETE;
-                    finish();
-                    break;
-                case FAILED:
-                    finishEventType = OperationEventType.FAILED;
-                    finish();
-                    break;
-                default:
-                    break;
-            }   
-        }
-
-        private void finish() {
-            synchronized(finishLock) {
-                finished = true;
-                finishLock.notifyAll();
-            }
-        }
-
-        public OperationEventType waitForFinish() throws InterruptedException {
-            synchronized (finishLock) {
-                if(finished == false) {
-                    finishLock.wait();
-                }
-                return finishEventType;
-            }
-        }
-
-    }
-
-
     public void example() throws MalformedURLException, JMSException, InterruptedException {
 
         // Creating the client    

@@ -17,7 +17,6 @@ import org.junit.Test;
 public class TestPropertiesHandler {
 
 	private RepositoryConfiguration repositoryConfiguration;
-	private PropertiesHandler propertiesHandler;
 	private Properties properties;
 	private static Path certificate;
 	private static Path settingsFolder;
@@ -58,37 +57,35 @@ public class TestPropertiesHandler {
 		properties.setProperty("pathToChecksumList", certificate.toString());
 		properties.setProperty("pathToSettingsFiles", settingsFolder.toString());
 		properties.setProperty("pillarID", "id");
-		
-		propertiesHandler = new PropertiesHandler();
 	}
 	
 	@Test
 	public void shouldHaveCollectionIdProperty() {
-		assertEquals("id", propertiesHandler.convertRepositoryConfigurationToProperties(repositoryConfiguration).getProperty("collectionID"));
+		assertEquals("id", PropertiesHandler.convertRepositoryConfigurationToProperties(repositoryConfiguration).getProperty("collectionID"));
 	}
 	
 	@Test
 	public void shouldHaveCollectionIdProperty2() throws InvalidArgumentException {
 		repositoryConfiguration.setCollectionId("id2");
-		assertEquals("id2", propertiesHandler.convertRepositoryConfigurationToProperties(repositoryConfiguration).getProperty("collectionID"));
+		assertEquals("id2", PropertiesHandler.convertRepositoryConfigurationToProperties(repositoryConfiguration).getProperty("collectionID"));
 	}
 	
 	@Test
 	public void shouldHaveNamePropertyXWhenNameIsX() throws InvalidArgumentException {
 		repositoryConfiguration.setName("x");
-		assertEquals("x", propertiesHandler.convertRepositoryConfigurationToProperties(repositoryConfiguration).getProperty("name"));
+		assertEquals("x", PropertiesHandler.convertRepositoryConfigurationToProperties(repositoryConfiguration).getProperty("name"));
 	}
 
 	@Test
 	public void shouldHaveNamePropertyYWhenNameIsY() throws InvalidArgumentException {
 		repositoryConfiguration.setName("y");
-		assertEquals("y", propertiesHandler.convertRepositoryConfigurationToProperties(repositoryConfiguration).getProperty("name"));
+		assertEquals("y", PropertiesHandler.convertRepositoryConfigurationToProperties(repositoryConfiguration).getProperty("name"));
 	}
 	
 	@Test
 	public void shouldHavePathToCertificate() {
 		Path path = Paths.get(tmp).resolve("certificate.pem");
-		assertEquals(path.toString(), propertiesHandler.convertRepositoryConfigurationToProperties(repositoryConfiguration).getProperty("pathToCertificate"));
+		assertEquals(path.toString(), PropertiesHandler.convertRepositoryConfigurationToProperties(repositoryConfiguration).getProperty("pathToCertificate"));
 	}
 	
 	@Test
@@ -96,47 +93,46 @@ public class TestPropertiesHandler {
 		Path path = Paths.get(tmp).resolve("certificate.pem");
 		assertEquals("Just using a random file...",
 				path.toString(),
-				propertiesHandler.convertRepositoryConfigurationToProperties(repositoryConfiguration).getProperty("pathToChecksumList"));
+				PropertiesHandler.convertRepositoryConfigurationToProperties(repositoryConfiguration).getProperty("pathToChecksumList"));
 	}
 	
 	@Test
 	public void shouldHavePathToSettingsFiles() {
-		assertEquals(settingsFolder.toString(), propertiesHandler.convertRepositoryConfigurationToProperties(repositoryConfiguration).getProperty("pathToSettingsFiles"));
+		assertEquals(settingsFolder.toString(), PropertiesHandler.convertRepositoryConfigurationToProperties(repositoryConfiguration).getProperty("pathToSettingsFiles"));
 	}
 	
 	@Test
 	public void shouldHavePillarIdProperty() {
-		assertEquals("id", propertiesHandler.convertRepositoryConfigurationToProperties(repositoryConfiguration).getProperty("pillarID"));
+		assertEquals("id", PropertiesHandler.convertRepositoryConfigurationToProperties(repositoryConfiguration).getProperty("pillarID"));
 	}
 	
 	@Test
 	public void PropertyToRepoCollectionId() throws InvalidArgumentException {
-		assertEquals("id", propertiesHandler.convertPropertiesToRepositoryConfiguration(properties).getCollectionId());
+		assertEquals("id", PropertiesHandler.convertPropertiesToRepositoryConfiguration(properties).getCollectionId());
 	}
 	
 	@Test
 	public void PropertyToRepoName() throws InvalidArgumentException {
-		assertEquals("name", propertiesHandler.convertPropertiesToRepositoryConfiguration(properties).getName());
+		assertEquals("name", PropertiesHandler.convertPropertiesToRepositoryConfiguration(properties).getName());
 	}
 
 	@Test
 	public void PropertyToRepoPathToCertificate() throws InvalidArgumentException {
-		assertEquals(certificate.toString(), propertiesHandler.convertPropertiesToRepositoryConfiguration(properties).getPathToCertificate().toString());
+		assertEquals(certificate.toString(), PropertiesHandler.convertPropertiesToRepositoryConfiguration(properties).getPathToCertificate().toString());
 	}
 
 	@Test
 	public void PropertyToRepoPathToChecksumFile() throws InvalidArgumentException {
-		assertEquals(certificate.toString(), propertiesHandler.convertPropertiesToRepositoryConfiguration(properties).getPathToChecksumList().toString());
+		assertEquals(certificate.toString(), PropertiesHandler.convertPropertiesToRepositoryConfiguration(properties).getPathToChecksumList().toString());
 	}
 
 	@Test
 	public void PropertyToRepoPathToSettingsFiles() throws InvalidArgumentException {
-		assertEquals(settingsFolder.toString(), propertiesHandler.convertPropertiesToRepositoryConfiguration(properties).getPathToSettingsFiles().toString());
+		assertEquals(settingsFolder.toString(), PropertiesHandler.convertPropertiesToRepositoryConfiguration(properties).getPathToSettingsFiles().toString());
 	}
 
 	@Test
 	public void PropertyToRepoPillarId() throws InvalidArgumentException {
-		assertEquals("id", propertiesHandler.convertPropertiesToRepositoryConfiguration(properties).getPillarId());
+		assertEquals("id", PropertiesHandler.convertPropertiesToRepositoryConfiguration(properties).getPillarId());
 	}
-	
 }
