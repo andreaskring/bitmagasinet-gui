@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.bitrepository.common.utils.Base16Utils;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -24,16 +25,14 @@ import org.junit.Test;
 import dk.magenta.bitmagasinet.configuration.InvalidArgumentException;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfiguration;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfigurationImpl;
-import dk.magenta.bitmagasinet.process.DateStrategy;
-import dk.magenta.bitmagasinet.process.FixedDateStrategy;
 
 public class TestChecksumIOHandler {
 
 	private File checksumFile;
 	private ChecksumIOHandler checksumIOHandler;
 	private static Path path;
-	private DateStrategy fixedDateStrategy12;
-	private DateStrategy fixedDateStrategy13;
+	private Date date12;
+	private Date date13;
 
 	/*
 	@BeforeClass
@@ -70,8 +69,8 @@ public class TestChecksumIOHandler {
 	public void setUp() {
 		checksumFile = new File(TestChecksumIOHandler.class.getResource("/checkSumTestList.txt").getFile());
 		checksumIOHandler = new ChecksumIOHandler();
-		fixedDateStrategy12 = new FixedDateStrategy(1879, Calendar.MARCH, 14, 12, 0, 0);
-		fixedDateStrategy13 = new FixedDateStrategy(1879, Calendar.MARCH, 14, 13, 0, 0);
+		date12 = getDate(1879, Calendar.MARCH, 14, 12, 0, 0);
+		date13 = getDate(1879, Calendar.MARCH, 14, 13, 0, 0);
 	}
 
 	@Test
@@ -98,25 +97,25 @@ public class TestChecksumIOHandler {
 	@Test
 	public void resultFileShouldHaveName_ChecksumCheckResult_1879_03_14_120000_CET() {
 		assertEquals("ChecksumCheckResult-1879-03-14_120000_CET.txt", 
-				checksumIOHandler.getRelativePathToResultChecksumFile(fixedDateStrategy12.getDate()).toString());
+				checksumIOHandler.getRelativePathToResultChecksumFile(date12).toString());
 	}
 
 	@Test
 	public void resultFileShouldHaveName_ChecksumCheckResult_1879_03_14_130000_CET() {
 		assertEquals("ChecksumCheckResult-1879-03-14_130000_CET.txt",
-				checksumIOHandler.getRelativePathToResultChecksumFile(fixedDateStrategy13.getDate()).toString());
+				checksumIOHandler.getRelativePathToResultChecksumFile(date13).toString());
 	}
 
 	@Test
 	public void headerFileShouldHaveName_Header_1879_03_14_120000_CET() {
 		assertEquals("Header-1879-03-14_120000_CET.txt",
-				checksumIOHandler.getRelativePathToHeaderFile(fixedDateStrategy12.getDate()).toString());
+				checksumIOHandler.getRelativePathToHeaderFile(date12).toString());
 	}
 
 	@Test
 	public void headerFileShouldHaveName_Header_1879_03_14_130000_CET() {
 		assertEquals("Header-1879-03-14_130000_CET.txt",
-				checksumIOHandler.getRelativePathToHeaderFile(fixedDateStrategy13.getDate()).toString());
+				checksumIOHandler.getRelativePathToHeaderFile(date13).toString());
 	}
 
 	@Test
@@ -153,5 +152,23 @@ public class TestChecksumIOHandler {
 		
 		checksumIOHandler.writeResultFiles(path, fileChecksumList, repositoryConfiguration, null, null);
 	}
+	
+	/**
+	 * Get a date specific date
+	 * @param year
+	 * @param month
+	 * @param day
+	 * @param hour
+	 * @param minute
+	 * @param second
+	 * @return The date truncated to seconds
+	 */
+	private Date getDate(int year, int month, int day, int hour, int minute, int second) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(year, month, day, hour, minute, second);
+		Date date = calendar.getTime();
+		return DateUtils.truncate(date, Calendar.SECOND);
+	}
+
 	
 }
