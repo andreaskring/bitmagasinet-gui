@@ -59,7 +59,6 @@ import dk.magenta.bitmagasinet.configuration.ConfigurationIOHandlerImpl;
 import dk.magenta.bitmagasinet.configuration.InvalidArgumentException;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfiguration;
 import dk.magenta.bitmagasinet.configuration.RepositoryConfigurationImpl;
-import dk.magenta.bitmagasinet.process.ClockBasedDateStrategy;
 import dk.magenta.bitmagasinet.process.ProcessHandler;
 import dk.magenta.bitmagasinet.process.ProcessHandlerImpl;
 import dk.magenta.bitmagasinet.process.ProcessHandlerObserver;
@@ -465,7 +464,7 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 				} catch (InvalidArgumentException e) {
 					e.printStackTrace();
 				}
-				processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, new ClockBasedDateStrategy(), true);
+				processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, true);
 				bitrepositoryConnector.addObserver(processHandler);
 				bitrepositoryConnector.addObserver(Main.this);
 				

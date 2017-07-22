@@ -16,21 +16,18 @@ public class ProcessHandlerImpl implements ProcessHandler, ThreadStatusObserver 
 	private List<ProcessHandlerObserver> observers;
 	private BitrepositoryProgressHandler bitrepositoryProgressHandler;
 	private BitrepositoryConnector bitrepositoryConnector;
-	private DateStrategy dateStrategy;
 	private boolean processAutomatically;
 	private Date startDate;
 	private Date endDate;
 
-	public ProcessHandlerImpl(List<FileChecksum> fileChecksums, BitrepositoryConnector bitrepositoryConnector, DateStrategy dateStrategy,
-			boolean processAutomatically) {
+	public ProcessHandlerImpl(List<FileChecksum> fileChecksums, BitrepositoryConnector bitrepositoryConnector, boolean processAutomatically) {
 		this.bitrepositoryConnector = bitrepositoryConnector;
-		this.dateStrategy = dateStrategy;
 		this.processAutomatically = processAutomatically;
 		remainingFileChecksums = fileChecksums;
 		processedFileChecksums = new ArrayList<FileChecksum>();
 		bitrepositoryProgressHandler = new BitrepositoryProgressHandlerImpl(fileChecksums);
 		observers = new ArrayList<ProcessHandlerObserver>();
-		startDate = dateStrategy.getDate();
+		startDate = new Date();
 	}
 
 	@Override
@@ -60,7 +57,7 @@ public class ProcessHandlerImpl implements ProcessHandler, ThreadStatusObserver 
 				processNext();
 			}
 		} else {
-			endDate = dateStrategy.getDate();
+			endDate = new Date();
 			notifyObservers();
 		}
 	}
