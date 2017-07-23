@@ -49,8 +49,8 @@ public class TestProcessHandlerImpl {
 	@Test
 	public void shouldReturnSizeZeroWhenRemainingFileChecksumListEmpty() {
 		List<FileChecksum> fileChecksums = new ArrayList<FileChecksum>();
-		ProcessHandler controller = new ProcessHandlerImpl(fileChecksums, null, false);
-		assertEquals(0, controller.getRemainingFileChecksums().size());
+		processHandler = new ProcessHandlerImpl(fileChecksums, null, false);
+		assertEquals(0, processHandler.getRemainingFileChecksums().size());
 	}
 
 	@Test
