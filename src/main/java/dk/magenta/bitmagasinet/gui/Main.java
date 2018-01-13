@@ -3,8 +3,6 @@ package dk.magenta.bitmagasinet.gui;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -224,27 +222,23 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		if (bitRepoListModel.isEmpty()) {
 			btnGetConfiguration.setEnabled(false);
 		}
-		btnGetConfiguration.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				repoName = (String) bitRepoList.getSelectedValue();
-				lblCurrentConfiguration.setText("Konfiguration for " + repoName);
-				setConfigurationPaneVisibility(true);
-				
-				RepositoryConfiguration repositoryConfiguration;
-				try {
-					repositoryConfiguration = configurationHandler.getRepositoryConfiguration(repoName);
-					txtPathToSettingsFolder.setText(repositoryConfiguration.getPathToSettingsFiles().toString());
-					txtPathToCertificate.setText(repositoryConfiguration.getPathToCertificate().toString());
-					txtCollectionId.setText(repositoryConfiguration.getCollectionId());
-					txtPillarId.setText(repositoryConfiguration.getPillarId());
-					txtPathToLocalChecksumList.setText(repositoryConfiguration.getPathToChecksumList().toString());
-					btnGetChecksums.setEnabled(true);
-				} catch (InvalidArgumentException e) {
-					// This should never happen
-					e.printStackTrace();
-				}
-				
-				
+		btnGetConfiguration.addActionListener(actionEvent -> {
+			repoName = (String) bitRepoList.getSelectedValue();
+			lblCurrentConfiguration.setText("Konfiguration for " + repoName);
+			setConfigurationPaneVisibility(true);
+			
+			RepositoryConfiguration repositoryConfiguration;
+			try {
+				repositoryConfiguration = configurationHandler.getRepositoryConfiguration(repoName);
+				txtPathToSettingsFolder.setText(repositoryConfiguration.getPathToSettingsFiles().toString());
+				txtPathToCertificate.setText(repositoryConfiguration.getPathToCertificate().toString());
+				txtCollectionId.setText(repositoryConfiguration.getCollectionId());
+				txtPillarId.setText(repositoryConfiguration.getPillarId());
+				txtPathToLocalChecksumList.setText(repositoryConfiguration.getPathToChecksumList().toString());
+				btnGetChecksums.setEnabled(true);
+			} catch (InvalidArgumentException e) {
+				// This should never happen
+				e.printStackTrace();
 			}
 		});
 		
@@ -257,18 +251,16 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		lblCurrentConfiguration.setVisible(false);
 		
 		JButton btnAddNewRepo = new JButton("Tilføj ny");
-		btnAddNewRepo.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				repoName = JOptionPane.showInputDialog("Indtast navn på konfiguration").trim();
-				if (configurationHandler.getRepositoryConfigurations().containsKey(repoName)) {
-					JOptionPane.showMessageDialog(contentPane, "Der findes allerede en konfiguration med det navn");
-					return;
-				}
-				lblCurrentConfiguration.setText("Konfiguration for " + repoName);
-				clearRepositoryConfigurationFields();
-				lblCurrentConfiguration.setVisible(true);
-				currentConfigurationPane.setVisible(true);
+		btnAddNewRepo.addActionListener(actionEvent -> {
+			repoName = JOptionPane.showInputDialog("Indtast navn på konfiguration").trim();
+			if (configurationHandler.getRepositoryConfigurations().containsKey(repoName)) {
+				JOptionPane.showMessageDialog(contentPane, "Der findes allerede en konfiguration med det navn");
+				return;
 			}
+			lblCurrentConfiguration.setText("Konfiguration for " + repoName);
+			clearRepositoryConfigurationFields();
+			lblCurrentConfiguration.setVisible(true);
+			currentConfigurationPane.setVisible(true);
 		});
 		
 		GroupLayout gl_pnlBitrepositories = new GroupLayout(pnlBitrepositories);
@@ -334,38 +326,34 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		txtPathToLocalChecksumList.getDocument().addDocumentListener(documentListener);
 		
 		JButton btnSaveRepoConf = new JButton("Gem");
-		btnSaveRepoConf.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					RepositoryConfiguration repositoryConfiguration = new RepositoryConfigurationImpl(repoName);
-					repositoryConfiguration.setPathToSettingsFiles(Paths.get(txtPathToSettingsFolder.getText()));
-					repositoryConfiguration.setPathToCertificate(Paths.get(txtPathToCertificate.getText()));
-					repositoryConfiguration.setCollectionId(txtCollectionId.getText());
-					repositoryConfiguration.setPillarId(txtPillarId.getText());
-					repositoryConfiguration.setPathToChecksumList(Paths.get(txtPathToLocalChecksumList.getText()));
-			
-					configurationHandler.addRepositoryConfiguration(repositoryConfiguration);
-					updateBitRepoListModel();
-					bitRepoList.setSelectedValue(repoName, true);
-					
-					configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration);
-					btnGetConfiguration.setEnabled(true);
-					
-					btnGetChecksums.setEnabled(true);
+		btnSaveRepoConf.addActionListener(actionEvent -> {
+			try {
+				RepositoryConfiguration repositoryConfiguration = new RepositoryConfigurationImpl(repoName);
+				repositoryConfiguration.setPathToSettingsFiles(Paths.get(txtPathToSettingsFolder.getText()));
+				repositoryConfiguration.setPathToCertificate(Paths.get(txtPathToCertificate.getText()));
+				repositoryConfiguration.setCollectionId(txtCollectionId.getText());
+				repositoryConfiguration.setPillarId(txtPillarId.getText());
+				repositoryConfiguration.setPathToChecksumList(Paths.get(txtPathToLocalChecksumList.getText()));
+		
+				configurationHandler.addRepositoryConfiguration(repositoryConfiguration);
+				updateBitRepoListModel();
+				bitRepoList.setSelectedValue(repoName, true);
+				
+				configurationIOHandler.writeRepositoryConfiguration(repositoryConfiguration);
+				btnGetConfiguration.setEnabled(true);
+				
+				btnGetChecksums.setEnabled(true);
 
-					JOptionPane.showMessageDialog(contentPane, "Konfiguration gemt");
-				} catch (InvalidArgumentException | IOException e) {
-					JOptionPane.showMessageDialog(
-							contentPane, e.getMessage());
-				}
+				JOptionPane.showMessageDialog(contentPane, "Konfiguration gemt");
+			} catch (InvalidArgumentException | IOException e) {
+				JOptionPane.showMessageDialog(
+						contentPane, e.getMessage());
 			}
 		});
 		
 		JButton btnClearFields = new JButton("Ryd felter");
-		btnClearFields.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				clearRepositoryConfigurationFields();
-			}
+		btnClearFields.addActionListener(actionEvent -> {
+			clearRepositoryConfigurationFields();
 		});
 		GroupLayout gl_currentConfigurationPane = new GroupLayout(currentConfigurationPane);
 		gl_currentConfigurationPane.setHorizontalGroup(
@@ -431,48 +419,46 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		tabbedPane.addTab("Kontrolsummer", null, pnlChecksums, null);
 		
 		btnGetChecksums = new JButton("Hent kontrolsummer");
-		btnGetChecksums.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				
-				// Disable/hide buttons
-				progressBar.setValue(0);
-				sortDropDown.setEnabled(false);
-				btnSort.setEnabled(false);
-				setResultFileInputVisibility(false);
-				
-				// Clear table
-				checksumTableModel.setRowCount(0);
-				
-				// Get checksum list from local file
-				File checksumFile = new File(txtPathToLocalChecksumList.getText().trim());
-				try {
-					fileChecksums = checksumIOHandler.readChecksumList(checksumFile);
-				} catch (IOException e) {
-					JOptionPane.showMessageDialog(contentPane, "Der opstod en fejl under læsning af filen " + txtPathToLocalChecksumList.getText());
-					e.printStackTrace();
-				} catch (InvalidChecksumFileException e) {
-					JOptionPane.showMessageDialog(contentPane, e.getMessage());
-					e.printStackTrace();
-				}
-				
-//				bitrepositoryConnector = new BitrepositoryConnectorRandomResultStub(fileChecksums.get(0), ThreadStatus.SUCCESS);
-				try {
-					bitrepositoryConnector = new BitrepositoryConnectorImpl(configurationHandler.getRepositoryConfiguration(repoName), 
-							fileChecksums.get(0));
-				} catch (InvalidArgumentException e) {
-					e.printStackTrace();
-				}
-				processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, true);
-				bitrepositoryConnector.addObserver(processHandler);
-				bitrepositoryConnector.addObserver(Main.this);
-				
-				processHandler.addObserver(Main.this);
-				processHandler.processNext();
-				
-				lblProgressBar.setVisible(true);
-				progressBar.setVisible(true);
-				
+		btnGetChecksums.addActionListener(actionEvent -> {
+			
+			// Disable/hide buttons
+			progressBar.setValue(0);
+			sortDropDown.setEnabled(false);
+			btnSort.setEnabled(false);
+			setResultFileInputVisibility(false);
+			
+			// Clear table
+			checksumTableModel.setRowCount(0);
+			
+			// Get checksum list from local file
+			File checksumFile = new File(txtPathToLocalChecksumList.getText().trim());
+			try {
+				fileChecksums = checksumIOHandler.readChecksumList(checksumFile);
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(contentPane, "Der opstod en fejl under læsning af filen " + txtPathToLocalChecksumList.getText());
+				e.printStackTrace();
+			} catch (InvalidChecksumFileException e) {
+				JOptionPane.showMessageDialog(contentPane, e.getMessage());
+				e.printStackTrace();
 			}
+			
+			// bitrepositoryConnector = new BitrepositoryConnectorRandomResultStub(fileChecksums.get(0), ThreadStatus.SUCCESS);
+			try {
+				bitrepositoryConnector = new BitrepositoryConnectorImpl(configurationHandler.getRepositoryConfiguration(repoName), 
+						fileChecksums.get(0));
+			} catch (InvalidArgumentException e) {
+				e.printStackTrace();
+			}
+			processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, true);
+			bitrepositoryConnector.addObserver(processHandler);
+			bitrepositoryConnector.addObserver(Main.this);
+			
+			processHandler.addObserver(Main.this);
+			processHandler.processNext();
+			
+			lblProgressBar.setVisible(true);
+			progressBar.setVisible(true);
+			
 		});
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -484,12 +470,10 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		
 		JLabel lblSortAfter = new JLabel("Sortér efter:");
 		btnSort = new JButton("Sortér");
-		btnSort.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				String sortAfter = (String) sortDropDown.getSelectedItem();
-				Collections.sort(processHandler.getProcessedFileChecksums(),comparatorMap.get(sortAfter));
-				updateChecksumResultList();
-			}
+		btnSort.addActionListener(actionEvent -> {
+			String sortAfter = (String) sortDropDown.getSelectedItem();
+			Collections.sort(processHandler.getProcessedFileChecksums(),comparatorMap.get(sortAfter));
+			updateChecksumResultList();
 		});
 		
 		disableGetChecksums();
@@ -511,30 +495,28 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		txtPathToResultFile.setColumns(10);
 		
 		btnPathToResultFile = new JButton("Gem");
-		btnPathToResultFile.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				Path path = Paths.get(txtPathToResultFile.getText().trim());
-				File file = path.toFile();
-				if (!file.isDirectory()) {
-					JOptionPane.showMessageDialog(contentPane, "Stien henviser ikke til en mappe");
-					return;
-				}
-				if (!file.canWrite()) {
-					JOptionPane.showMessageDialog(contentPane, "Kan ikke skrive til den angivne mappe!");
-					return;
-				}
-				try {
-					checksumIOHandler.writeResultFiles(path, processHandler.getProcessedFileChecksums(), 
-							configurationHandler.getRepositoryConfiguration(repoName), 
-							processHandler.getStartDate(), processHandler.getEndDate());
-					JOptionPane.showMessageDialog(contentPane, "Filen er blevet gemt");
-				} catch (IOException e) {
-					JOptionPane.showConfirmDialog(contentPane, "Der opstod en fejl: " + e.getMessage());
-					e.printStackTrace();
-				} catch (InvalidArgumentException e) {
-					JOptionPane.showConfirmDialog(contentPane, "Der opstod en fejl: " + e.getMessage());
-					e.printStackTrace();
-				}
+		btnPathToResultFile.addActionListener(actionEvent -> {
+			Path path = Paths.get(txtPathToResultFile.getText().trim());
+			File file = path.toFile();
+			if (!file.isDirectory()) {
+				JOptionPane.showMessageDialog(contentPane, "Stien henviser ikke til en mappe");
+				return;
+			}
+			if (!file.canWrite()) {
+				JOptionPane.showMessageDialog(contentPane, "Kan ikke skrive til den angivne mappe!");
+				return;
+			}
+			try {
+				checksumIOHandler.writeResultFiles(path, processHandler.getProcessedFileChecksums(), 
+						configurationHandler.getRepositoryConfiguration(repoName), 
+						processHandler.getStartDate(), processHandler.getEndDate());
+				JOptionPane.showMessageDialog(contentPane, "Filen er blevet gemt");
+			} catch (IOException e) {
+				JOptionPane.showConfirmDialog(contentPane, "Der opstod en fejl: " + e.getMessage());
+				e.printStackTrace();
+			} catch (InvalidArgumentException e) {
+				JOptionPane.showConfirmDialog(contentPane, "Der opstod en fejl: " + e.getMessage());
+				e.printStackTrace();
 			}
 		});
 		btnPathToResultFile.setVisible(false);
