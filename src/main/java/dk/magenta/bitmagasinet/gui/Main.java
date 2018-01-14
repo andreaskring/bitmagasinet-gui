@@ -3,6 +3,8 @@ package dk.magenta.bitmagasinet.gui;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -22,6 +24,7 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -62,7 +65,8 @@ import dk.magenta.bitmagasinet.process.ProcessHandlerImpl;
 import dk.magenta.bitmagasinet.process.ProcessHandlerObserver;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnectionResult;
 import dk.magenta.bitmagasinet.remote.BitrepositoryConnector;
-import dk.magenta.bitmagasinet.remote.BitrepositoryConnectorImpl;
+import dk.magenta.bitmagasinet.remote.BitrepositoryConnectorRandomResultStub;
+import dk.magenta.bitmagasinet.remote.ThreadStatus;
 import dk.magenta.bitmagasinet.remote.ThreadStatusObserver;
 
 public class Main extends JFrame implements ThreadStatusObserver, ProcessHandlerObserver {
@@ -300,10 +304,50 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 					.addContainerGap())
 		);
 		
+		
+		final JFileChooser fc = new JFileChooser();
+		
 		JLabel lblPathToRepositorysettingXml = new JLabel("Sti til mappe indeholdende RepositorySetting.xml og ReferenceSettings.xml");
 		txtPathToSettingsFolder = new JTextField();
 		txtPathToSettingsFolder.setColumns(10);
 		txtPathToSettingsFolder.getDocument().addDocumentListener(documentListener);
+		txtPathToSettingsFolder.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				int returnVal = fc.showDialog(contentPane, "Vælg");
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					File file = fc.getSelectedFile();
+					txtPathToSettingsFolder.setText(file.getAbsolutePath());						
+				}
+				
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		
 		JLabel lblpathToCertificate = new JLabel("Sti og filnavn til certifikat");
 		txtPathToCertificate = new JTextField();
@@ -442,13 +486,13 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 				e.printStackTrace();
 			}
 			
-			// bitrepositoryConnector = new BitrepositoryConnectorRandomResultStub(fileChecksums.get(0), ThreadStatus.SUCCESS);
-			try {
-				bitrepositoryConnector = new BitrepositoryConnectorImpl(configurationHandler.getRepositoryConfiguration(repoName), 
-						fileChecksums.get(0));
-			} catch (InvalidArgumentException e) {
-				e.printStackTrace();
-			}
+			bitrepositoryConnector = new BitrepositoryConnectorRandomResultStub(fileChecksums.get(0), ThreadStatus.SUCCESS);
+//			try {
+//				bitrepositoryConnector = new BitrepositoryConnectorImpl(configurationHandler.getRepositoryConfiguration(repoName), 
+//						fileChecksums.get(0));
+//			} catch (InvalidArgumentException e) {
+//				e.printStackTrace();
+//			}
 			processHandler = new ProcessHandlerImpl(fileChecksums, bitrepositoryConnector, true);
 			bitrepositoryConnector.addObserver(processHandler);
 			bitrepositoryConnector.addObserver(Main.this);

@@ -86,7 +86,7 @@ public class RepositoryConfigurationImpl implements RepositoryConfiguration {
 		File repositorySettings = path.resolve("RepositorySettings.xml").toFile();
 		File referenceSettings = path.resolve("ReferenceSettings.xml").toFile();
 		if (!repositorySettings.exists() || !referenceSettings.exists()) {
-			throw new InvalidArgumentException("Mappen indeholder ikke RepositorySettings.xml og/eller ReferenceSettings.xml");
+			throw new InvalidArgumentException(path + " indeholder ikke RepositorySettings.xml og/eller ReferenceSettings.xml");
 		}
 		settingsFolder = path;
 	}
