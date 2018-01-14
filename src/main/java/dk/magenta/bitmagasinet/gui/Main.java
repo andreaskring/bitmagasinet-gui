@@ -487,7 +487,7 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 		lblProgressBar.setVisible(false);
 		lblProgressBar.setFont(new Font("Tahoma", Font.BOLD, 13));
 		
-		lblPathToResultFile = new JLabel("Angiv sti til mappe hvor resultatfilen skal gemmes:");
+		lblPathToResultFile = new JLabel("Angiv sti til mappe, hvor resultatfilen skal gemmes:");
 		lblPathToResultFile.setVisible(false);
 		
 		txtPathToResultFile = new JTextField();
@@ -499,11 +499,11 @@ public class Main extends JFrame implements ThreadStatusObserver, ProcessHandler
 			Path path = Paths.get(txtPathToResultFile.getText().trim());
 			File file = path.toFile();
 			if (!file.isDirectory()) {
-				JOptionPane.showMessageDialog(contentPane, "Stien henviser ikke til en mappe");
+				JOptionPane.showMessageDialog(contentPane, file.getAbsolutePath() + " henviser ikke til en mappe");
 				return;
 			}
 			if (!file.canWrite()) {
-				JOptionPane.showMessageDialog(contentPane, "Kan ikke skrive til den angivne mappe!");
+				JOptionPane.showMessageDialog(contentPane, "Kan ikke skrive til " + file.getAbsolutePath());
 				return;
 			}
 			try {
