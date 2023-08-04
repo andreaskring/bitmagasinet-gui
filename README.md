@@ -33,4 +33,3 @@ A zip file containing the bitmagasin-gui.jar file and the necessary dependencies
 by clicking the "Release" tab in the menu above.
 
 ## Contact
-[Andreas Kring](https://github.com/andreaskring)@[Magenta Aps](http://www.magenta.dk)
